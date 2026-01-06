@@ -1,9 +1,24 @@
-import Image from "next/image";
+'use client';
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      
-    </div>
-  );
-}
+    <main>
+    {/*main title*/}
+    <h1>i'm hanjing!</h1>
+
+    {/*header*/}
+    <p>
+      <span>se @ western university</span>
+    </p>
+    {/*buttons*/}
+    <a href="mailto:hanjinglin8@gmail.com"
+      target="_blank"
+    >
+      <span>
+        hire me pls
+      </span>
+    </a>
+
+    </main>
+   );
+};
