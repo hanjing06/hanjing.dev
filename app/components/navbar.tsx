@@ -1,13 +1,13 @@
-"use client";
 import Link from "next/link";
 
 export default function NavBar(){
     return (
-    <nav>
-        <Link href="/app/page">home</Link>
-        <Link href="/app/projects/page">projects</Link>
-            
-    </nav>
+    <div className="mt-8 sm:mt-18 flex justify-center items-center gap-6">
+        <Link href="/">home</Link>
+        <Link href="/projects">projects</Link>
+        <Link href="/about">about</Link>
+    </div>
     );
 }
+
 
