@@ -9,3 +9,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 }
+
+nav{
+  margin-inline: auto;
+}
