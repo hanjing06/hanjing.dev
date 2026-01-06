@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Link from "next/link";
 import Home from "./page";
 import NavBar from "./components/navbar";
 
@@ -24,10 +23,9 @@ export default function RootLayout({
 
         {/*Nav Bar*/}
         <NavBar />
-
+    
         {/*Main Content*/}
-        <Home />
-        <Link href="/app/project/page">projects</Link>
+        {children}
       </body>
     </html>
   );
