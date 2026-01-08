@@ -2,7 +2,7 @@
 
 export default function Home() {
   return (
-    <main>
+    <main className = "m-10 text-center">
     {/*main title*/}
     <h1>i'm hanjing!</h1>
 
