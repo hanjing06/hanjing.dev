@@ -1,21 +1,22 @@
 "use client";
 
-import ProjectCard from "../components/ProjectCard";
+import { triggerAsyncId } from "async_hooks";
+import { link } from "fs";
 
 export default function About(){
     const collections = [
-    {   title: "title",
-        description: "description",
-        tags: ["Java", "C#"],
+    {   title: "",
+        description: "",
+        tags: "",
         logo: "",
         link: "",
         demoVideo: "",
         insideDesc: "",
         date: "",
     },
-    {   title: "title",
-        description: "description",
-        tags: ["Languages"],
+    {   title: "",
+        description: "",
+        tags: "",
         logo: "",
         link: "",
         demoVideo: "",
@@ -24,27 +25,12 @@ export default function About(){
     }
 ];
 
-return (
+/*return (
     <main>
-    <section>
-      <div>
-         <div>
-            {collections.map((item, i)=>(
-                <ProjectCard
-                key = {i}
-                title = {item.title}
-                description = {item.description}
-                tags = {item.tags}
-                logo = {item.logo}
-                link = {item.link}
-                demoVideo = {item.demoVideo}
-                insideDesc = {item.insideDesc}
-                date = {item.date}        
-                />
-            ))}
-         </div>
-      </div>
-    </section>
+        {collections.map((item, i)=>(
+            key={i}
+            title={item.title}
+        ))}
     </main>
-    );
+);*/
 };
