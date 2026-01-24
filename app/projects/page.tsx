@@ -5,20 +5,22 @@ import {useState} from 'react';
 
 export default function Projects(){
     const collections = [
-    {   title: "1",
+    {   title: "project 1",
         description: "description",
         tags: ["Java", "C#"],
+        image: "",
         logo: "",
-        link: "",
+        link: "https://github.com/hanjing06/workoutTracker",
         demoVideo: "",
         insideDesc: "",
         date: "",
     },
-    {   title: "2",
+    {   title: "project 2",
         description: "description",
         tags: ["MySQL", "Python", "RestAPI", "Language"],
+        image: "",
         logo: "",
-        link: "",
+        link: "https://github.com/hanjing06/Course-Selector",
         demoVideo: "",
         insideDesc: "",
         date: "",
@@ -41,12 +43,13 @@ return (
     <section id ="projects">
         <h1 className="text-center mt-5 mb-3">Projects</h1>
         <div className="flex justify-between items-center">
-            <button onClick={backProject} className="cursor-pointer ml-30">{'<'}</button>
+            <button onClick={backProject} className="cursor-pointer ml-75">{'<'}</button>
         <div>
             <ProjectCard
             title={project.title}
             description={project.description}
             tags={project.tags}
+            image={project.image}
             logo={project.logo}
             link={project.link}
             demoVideo={project.demoVideo}
@@ -54,7 +57,7 @@ return (
             date={project.date}        
             />
         </div>
-            <button onClick={nextProject} className="cursor-pointer mr-30">{'>'}</button>
+            <button onClick={nextProject} className="cursor-pointer mr-75">{'>'}</button>
         </div>
     </section>
     );
