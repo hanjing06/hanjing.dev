@@ -16,8 +16,8 @@ export default function ProjectCard({title, description, tags, image, logo, link
     return ( 
     <section>
         <a href={link} target="loading">
-            <div className="grid grid-3 overflow-hidden rounded-xl bg-white shadow-md items-center justify-center h-100 md:w-xs hover:translate-y-[-4px] duration-300 ease-in-out">
-                <img src={image} className="h-full w-xl rounded-t-lg"/>
+            <div className="grid grid-3 overflow-hidden rounded-xl bg-white shadow-md items-center justify-center w-[320px] h-[400px] md:w-xs hover:translate-y-[-4px] duration-300 ease-in-out">
+                <img src={image} className="h-full w-xl rounded-t-lg object-cover"/>
                 <div className="h-50 flex-col items-center text-center">
                     <div className="h-10 items-center justify-center w-full line-clamp-2">{title}</div>
                     <div className="h-10 overflow-hidden w-full line-clamp-3">{description}</div>
