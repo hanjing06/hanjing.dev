@@ -11,7 +11,7 @@ export default function Home() {
     <h1>i'm hanjing!</h1>
 
     {/*header*/}
-    <p><span>se @ western university</span></p>
+    <p><span>swe @ western university</span></p>
 
     {/*buttons*/}
     <p><a href="mailto:hanjinglin8@gmail.com" target="_blank">
