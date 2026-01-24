@@ -1,23 +1,40 @@
 'use client';
 
+import Projects from "./projects/page";
+import About from "./about/page";
+
 export default function Home() {
   return (
-    <main className = "m-10 text-center">
+    <main>
+    <section id="home" className = "m-10 text-center">
     {/*main title*/}
     <h1>i'm hanjing!</h1>
 
     {/*header*/}
-    <p>
-      <span>se @ western university</span>
-    </p>
+    <p><span>se @ western university</span></p>
+
     {/*buttons*/}
-    <a href="mailto:hanjinglin8@gmail.com"
-      target="_blank"
-    >
+    <p><a href="mailto:hanjinglin8@gmail.com">
       <span>
-        hire me pls
+        seeking 2026 summer co-op
       </span>
-    </a>
+    </a></p>
+    </section>
+
+    <div className="m-auto flex justify-center">
+      <a href="https://github.com/hanjing06" target="loading" className="w-5"><img src="github.png" alt="github"/></a>
+      <a href="https://www.linkedin.com/in/hanjing-lin-790252113/" target="loading" className="w-5"><img src="linkedin.png" alt="linkedin"/></a>
+    </div>
+
+    {/*projects*/}
+    <section id="projects">
+    <Projects />
+    </section>
+
+    {/*about*/}
+    <section id="about">
+    <About />
+    </section>
 
     </main>
    );
