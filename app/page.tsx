@@ -14,7 +14,7 @@ export default function Home() {
     <p><span>se @ western university</span></p>
 
     {/*buttons*/}
-    <p><a href="mailto:hanjinglin8@gmail.com">
+    <p><a href="mailto:hanjinglin8@gmail.com" target="_blank">
       <span>
         seeking 2026 summer co-op
       </span>
@@ -22,8 +22,8 @@ export default function Home() {
     </section>
 
     <div className="m-auto flex justify-center">
-      <a href="https://github.com/hanjing06" target="loading" className="w-5"><img src="github.png" alt="github"/></a>
-      <a href="https://www.linkedin.com/in/hanjing-lin-790252113/" target="loading" className="w-5"><img src="linkedin.png" alt="linkedin"/></a>
+      <a href="https://github.com/hanjing06" target="loading"><img src="/github.png" alt="hanjing's github"  className="w-5"/></a>
+      <a href="https://www.linkedin.com/in/hanjing-lin-790252113/" target="loading"><img src="/linkedin.png" alt="hanjing's linkedin" className="w-5"/></a>
     </div>
 
     {/*projects*/}
