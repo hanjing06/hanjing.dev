@@ -42,8 +42,8 @@ export default function Projects(){
 return (
     <section id ="projects">
         <h1 className="text-center mt-5 mb-3">Projects</h1>
-        <div className="flex justify-between items-center">
-            <button onClick={backProject} className="cursor-pointer ml-75">{'<'}</button>
+        <div className="flex justify-center items-center gap-15">
+            <button onClick={backProject} className="cursor-pointer">{'<'}</button>
         <div>
             <ProjectCard
             title={project.title}
@@ -57,7 +57,7 @@ return (
             date={project.date}        
             />
         </div>
-            <button onClick={nextProject} className="cursor-pointer mr-75">{'>'}</button>
+            <button onClick={nextProject} className="cursor-pointer">{'>'}</button>
         </div>
     </section>
     );
