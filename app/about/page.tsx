@@ -1,15 +1,15 @@
 "create client";
+import AboutCard from "../components/AboutCard";
 
-const time = [
+const collections = [
 
 {   title: "background",
-    descriptions: [
-        {description: "i did freelance video editing for all of covid"},
-        {description: "i bench 115lbs"}] 
+    heading: [
+        {description: "i did freelance video editing for all of covid"}] 
 },
 
 {   title: "now",
-    descriptions: [
+    heading: [
         {description:"second year at western"},
         {description:"??"}],
     tags: ["SE2203", "SE2250"]  
@@ -21,6 +21,17 @@ const time = [
 
 export default function About(){
     return (
-        <p className = "text-center m-10">my life up until now</p>
+        <section id="about">
+        <p className = "text-center m-10">about me is under construction</p>
+        <div>
+            {collections.map((item, i)=>(
+                <AboutCard
+                key = {i}
+                title = {item.title}
+                heading = {[]}   
+                />
+             ))}
+        </div>
+        </section>
     )
 }
