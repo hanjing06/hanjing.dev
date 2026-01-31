@@ -13,8 +13,9 @@ interface ProjectCard{
 }
 
 export default function ProjectCard({title, description, tags, image, logo, link, demoVideo, insideDesc, date}: ProjectCard){
+
     return ( 
-    <section>
+    <section className="overflow-hidden">
         <a href={link} target="loading">
             <div className="grid grid-3 overflow-hidden rounded-xl bg-white shadow-md items-center justify-center w-[320px] h-[400px] md:w-xs hover:translate-y-[-4px] duration-300 ease-in-out">
                 <img src={image} className="h-full w-xl rounded-t-lg object-cover"/>
