@@ -14,8 +14,14 @@ export default function NavBar(){
     }
   };
     return (
-    <div className="mt-8 sm:mt-18 flex justify-center items-center gap-6">
-        <Link href="#" onClick={(e) => handleClick(e, 'home')}>home</Link>    
+    // <div className="sm:mt-8 flex justify-center items-center gap-6">
+    //     <Link href="#" onClick={(e) => handleClick(e, 'home')}>home</Link>    
+    //     <Link href="#projects" onClick={(e) => handleClick(e, 'projects')}>projects</Link>
+    //     <Link href="#about" onClick={(e) => handleClick(e, 'about')}>about</Link>
+    // </div>
+
+    <div className="sm:mt-8 flex justify-center items-center gap-6">
+        <Link href="./page" onClick={(e) => handleClick(e, 'home')}>home</Link>    
         <Link href="#projects" onClick={(e) => handleClick(e, 'projects')}>projects</Link>
         <Link href="#about" onClick={(e) => handleClick(e, 'about')}>about</Link>
     </div>
