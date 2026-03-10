@@ -1,12 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #effff2;
-  --foreground: #171717;
+  --background: #F8F7F5;
+  --foreground: #1A1A1A;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+@theme {
+  --font-family-lora: 'Lora', Georgia, serif;
+  
+  --color-background: #F8F7F5;
+  --color-foreground: #1A1A1A;
 }
 
+body {
+  font-family: var(--font-family-lora);
+  font-size: 20px;
+}

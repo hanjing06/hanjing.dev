@@ -4,6 +4,7 @@ import Projects from "./projects/page";
 import About from "./about/page";
 
 export default function Home() {
+
   return (
     <main>
     <section id="home" className = "m-10 text-center">
