@@ -1,6 +1,5 @@
 "use client";
-import {AnimatePresence, motion} from "framer-motion";
-import Link from 'next/link';
+import {motion} from "framer-motion";
 
 
 export default function ProjectsPage() {
@@ -9,13 +8,13 @@ export default function ProjectsPage() {
       title: "Sunstang VCU 2026",
       description: "Designing the vehicle control unit for a solar powered car.",
       image: "/SunstangThumbnail.jpeg",
-      tags: ["Embedded Systems", "PCB Design"],
+      tags: ["Embedded Systems", "PCB Design", "Hardware"],
     },
     {
-      title: "Project Two",
-      description: "Short description for the second project.",
+      title: "The Perfect Squat",
+      description: "Developing a computer vision program that detects the bar path of your squat.",
       image: "/projects/project-2.jpg",
-      tags: ["Hardware", "Systems"],
+      tags: ["Computer Vision", "Machine Learning"],
     },
     {
       title: "Project Three",
