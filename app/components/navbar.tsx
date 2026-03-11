@@ -1,31 +1,18 @@
-"use client";
+'use client';
+import { motion } from "framer-motion";
 
-import Link from "next/link";
-
-export default function NavBar(){
-    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
-    e.preventDefault();
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }
-  };
-    return (
-    // <div className="sm:mt-8 flex justify-center items-center gap-6">
-    //     <Link href="#" onClick={(e) => handleClick(e, 'home')}>home</Link>    
-    //     <Link href="#projects" onClick={(e) => handleClick(e, 'projects')}>projects</Link>
-    //     <Link href="#about" onClick={(e) => handleClick(e, 'about')}>about</Link>
-    // </div>
-
-    <div className="sm:mt-8 flex justify-center items-center gap-6">
-        <Link href="./page" onClick={(e) => handleClick(e, 'home')}>home</Link>    
-        <Link href="#projects" onClick={(e) => handleClick(e, 'projects')}>projects</Link>
-        <Link href="#about" onClick={(e) => handleClick(e, 'about')}>about</Link>
-    </div>
-    );
+export default function Navbar() {
+  return (
+    <header className="sticky top-0 z-50 border-b border-black/10 bg-[#efefec]/70 backdrop-blur-md">
+      <nav className="mx-100 flex max-w-[920px] items-center justify-between py-7 md:px-10">
+        <a href="/" className="text-[32px]">
+         <motion.span
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              Hanjing Lin.
+            </motion.span>
+        </a>
+      </nav>
+    </header>
+  );
 }
-
-

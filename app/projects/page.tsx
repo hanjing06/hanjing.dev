@@ -1,102 +1,74 @@
 "use client";
-
-import ProjectCard from "../components/ProjectCard";
-import {useState} from 'react';
 import {AnimatePresence, motion} from "framer-motion";
 
 
-export default function Projects(){
-    const collections = [
-    {   title: "project 1",
-        description: "description",
-        tags: ["Java", "C#"],
-        image: "",
-        logo: "",
-        link: "https://github.com/hanjing06/workoutTracker",
-        demoVideo: "",
-        insideDesc: "",
-        date: "",
+export default function ProjectsPage() {
+  const projects = [
+    {
+      title: "Sunstang VCU 2026",
+      description: "Designing the vehicle control unit for a solar powered car.",
+      image: "/projects/sunstang.jpg",
+      tags: ["Embedded Systems", "PCB Design"],
     },
-    {   title: "project 2",
-        description: "description",
-        tags: ["MySQL", "Python", "RestAPI", "Language"],
-        image: "",
-        logo: "",
-        link: "https://github.com/hanjing06/Course-Selector",
-        demoVideo: "",
-        insideDesc: "",
-        date: "",
-    }
-    ];
+    {
+      title: "Project Two",
+      description: "Short description for the second project.",
+      image: "/projects/project-2.jpg",
+      tags: ["Hardware", "Systems"],
+    },
+    {
+      title: "Project Three",
+      description: "Short description for the third project.",
+      image: "/projects/project-3.jpg",
+      tags: ["Computer Vision", "AI"],
+    },
+    {
+      title: "Project Four",
+      description: "Short description for the fourth project.",
+      image: "/projects/project-4.jpg",
+      tags: ["Web App", "Full Stack"],
+    },
+  ];
 
-    const[index, setIndex] = useState(0);
-    const[direction, setDirection] = useState(1);
+  return (
+    <main className="min-h-screen bg-[#efefec]">
+      <section className="mx-auto max-w-[1100px] px-8 py-20 md:px-16">
 
-    function nextProject(){
-        setDirection(1);
-        setIndex((index + 1) % collections.length);
-    }
+        <div className="grid grid-cols-1 gap-x-12 gap-y-14 md:grid-cols-2">
+          {projects.map((project) => (
+            <article key={project.title} className="flex h-full flex-col">
+              <div className="aspect-[16/9] w-full overflow-hidden bg-black/10">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="h-full w-full object-cover"
+                />
+              </div>
 
-    function backProject(){
-        setDirection(-1);
-        setIndex((index - 1 + collections.length) % collections.length);
-    }
+              <div className="mt-3 flex flex-1 flex-col">
+                <h2 className="text-[20px] text-black">
+                  {project.title}
+                </h2>
 
-    let project = collections[index];
+                <p className="mt-1 min-h-[20px] text-[16px] text-black/55">
+                  {project.description}
+                </p>
 
-    const variants = {
-        enter: (direction: number) => ({
-            x: direction > 0 ? 100 : -100,
-            opacity: 0
-        }),
-        center: {
-            x: 0,
-            opacity: 1
-        },
-        exit: (direction: number) => ({
-            x: direction > 0 ? -100 : 100,
-            opacity: 0
-        })
-    };
-
-return (
-    <section id ="projects">
-        <h1 className="text-center mt-5 mb-3">Projects</h1>
-        <div className="flex justify-center items-center gap-15">
-            <button onClick={backProject} className="cursor-pointer text-3xl font-bold px-4 py-2 hover:scale-110 transition-transform">{'<'}</button>
-
-        <div className="relative md:w-xs overflow-hidden">
-             <AnimatePresence initial={false} custom={direction} mode="popLayout">
-                <motion.div
-                    key={index}
-                    custom={direction}
-                    variants={variants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{
-                        x: { type: "spring", stiffness: 400, damping: 35 },
-                            opacity: { duration: 0.15 }
-                            }}>
-
-                    <ProjectCard
-                    title={project.title}
-                    description={project.description}
-                    tags={project.tags}
-                    image={project.image}
-                    logo={project.logo}
-                    link={project.link}
-                    demoVideo={project.demoVideo}
-                    insideDesc={project.insideDesc}
-                    date={project.date}        
-                    />
-
-                </motion.div>
-            </AnimatePresence>
+                <div className="mt-3 flex flex-wrap gap-3">
+                  {project.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="bg-[#e0b24c] px-3 py-1 text-[14px] text-black"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))}
         </div>
-
-            <button onClick={nextProject} className="cursor-pointer text-3xl font-bold px-4 py-2 hover:scale-110 transition-transform">{'>'}</button>
-        </div>
-    </section>
-    );
-};
+      </section>
+    </main>
+  );
+}

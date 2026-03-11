@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import NavBar from "./components/navbar";
-
+import Navbar from "./components/Navbar";
 
 export const metadata: Metadata = {
   title: "hanjing lin's portfolio",
@@ -13,15 +12,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en">
       <body className="bg-background">
-      
-        {/*Nav Bar*/}
-        <NavBar />
+        <Navbar />
 
         {/*Main Content*/}
-        {children}
+        <main className="flex flex-col gap-y-20 md:gap-y-32 overflow-hidden">{children}</main>
+      
       </body>
     </html>
   );
