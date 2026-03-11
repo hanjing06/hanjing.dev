@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 export const metadata: Metadata = {
   title: "hanjing lin's portfolio",
@@ -20,6 +21,8 @@ export default function RootLayout({
 
         {/*Main Content*/}
         <main className="flex flex-col gap-y-20 md:gap-y-32 overflow-hidden">{children}</main>
+
+        <Footer />
       
       </body>
     </html>
