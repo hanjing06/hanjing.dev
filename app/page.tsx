@@ -7,8 +7,8 @@ import Link from "next/link";
 export default function Home() {
 
   return (
-    <main className="min-h-screen px-6 md:px-10">
-      <section className="my-40 mx-100 max-w-[920px]">
+    <main>
+      <section className="my-20 mx-50 max-w-[920px]">
       <div className="max-w-2xl w-full px-4 flex flex-col items-start text-left gap-10">
         
         {/* Line 1: Name */}
