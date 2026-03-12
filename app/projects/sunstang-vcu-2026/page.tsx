@@ -75,7 +75,7 @@ export default function SunstangPage(){
             <img className="w-[1084px] h-[829px] object-cover mt-[30px]" src="/SunstangBoard.jpg" />
             <div className="justify-start text-neutral-600 text-base">PCB</div>
             <div className="justify-start text-black text-3xl mt-[44px]">A special thanks</div>
-            <div className="w-[1081px] justify-start"><span className="text-black text-xl">I wanna give a special thank you to </span><a href="https://www.linkedin.com/in/xiuting-s/" className="underline text-[#C85A3F] transition duration-300 ease-in-out hover:text-[#f6d053]">Xiuting Shi</a><span className="text-black text-xl"> for teaching and mentoring me through the whole process. From explaining what a MOSFET is, to finalizing the design, thank you.</span></div>
+            <div className="w-[1081px] justify-start"><span className="text-black text-xl">I wanna give a special thank you to </span><a href="https://www.linkedin.com/in/xiuting-s/" target="_blank" className="underline text-[#C85A3F] transition duration-300 ease-in-out hover:text-[#f6d053]">Xiuting Shi</a><span className="text-black text-xl"> for teaching and mentoring me through the whole process. From explaining what a MOSFET is, to finalizing the design, thank you.</span></div>
             <div className="justify-start text-black text-3xl mt-[62px]">Tools &amp; Skills</div>
             <div className="flex flex-wrap gap-3 mt-[14px]">
             {tools.map((tags) => (

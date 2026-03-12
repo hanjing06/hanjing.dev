@@ -23,7 +23,7 @@ export default function SquatPage(){
             </div>
             <div className="justify-start text-black text-3xl mt-[30px]">Overview</div>
             <div className="w-[1081px] justify-start text-black text-xl mt-3">
-                The Perfect Squat is a passion project that <a href="https://www.linkedin.com/in/mats-leis-4b9911271/" className="underline text-[#C85A3F] transition duration-300 ease-in-out hover:text-[#f6d053]">Mats Leis</a> and I started second semester of our second year. 
+                The Perfect Squat is a passion project that <a href="https://www.linkedin.com/in/mats-leis-4b9911271/" target="_blank" className="underline text-[#C85A3F] transition duration-300 ease-in-out hover:text-[#f6d053]">Mats Leis</a> and I started second semester of our second year. 
                 This came about when we were discussing about a LinkedIn post we both saw exploring MediaPipe's pose model detection.
                 It got us thinking about how we could utilize these tools into our everyday lives.
             <div className="mt-5">
