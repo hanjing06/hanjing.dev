@@ -15,19 +15,7 @@ export default function ProjectsPage() {
       description: "Developing a computer vision program that detects the bar path of your squat.",
       image: "/projects/project-2.jpg",
       tags: ["Computer Vision", "Machine Learning"],
-    },
-    {
-      title: "Project Three",
-      description: "Short description for the third project.",
-      image: "/projects/project-3.jpg",
-      tags: ["Computer Vision", "AI"],
-    },
-    {
-      title: "Project Four",
-      description: "Short description for the fourth project.",
-      image: "/projects/project-4.jpg",
-      tags: ["Web App", "Full Stack"],
-    },
+    }
   ];
 
   return (
@@ -69,7 +57,7 @@ export default function ProjectsPage() {
             {project.description}
             </p>
 
-            <div className="mt-3 flex flex-wrap gap-3">
+            <div className="mt-auto pt-3 flex flex-wrap gap-3">
             {project.tags.map((tag) => (
                 <span key={tag} className="bg-[#e0b24c] px-3 py-1 text-[14px] text-black">
                 {tag}
