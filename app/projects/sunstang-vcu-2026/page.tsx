@@ -23,7 +23,7 @@ export default function SunstangPage(){
             </div>
             <img className="w-[1081px] h-[608px] object-cover mt-[59px]" src="/SunstangThumbnail.jpeg" />
             <div className="justify-start text-black text-3xl mt-[30px]">Overview</div>
-            <div className="w-[1081px] justify-start text-black text-xl">
+            <div className="w-[1081px] justify-start text-black text-xl mt-3">
                 The Sunstang VCU 2026 is a custom-designed Vehicle Control Unit PCB developed in KiCad v6+. 
                 The board integrates driver inputs, pedal interfaces, high-voltage enable logic, lighting control, safety interlocks, and vehicle state management into a centralized low-voltage control system. 
                 The system is built around the STM32 Nucleo-F302R8 development board (ARM Cortex-M4, 3.3V logic). 
@@ -75,7 +75,7 @@ export default function SunstangPage(){
             <img className="w-[1084px] h-[829px] object-cover mt-[30px]" src="/SunstangBoard.jpg" />
             <div className="justify-start text-neutral-600 text-base">PCB</div>
             <div className="justify-start text-black text-3xl mt-[44px]">A special thanks</div>
-            <div className="w-[1081px] justify-start"><span className="text-black text-xl">I wanna give a special thank you to </span><a href="https://www.linkedin.com/in/xiuting-s/" className="underline">Xiuting Shi</a><span className="text-black text-xl"> for teaching and mentoring me through the whole process. From explaining what a MOSFET is, to finalizing the design, thank you.</span></div>
+            <div className="w-[1081px] justify-start"><span className="text-black text-xl">I wanna give a special thank you to </span><a href="https://www.linkedin.com/in/xiuting-s/" className="underline text-[#C85A3F] transition duration-300 ease-in-out hover:text-[#f6d053]">Xiuting Shi</a><span className="text-black text-xl"> for teaching and mentoring me through the whole process. From explaining what a MOSFET is, to finalizing the design, thank you.</span></div>
             <div className="justify-start text-black text-3xl mt-[62px]">Tools &amp; Skills</div>
             <div className="flex flex-wrap gap-3 mt-[14px]">
             {tools.map((tags) => (
