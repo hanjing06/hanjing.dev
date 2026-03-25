@@ -1,55 +1,95 @@
 'use client';
 
+import { motion } from 'framer-motion';
+import Link from 'next/link';
 
-import { motion } from "framer-motion";
-import Link from "next/link";
+const container = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.14,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 10 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 2.3,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const buttonGroup = {
+  hidden: { opacity: 0, y: 8 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 1.67,
+      delay: 0.2,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
 
 export default function Home() {
-
   return (
-    <main>
-      <section className="my-20 mx-50 max-w-[920px]">
-      <div className="max-w-2xl w-full px-4 flex flex-col items-start text-left gap-10">
-        
-        {/* Line 1: Name */}
-        <h1 className="firstLine text-[32px] whitespace-nowrap">
-          Hi! I'm Hanjing.
-          <br />I am a software engineer based in London ⇄ Toronto.
-        </h1>
+    <main className="min-h-screen flex items-center justify-center px-6 -mt-16">
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="flex flex-col items-center text-center"
+      >
+        {/* Name */}
+        <motion.div
+          variants={fadeUp}
+          className="text-black text-6xl tracking-[6.40px]"
+        >
+          Hanjing
+        </motion.div>
 
-        {/* Line 2: Projects */}
-        <h1 className="secondLine text-[32px] whitespace-nowrap">
-          My projects revolve around my interest in electronics.{' '}
-          <Link href="/projects">
-            <motion.span
-              whileHover={{ x: 5, color: "#f6d053" }}
-              animate={{ color: "#C85A3F" }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
+        {/* What I do */}
+        <motion.div
+          variants={fadeUp}
+          transition={{delay:0.09}}
+          className="mt-3 text-neutral-600 text-xl tracking-widest"
+        >
+          building intelligent systems that interact with the real world.
+        </motion.div>
+
+        {/* Buttons */}
+        <motion.div
+          variants={buttonGroup}
+          className="mt-8 flex gap-4"
+        >
+         <Link href="/projects">
+            <motion.button
+              whileHover={{ y: -2, cursor:'pointer' }}
+              transition={{ ease: 'easeInOut', duration: 0.34 }}
+              className="w-36 py-2.5 text-base tracking-wider border-[1.5px] border-transparent bg-[#1d1d1f] text-[#f5f5f7] transition-colors duration-200 hover:bg-[#3a3a3c]"
             >
-              See my projects.
-            </motion.span>
+              projects →
+            </motion.button>
           </Link>
-        </h1>
 
-        {/* Line 3: Education */}
-        <p className="thirdLine text-[32px] whitespace-nowrap">I am currently a second year student at University of Western Ontario.</p>
-
-        {/* Line 4: Tech stack */}
-        <p className="fourthLine text-[32px] whitespace-nowrap">
-          Curious about what powers my projects?{' '}
-          <Link href="/techstack" className="tech-link">
-            <motion.span
-              whileHover={{ x: 5, color: "#f6d053" }}
-              animate={{ color: "#C85A3F" }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
+          <Link href="/about">
+            <motion.button
+              whileHover={{ y: -2, cursor:'pointer' }}
+              transition={{ ease: 'easeInOut', duration: 0.34 }}
+              className="w-36 py-2.5 text-base tracking-wider border-[1.5px] border-[#1d1d1f] text-[#1d1d1f] transition-colors duration-200 hover:bg-[#1d1d1f] hover:text-[#f5f5f7]"
             >
-              Click here.
-            </motion.span>
+              about →
+            </motion.button>
           </Link>
-        </p>
-
-      </div>
-      </section>
+        </motion.div>
+      </motion.div>
     </main>
   );
 }

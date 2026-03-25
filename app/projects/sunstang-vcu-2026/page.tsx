@@ -1,90 +1,236 @@
 'use client';
 
-const tags = ["Embedded Systems", "PCB Design"];
-const tools = ["KiCad",  "STM32", "Embedded C", "GPIO Control", "CAN", "UART"];
+import { motion } from 'framer-motion';
+import Link from 'next/link';
 
-export default function SunstangPage(){
-    return(
-        <main className="min-h-screen">
-            <section className="mx-auto max-w-[1100px] px-8 py-20 md:px-16">
-            <a href="/projects"><div className="justify-start text-neutral-600">← back to projects</div></a>
-            <img className="w-[550px] h-24 mt-[42px]" src="/SunstangLogo.png" />
-            <div className="justify-start text-neutral-600 mt-[17px]">2026 · Sunstang Driver Controls</div>
-            <div className="justify-start text-black text-3xl mt-[22px]">Sunstang VCU 2026
-                <a href="https://github.com/hanjing06/Sunstang-VCU-2026.git" target="_blank"><img className="w-9 h-9 inline ml-[21px] mb-2" src="/github.png" /></a>
-            </div>
-            <div className="w-[1054px] h-12 justify-start text-stone-500 text-xl">Designing the vehicle control unit for a solar powered car.</div>
-            <div className="flex flex-wrap gap-3">
-            {tags.map((tags) => (
-                <span className="bg-[#e0b24c] px-3 py-1 text-[14px] text-black">
-                {tags}
-                </span>
+const container = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 10 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 1.67,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const tags = ["Embedded Systems", "PCB Design"];
+const tools = ["KiCad", "STM32", "Embedded C", "GPIO Control", "CAN", "UART"];
+
+export default function SunstangPage() {
+  return (
+    <main className="min-h-screen mx-auto">
+      <motion.section
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="mx-auto max-w-[920px] px-6 py-24 md:px-3"
+      >
+        {/* Back */}
+        <motion.div variants={fadeUp}>
+          <Link
+            href="/projects"
+            className="text-sm text-neutral-500 hover:text-neutral-700 transition-colors duration-200"
+          >
+            ← back to projects
+          </Link>
+        </motion.div>
+
+        {/* Logo */}
+        <motion.div variants={fadeUp} className="mt-4">
+          <img src="/SunstangLogo.png" className="h-16 w-auto object-contain" />
+        </motion.div>
+
+        {/* Meta */}
+        <motion.div
+          variants={fadeUp}
+          className="mt-4 text-sm text-neutral-500"
+        >
+          2026 · Sunstang Driver Controls
+        </motion.div>
+
+        {/* Title + GitHub */}
+        <motion.div
+          variants={fadeUp}
+          className="mt-4 flex items-center gap-4"
+        >
+          <h1 className="text-4xl tracking-tight text-black">
+            Sunstang VCU 2026
+          </h1>
+          <a href="https://github.com/hanjing06/Sunstang-VCU-2026.git" target="_blank" rel="noopener noreferrer">
+            <img src="/github.png" className="w-7 h-7 opacity-70 hover:opacity-100 transition-opacity duration-200" />
+          </a>
+        </motion.div>
+
+        {/* Subtitle */}
+        <motion.p
+          variants={fadeUp}
+          className="mt-3 text-lg tracking-wide text-neutral-500"
+        >
+          Designing the vehicle control unit for a solar powered car.
+        </motion.p>
+
+        {/* Tags */}
+        <motion.div variants={fadeUp} className="mt-5 flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <span
+              key={tag}
+              className="bg-[#e0b24c] px-3 py-1 text-xs text-black"
+            >
+              {tag}
+            </span>
+          ))}
+        </motion.div>
+
+        {/* Divider */}
+        <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
+
+        {/* Hero image */}
+        <motion.img
+          variants={fadeUp}
+          src="/SunstangThumbnail.jpeg"
+          className="mt-14 w-full object-cover"
+          style={{ maxHeight: '560px' }}
+        />
+
+        {/* Divider */}
+        <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
+
+        {/* Overview */}
+        <motion.div variants={fadeUp} className="mt-14">
+          <h2 className="text-2xl tracking-tight text-black">
+            Overview
+          </h2>
+          <p className="mt-8 text-base leading-relaxed tracking-wide text-neutral-700">
+            The Sunstang VCU 2026 is a custom-designed Vehicle Control Unit PCB developed in KiCad v6+.
+            The board integrates driver inputs, pedal interfaces, high-voltage enable logic, lighting control,
+            safety interlocks, and vehicle state management into a centralized low-voltage control system.
+            The system is built around the STM32 Nucleo-F302R8 development board (ARM Cortex-M4, 3.3V logic).
+            This PCB acts as the hardware interface between the microcontroller (3.3V) and the vehicle's 12V automotive systems.
+          </p>
+        </motion.div>
+
+        {/* Divider */}
+        <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
+
+        {/* High-level diagram */}
+        <motion.div variants={fadeUp} className="mt-14">
+          <img src="/SunstangHighLevel.png" className="w-full object-cover" />
+          <p className="mt-2 text-xs text-neutral-400">
+            High-Level Diagram
+          </p>
+        </motion.div>
+
+        {/* Functional Responsibilities */}
+        <motion.div variants={fadeUp} className="mt-14">
+          <h2 className="text-2xl tracking-tight text-black">
+            Functional Responsibilities
+          </h2>
+          <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
+            {[
+              {
+                title: '1. Power & HV Control',
+                items: ['LV switch interface', 'HV switch interface', 'Pre-charge button input', 'Pre-charge contactor feedback', 'Main contactor feedback', 'HV active indication', 'BMS interface signals'],
+              },
+              {
+                title: '2. Driver Inputs',
+                items: ['Accelerator pedal (ADC input)', 'Brake pedal (ADC/digital input)', 'Brake light trigger output'],
+              },
+              {
+                title: '3. Mode Control',
+                items: ['Ready mode switch', 'Charge mode switch', 'Mode select (SPDT)', 'Gear selector (SPST)'],
+              },
+              {
+                title: '4. Lighting Control',
+                items: ['Brake lights', 'Daytime running lights', 'Left turn signal', 'Right turn signal', 'Hazard lights', 'Rear signal outputs'],
+              },
+              {
+                title: '5. Safety Inputs',
+                items: ['HV active confirmation', 'Thermal shutdown', 'Pre-charge verification before main contactor closure'],
+              },
+            ].map(({ title, items }) => (
+              <div key={title}>
+                <p className="text-sm text-black">{title}</p>
+                <ul className="mt-3 space-y-1.5">
+                  {items.map((item) => (
+                    <li key={item} className="text-sm leading-relaxed tracking-wide text-neutral-500">
+                      · {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-            </div>
-            <img className="w-[1081px] h-[608px] object-cover mt-[59px]" src="/SunstangThumbnail.jpeg" />
-            <div className="justify-start text-black text-3xl mt-[30px]">Overview</div>
-            <div className="w-[1081px] justify-start text-black text-xl mt-3">
-                The Sunstang VCU 2026 is a custom-designed Vehicle Control Unit PCB developed in KiCad v6+. 
-                The board integrates driver inputs, pedal interfaces, high-voltage enable logic, lighting control, safety interlocks, and vehicle state management into a centralized low-voltage control system. 
-                The system is built around the STM32 Nucleo-F302R8 development board (ARM Cortex-M4, 3.3V logic). 
-                This PCB acts as the hardware interface between the microcontroller (3.3V) and the vehicle’s 12V automotive systems.</div>
-            <img className="w-[1047px] h-[812px] object-cover mt-[30px]" src="/SunstangHighLevel.png" />
-            <div className="justify-start text-neutral-600 text-base">High-Level Diagram</div>
-            <div className="justify-start text-black text-3xl mt-[30px]">Functional Responsibilites</div>
-            <div className="grid grid-cols-3 mt-[18px] gap-35">
-            <div className="whitespace-nowrap">
-                1. Power &amp; HV Control
-                <div className="indent-2 mt-2">• LV switch interface</div>
-                <div className="indent-2">• HV switch interface</div>
-                <div className="indent-2">• Pre-charge button input</div>
-                <div className="indent-2">• Pre-charge contactor feedback</div>
-                <div className="indent-2">• Main contactor feedback</div>
-                <div className="indent-2">• HV active indication</div>
-                <div className="indent-2">•  BMS interface signals</div></div>
-            <div className="whitespace-nowrap">
-                2. Driver Inputs
-                <div className="indent-2 mt-2">• Accelerator pedal (ADC input)</div>
-                <div className="indent-2">• Brake pedal (ADC/digital input)</div>
-                <div className="indent-2">• Brake light trigger output</div></div>
-            <div>
-                3. Mode Control
-                <div className="indent-2 mt-2">• Ready mode switch</div>
-                <div className="indent-2">• Charge mode switch</div>
-                <div className="indent-2">• Mode select (SPDT)</div>
-                <div className="indent-2">• Gear selector (SPST)</div></div>
-            </div>
-            <div className="grid grid-cols-3 mt-[30px] gap-35">
-            <div className="whitespace-nowrap">
-                4. Lighting Control
-                <div className="indent-2 mt-2">• Brake lights</div>
-                <div className="indent-2">• Daytime running lights</div>
-                <div className="indent-2">• Left turn signal</div>
-                <div className="indent-2">• Right turn signal</div>
-                <div className="indent-2">• Hazard lights</div>
-                <div className="indent-2">• Rear signal outputs</div></div>
-            <div className="whitespace-nowrap">
-                5. Safety Inputs
-                <div className="indent-2 mt-2">• HV active confirmation</div>
-                <div className="indent-2">• Thermal shutdown</div>
-                <div className="indent-2">• Pre-charge verification before <br/><div className="indent-5">main contactor closure</div></div></div>
-            </div>
-            <img className="w-[1076px] h-[806px] object-cover mt-[30px]" src="/SunstangSchematic.png" />
-            <div className="justify-start text-neutral-600 text-base">PCB Schematic</div>
-            <img className="w-[1084px] h-[752px] object-cover mt-[30px]" src="/SunstangPCB.png" />
-            <div className="justify-start text-neutral-600 text-base">PCB Board</div>
-            <img className="w-[1084px] h-[829px] object-cover mt-[30px]" src="/SunstangBoard.jpg" />
-            <div className="justify-start text-neutral-600 text-base">PCB</div>
-            <div className="justify-start text-black text-3xl mt-[44px]">A special thanks</div>
-            <div className="w-[1081px] justify-start"><span className="text-black text-xl">I wanna give a special thank you to </span><a href="https://www.linkedin.com/in/xiuting-s/" target="_blank" className="underline text-[#C85A3F] transition duration-300 ease-in-out hover:text-[#f6d053]">Xiuting Shi</a><span className="text-black text-xl"> for teaching and mentoring me through the whole process. From explaining what a MOSFET is, to finalizing the design, thank you.</span></div>
-            <div className="justify-start text-black text-3xl mt-[62px]">Tools &amp; Skills</div>
-            <div className="flex flex-wrap gap-3 mt-[14px]">
-            {tools.map((tags) => (
-                <span className="bg-[#e0b24c] px-3 py-1 text-[14px] text-black">
-                {tags}
-                </span>
+          </div>
+        </motion.div>
+
+        {/* Schematic */}
+        <motion.div variants={fadeUp} className="mt-14">
+          <img src="/SunstangSchematic.png" className="w-full object-cover" />
+          <p className="mt-2 text-xs text-neutral-400">PCB Schematic</p>
+        </motion.div>
+
+        <motion.div variants={fadeUp} className="mt-8">
+          <img src="/SunstangPCB.png" className="w-full object-cover" />
+          <p className="mt-2 text-xs text-neutral-400">PCB Board</p>
+        </motion.div>
+
+        <motion.div variants={fadeUp} className="mt-8">
+          <img src="/SunstangBoard.jpg" className="w-full object-cover" />
+          <p className="mt-2 text-xs text-neutral-400">PCB</p>
+        </motion.div>
+
+        {/* Divider */}
+        <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
+
+        {/* Thanks */}
+        <motion.div variants={fadeUp} className="mt-14">
+          <h2 className="text-2xl tracking-tight text-black">
+            A special thanks
+          </h2>
+          <p className="mt-4 text-base leading-relaxed tracking-wide text-neutral-700 max-w-2xl">
+            I wanna give a special thank you to{' '}
+            
+            <a href="https://www.linkedin.com/in/xiuting-s/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#C85A3F] border-b border-[#C85A3F]/30 hover:text-[#e0b24c] hover:border-[#e0b24c]/30 transition-colors duration-300">
+              Xiuting Shi
+            </a>{' '}
+            for teaching and mentoring me through the whole process. From explaining what a MOSFET is, to finalizing the design, thank you.
+          </p>
+        </motion.div>
+
+        {/* Divider */}
+        <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
+
+        {/* Tools */}
+        <motion.div variants={fadeUp} className="mt-14 pb-8">
+          <h2 className="text-2xl tracking-tight text-black">
+            Tools & Skills
+          </h2>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {tools.map((tool) => (
+              <span
+                key={tool}
+                className="bg-[#e0b24c] px-3 py-1 text-xs text-black"
+              >
+                {tool}
+              </span>
             ))}
-            </div>
-            </section>
-        </main>
-    )
+          </div>
+        </motion.div>
+      </motion.section>
+    </main>
+  );
 }
