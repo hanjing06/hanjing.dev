@@ -1,9 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import Link from 'next/link';
 
-const container = {
+const container: Variants = {
   hidden: {},
   show: {
     transition: {
@@ -13,19 +13,19 @@ const container = {
   },
 };
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 10 },
   show: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 2.3,
-      ease: [0.22, 1, 0.36, 1],
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
     },
   },
 };
 
-const buttonGroup = {
+const buttonGroup: Variants = {
   hidden: { opacity: 0, y: 8 },
   show: {
     opacity: 1,
@@ -33,7 +33,7 @@ const buttonGroup = {
     transition: {
       duration: 1.67,
       delay: 0.2,
-      ease: [0.22, 1, 0.36, 1],
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
     },
   },
 };

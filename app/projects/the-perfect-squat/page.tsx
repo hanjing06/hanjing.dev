@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import Link from 'next/link';
 
 const container = {
@@ -13,17 +13,18 @@ const container = {
   },
 };
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 10 },
   show: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.45,
-      ease: [0.22, 1, 0.36, 1],
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
     },
   },
 };
+
 
 const tags = ["Computer Vision", "Machine Learning"];
 const tools = ["OpenCV", "Python", "YOLOv8", "PyTorch", "NumPy", "RoboFlow", "Google Colab"];
