@@ -15,5 +15,9 @@
 
 body {
   font-family: var(--font-family-lora);
-  font-size: 20px;
+  font-size: 10px;
+}
+
+html{
+  scroll-behavior: smooth;
 }

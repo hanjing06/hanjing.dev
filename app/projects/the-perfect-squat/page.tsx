@@ -1,46 +1,148 @@
 'use client';
 
-const tags = ["Computer Vision", "Machine Learning"];
-const tools = ["OpenCV",  "Python", "YOLOv8", "PyTorch", "NumPy", "RoboFlow", "Google Colab"];
+import { motion } from 'framer-motion';
+import Link from 'next/link';
 
-export default function SquatPage(){
-    return(
-        <main className="min-h-screen">
-        <section className="mx-auto max-w-[1100px] px-8 py-20 md:px-16">
-            <a href="/projects"><div className="justify-start text-neutral-600">← back to projects</div></a>
-            <img className="w-[550px] h-24 mt-[42px]" src="/https://placehold.co/550x94" />
-            <div className="justify-start text-neutral-600 mt-[17px]">Ongoing · Passion Project</div>
-            <div className="justify-start text-black text-3xl mt-[22px]">The Perfect Squat
-                <a href="https://github.com/hanjing06/Sunstang-VCU-2026.git" target="_blank"><img className="w-9 h-9 inline ml-[21px] mb-2" src="/github.png" /></a>
-            </div>
-            <div className="w-[1054px] h-12 justify-start text-stone-500 text-xl">Developing a computer vision program that detects the bar path of your squat.</div>
-            <div className="flex flex-wrap gap-3">
-            {tags.map((tags) => (
-                <span className="bg-[#e0b24c] px-3 py-1 text-[14px] text-black">
-                {tags}
-                </span>
+const container = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 10 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.45,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const tags = ["Computer Vision", "Machine Learning"];
+const tools = ["OpenCV", "Python", "YOLOv8", "PyTorch", "NumPy", "RoboFlow", "Google Colab"];
+
+export default function SquatPage() {
+  return (
+    <main className="min-h-screen">
+      <motion.section
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="mx-auto max-w-[920px] px-6 py-24 md:px-3"
+      >
+        {/* Back */}
+        <motion.div variants={fadeUp}>
+          <Link
+            href="/projects"
+            className="text-sm text-neutral-500 hover:text-black transition-colors duration-200"
+          >
+            ← back to projects
+          </Link>
+        </motion.div>
+
+        {/* Meta */}
+        <motion.div
+          variants={fadeUp}
+          className="mt-10 text-sm text-neutral-500"
+        >
+          Ongoing · Passion Project
+        </motion.div>
+
+        {/* Title + GitHub */}
+        <motion.div variants={fadeUp} className="mt-4 flex items-center gap-4">
+          <h1 className="text-4xl tracking-tight text-black">
+            The Perfect Squat
+          </h1>
+          
+            <a href="https://github.com/hanjing06/the-perfect-squat"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="/github.png"
+              className="w-7 h-7 opacity-70 hover:opacity-100 transition-opacity duration-200"
+            />
+          </a>
+        </motion.div>
+
+        {/* Subtitle */}
+        <motion.p
+          variants={fadeUp}
+          className="mt-3 text-lg tracking-wide text-neutral-500"
+        >
+          Developing a computer vision program that detects the bar path of your squat.
+        </motion.p>
+
+        {/* Tags */}
+        <motion.div variants={fadeUp} className="mt-5 flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <span
+              key={tag}
+              className="bg-[#e0b24c] px-3 py-1 text-xs font-['Lora'] tracking-widest text-black"
+            >
+              {tag}
+            </span>
+          ))}
+        </motion.div>
+
+        {/* Divider */}
+        <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
+
+        {/* Overview */}
+        <motion.div variants={fadeUp} className="mt-14">
+          <h2 className="text-2xl tracking-tight">
+            Overview
+          </h2>
+          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+            <p>
+              The Perfect Squat is a passion project that{' '}
+              
+                <a href="https://www.linkedin.com/in/mats-leis-4b9911271/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#C85A3F] border-b border-[#C85A3F]/30 hover:text-[#e0b24c] hover:border-[#e0b24c]/30 transition-colors duration-300"
+              >
+                Mats Leis
+              </a>{' '}
+              and I started second semester of our second year. This came about when we were
+              discussing a LinkedIn post we both saw exploring MediaPipe's pose model detection. It
+              got us thinking about how we could utilize these tools in our everyday lives.
+            </p>
+            <p>That's when 'The Perfect Squat' came alive.</p>
+            <p>
+              A computer vision system that analyzes barbell trajectory during a squat using the
+              YOLOv8 pose model and OpenCV to process videos.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Divider */}
+        <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
+
+        {/* Tools */}
+        <motion.div variants={fadeUp} className="mt-14 pb-8">
+          <h2 className="text-2xl tracking-tight text-black">
+            Tools & Skills
+          </h2>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {tools.map((tool) => (
+              <span
+                key={tool}
+                className="bg-[#e0b24c] px-3 py-1 text-xs"
+              >
+                {tool}
+              </span>
             ))}
-            </div>
-            <div className="justify-start text-black text-3xl mt-[30px]">Overview</div>
-            <div className="w-[1081px] justify-start text-black text-xl mt-3">
-                The Perfect Squat is a passion project that <a href="https://www.linkedin.com/in/mats-leis-4b9911271/" target="_blank" className="underline text-[#C85A3F] transition duration-300 ease-in-out hover:text-[#f6d053]">Mats Leis</a> and I started second semester of our second year. 
-                This came about when we were discussing about a LinkedIn post we both saw exploring MediaPipe's pose model detection.
-                It got us thinking about how we could utilize these tools into our everyday lives.
-            <div className="mt-5">
-                That's when 'The Perfect Squat' came alive.
-            </div>
-            <div className="mt-5">
-                A computer vision system that analyzes barbell trajectory during a squat using the YOLOv8 pose model and OpenCV to process videos. 
-            </div></div>
-        <div className="justify-start text-black text-3xl mt-[62px]">Tools &amp; Skills</div>
-        <div className="flex flex-wrap gap-3 mt-[14px]">
-            {tools.map((tags) => (
-                <span className="bg-[#e0b24c] px-3 py-1 text-[14px] text-black">
-                {tags}
-                </span>
-            ))}
-            </div>
-            </section>
-        </main>
-    )
+          </div>
+        </motion.div>
+      </motion.section>
+    </main>
+  );
 }

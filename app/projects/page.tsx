@@ -1,6 +1,28 @@
 "use client";
 import {motion} from "framer-motion";
 
+const container = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 10 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 1.67,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
 
 export default function ProjectsPage() {
   const projects = [
@@ -20,9 +42,14 @@ export default function ProjectsPage() {
 
   return (
     <main className="min-h-screen">
-      <section className="mx-auto max-w-[1100px] px-8 py-20 md:px-16">
+      <motion.section
+              variants={container}
+              initial="hidden"
+              animate="show"
+              className="mx-auto max-w-[1100px] px-8 py-20 md:px-16"
+            >
 
-        <div className="grid grid-cols-1 gap-x-12 gap-y-14 md:grid-cols-2">
+        <motion.div variants={fadeUp} className="grid grid-cols-1 gap-x-12 gap-y-14 md:grid-cols-2">
           {projects.map((project) => (
             <motion.article
             key={project.title}
@@ -32,15 +59,15 @@ export default function ProjectsPage() {
             animate="rest"
             onClick={() => window.location.href = `/projects/${project.title.toLowerCase().replace(/\s+/g, '-')}`}
             >
-        <div className="aspect-[16/9] w-full overflow-hidden bg-black/10">
+        <motion.div variants={fadeUp} className="aspect-[16/9] w-full overflow-hidden bg-black/10">
             <img
             src={project.image}
             alt={project.title}
             className="h-full w-full object-cover"
             />
-        </div>
+        </motion.div>
 
-        <div className="mt-3 flex flex-1 flex-col">
+        <motion.div variants={fadeUp} className="mt-3 flex flex-1 flex-col">
             <motion.span className="relative inline-block text-[20px] text-black w-fit">
             {project.title}
             <motion.span
@@ -57,18 +84,18 @@ export default function ProjectsPage() {
             {project.description}
             </p>
 
-            <div className="mt-auto pt-3 flex flex-wrap gap-3">
+            <motion.div variants={fadeUp} className="mt-auto pt-3 flex flex-wrap gap-3">
             {project.tags.map((tag) => (
                 <span key={tag} className="bg-[#e0b24c] px-3 py-1 text-[14px] text-black">
                 {tag}
                 </span>
             ))}
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
         </motion.article>
 ))}
-</div>
-</section>
+</motion.div>
+</motion.section>
 </main>
   );
 }
