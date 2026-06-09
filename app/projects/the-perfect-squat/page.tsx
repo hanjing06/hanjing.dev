@@ -3,7 +3,7 @@
 import { motion, Variants } from 'framer-motion';
 import Link from 'next/link';
 
-const container = {
+const container: Variants = {
   hidden: {},
   show: {
     transition: {
@@ -36,7 +36,7 @@ export default function SquatPage() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="mx-auto max-w-[920px] px-6 py-24 md:px-3"
+        className="site-container py-24"
       >
         {/* Back */}
         <motion.div variants={fadeUp}>
@@ -61,7 +61,7 @@ export default function SquatPage() {
           <h1 className="text-4xl tracking-tight text-black">
             The Perfect Squat
           </h1>
-          
+
             <a href="https://github.com/hanjing06/the-perfect-squat"
             target="_blank"
             rel="noopener noreferrer"
@@ -121,6 +121,90 @@ export default function SquatPage() {
               A computer vision system that analyzes barbell trajectory during a squat using the
               YOLOv8 pose model and OpenCV to process videos.
             </p>
+          </div>
+        </motion.div>
+
+        {/* Divider */}
+        <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
+
+        <motion.div variants={fadeUp} className="mt-14">
+          <h2 className="text-2xl tracking-tight text-black">
+            The Beginning
+          </h2>
+
+        <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <p>
+            Right when Google's MediaPipe framework was growing immense traction back in November of 2025,
+            it got Mats and I thinking about all the possibilites that could be possible with this technology.
+          </p>
+
+          <p>The main problem was that we were unfamiliar and inexperience.</p>
+
+          <p>We had no idea where to start.</p>
+
+          <p>That's when we started to fall in the hole of tutorial hell.</p>
+
+          </div>
+
+        </motion.div>
+
+        {/* Divider */}
+        <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
+
+        <motion.div variants={fadeUp} className="mt-14">
+          <h2 className="text-2xl tracking-tight">
+            Figuring out the tech stack
+          </h2>
+
+          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <p>
+            We knew from the get go that we wanted to track the linearity of a bar path but in order to do this,
+            we needed to think about the: model, framework, data, libraries, and the gpu.
+          </p>
+
+          <p>
+            First, we needed to choose a model to train. For this, we decided to choose Ultralytics YOLOv8-pose model
+            due to its fast but precise performance. It is a smaller model than the YOLO11, however, for our task,
+            the YOLOv8 was enough.
+          </p>
+
+          <p>
+            Next, is a dataset fit for the size of our model. Thanks to Roboflow Universe, they had a set of annotated
+            images that we were able to use to train our model.
+          </p>
+
+          <p>
+            Since the primary programming language is Python, the many libraries that are used to track, analyze and visualize data include:
+            OpenCV, PyTorch, NumPy and Matplotlib.
+          </p>
+
+          <p>
+            Finally, due to limited access to a powerful gpu, Google Colab is used to train, test and validate the model.
+          </p>
+
+          </div>
+        </motion.div>
+
+        {/* Divider */}
+        <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
+
+        <motion.div variants={fadeUp} className="mt-14">
+          <h2 className="text-2xl tracking-tight">
+            Current stage
+          </h2>
+
+          <p><i className="text-neutral-500">Updated: March 27 2026</i></p>
+
+          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <p>
+            Currently, we have a working MVP. Being able to detect and track keypoints of a barbell and
+            visualize this data to display the linearity of its path via video and graph.
+          </p>
+
+          <p>
+            We demoed our project at the Canadian Tech Summit and Alchemy.
+          </p>
+
           </div>
         </motion.div>
 

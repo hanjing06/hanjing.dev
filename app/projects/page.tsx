@@ -45,8 +45,15 @@ export default function ProjectsPage() {
               variants={container}
               initial="hidden"
               animate="show"
-              className="mx-auto max-w-[1100px] px-8 py-20 md:px-16"
+              className="site-container py-32"
             >
+
+        <motion.h1
+          variants={fadeUp}
+          className="mb-10 text-6xl tracking-tight text-black"
+        >
+          projects.
+        </motion.h1>
 
         <motion.div variants={fadeUp} className="grid grid-cols-1 gap-x-12 gap-y-14 md:grid-cols-2">
           {projects.map((project) => (

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 
 const container: Variants = {
   hidden: {},
@@ -27,18 +27,25 @@ const fadeUp: Variants = {
 
 export default function Blog(){
     return(
-        <main className="min-h-screen px-6 mx-auto">
+        <main className="min-h-screen">
             <motion.div
                     variants={container}
                     initial="hidden"
                     animate="show"
-                    className="mx-auto max-w-[920px] py-32 md:px-3"
+                    className="site-container py-32"
                   >
+            <motion.h1
+                variants={fadeUp}
+                className="mb-10 text-6xl tracking-tight text-black"
+            >
+                blog.
+            </motion.h1>
+
             <motion.div
                 variants={fadeUp}
                 className="space-y-6 text-neutral-700 text-base leading-relaxed tracking-wide max-w-2xl"
             >
-            <p>coming soon.</p>
+            <p>Under Construction. Come back soon!</p>
             </motion.div>
             </motion.div>
 

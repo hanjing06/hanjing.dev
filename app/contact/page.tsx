@@ -1,9 +1,8 @@
 'use client';
 
-import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { useState } from 'react';
+import { motion, Variants } from 'framer-motion';
 
-const container = {
+const container: Variants = {
   hidden: {},
   show: {
     transition: {
@@ -27,12 +26,12 @@ const fadeUp: Variants = {
 
 export default function Contact(){
     return(
-    <main className="min-h-screen px-6 mx-auto">
+    <main className="min-h-screen">
         <motion.div
             variants={container}
             initial="hidden"
             animate="show"
-            className="mx-auto max-w-[920px] py-32 md:px-3"
+            className="site-container py-32"
         >
 
          {/* Title */}
@@ -45,7 +44,7 @@ export default function Contact(){
 
         <motion.div 
         variants={fadeUp}
-        className="h-96 justify-start">
+        className="space-y-6">
             <p className="text-neutral-500 text-2xl tracking-[7.20px]">
                 EMAIL</p>
 
