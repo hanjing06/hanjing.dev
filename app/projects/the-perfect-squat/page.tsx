@@ -2,6 +2,7 @@
 
 import { motion, Variants } from 'framer-motion';
 import Link from 'next/link';
+import ArticleTableOfContents from '../../components/ArticleTableOfContents';
 
 const container: Variants = {
   hidden: {},
@@ -28,6 +29,14 @@ const fadeUp: Variants = {
 
 const tags = ["Computer Vision", "Machine Learning"];
 const tools = ["OpenCV", "Python", "YOLOv8", "PyTorch", "NumPy", "RoboFlow", "Google Colab"];
+const articleSections = [
+  { id: 'overview', title: 'Overview' },
+  { id: 'the-beginning', title: 'The Beginning' },
+  { id: 'tech-stack', title: 'Figuring out the tech stack' },
+  { id: 'current-stage', title: 'Current stage' },
+];
+const linkedInPost =
+  'https://www.linkedin.com/posts/hanjing-lin-790252113_we-locked-in-and-it-actually-worked-activity-7443047991311007744-aKQE?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAABxVrtwBRMk0uRF6R3XVVWeCli2jUS9r7K8';
 
 export default function SquatPage() {
   return (
@@ -68,6 +77,7 @@ export default function SquatPage() {
           >
             <img
               src="/github.png"
+              alt="View The Perfect Squat repository on GitHub"
               className="w-7 h-7 opacity-70 hover:opacity-100 transition-opacity duration-200"
             />
           </a>
@@ -96,8 +106,14 @@ export default function SquatPage() {
         {/* Divider */}
         <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
 
+        <ArticleTableOfContents sections={articleSections} />
+
         {/* Overview */}
-        <motion.div variants={fadeUp} className="mt-14">
+        <motion.section
+          id="overview"
+          variants={fadeUp}
+          className="scroll-mt-32 pt-14"
+        >
           <h2 className="text-2xl tracking-tight">
             Overview
           </h2>
@@ -122,12 +138,16 @@ export default function SquatPage() {
               YOLOv8 pose model and OpenCV to process videos.
             </p>
           </div>
-        </motion.div>
+        </motion.section>
 
         {/* Divider */}
         <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
 
-        <motion.div variants={fadeUp} className="mt-14">
+        <motion.section
+          id="the-beginning"
+          variants={fadeUp}
+          className="scroll-mt-32 pt-14"
+        >
           <h2 className="text-2xl tracking-tight text-black">
             The Beginning
           </h2>
@@ -146,12 +166,16 @@ export default function SquatPage() {
 
           </div>
 
-        </motion.div>
+        </motion.section>
 
         {/* Divider */}
         <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
 
-        <motion.div variants={fadeUp} className="mt-14">
+        <motion.section
+          id="tech-stack"
+          variants={fadeUp}
+          className="scroll-mt-32 pt-14"
+        >
           <h2 className="text-2xl tracking-tight">
             Figuring out the tech stack
           </h2>
@@ -183,12 +207,16 @@ export default function SquatPage() {
           </p>
 
           </div>
-        </motion.div>
+        </motion.section>
 
         {/* Divider */}
         <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
 
-        <motion.div variants={fadeUp} className="mt-14">
+        <motion.section
+          id="current-stage"
+          variants={fadeUp}
+          className="scroll-mt-32 pt-14"
+        >
           <h2 className="text-2xl tracking-tight">
             Current stage
           </h2>
@@ -206,7 +234,54 @@ export default function SquatPage() {
           </p>
 
           </div>
-        </motion.div>
+
+          <article className="mt-10 overflow-hidden border border-black/10 bg-white/30">
+            <div className="flex items-start justify-between gap-5 p-6">
+              <div>
+                <p className="text-base tracking-wide text-black">
+                  Hanjing Lin
+                </p>
+                <p className="mt-1 text-xs tracking-wide text-neutral-400">
+                  The Perfect Squat · Project update
+                </p>
+              </div>
+              <span
+                className="text-xs font-semibold tracking-wide text-[#0a66c2]"
+                aria-label="LinkedIn"
+              >
+                in
+              </span>
+            </div>
+
+            <div className="px-6 pb-6 text-base leading-relaxed tracking-wide text-neutral-700">
+              <p className="text-xl leading-relaxed text-black">
+                We locked in and it actually worked.
+              </p>
+              <p className="mt-4">
+                A working computer vision pipeline that detects the barbell,
+                tracks its movement, and turns a squat video into a measurable
+                bar path. We presented the project, demonstrated the MVP, and
+                shared what we learned while building it.
+              </p>
+            </div>
+
+            <img
+              src="/perfect-squat-cover.jpg"
+              alt="The Perfect Squat team presenting their project poster"
+              className="max-h-[680px] w-full object-cover object-center"
+            />
+
+            <a
+              href={linkedInPost}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between border-t border-black/10 px-6 py-4 text-sm tracking-wide text-neutral-500 transition-colors duration-200 hover:bg-black/[0.02] hover:text-black"
+            >
+              <span>View the original post on LinkedIn</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+          </article>
+        </motion.section>
 
         {/* Divider */}
         <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
