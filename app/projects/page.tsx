@@ -30,12 +30,21 @@ export default function ProjectsPage() {
       description: "Designing the vehicle control unit for a solar powered car.",
       image: "/SunstangThumbnail.jpeg",
       tags: ["Embedded Systems", "PCB Design", "Hardware"],
+      href: "/projects/sunstang-vcu-2026",
     },
     {
       title: "The Perfect Squat",
       description: "Developing a computer vision program that detects the bar path of your squat.",
       image: "/perfect-squat-cover.jpg",
       tags: ["Computer Vision", "Machine Learning"],
+      href: "/projects/the-perfect-squat",
+    },
+    {
+      title: "Tiny Squares: Camera System",
+      description: "Engineering a camera that shoots, converts image, bitmaps jpg, and prints instantly.",
+      image: "/tiny-squares-camera.jpg",
+      tags: ["Embedded Systems", "Computer Vision", "Image Processing"],
+      href: "/projects/tiny-squares-camera-system",
     }
   ];
 
@@ -59,11 +68,15 @@ export default function ProjectsPage() {
           {projects.map((project) => (
             <motion.article
             key={project.title}
-            className="flex h-full flex-col cursor-pointer"
+            className={`flex h-full flex-col ${project.href ? 'cursor-pointer' : ''}`}
             whileHover="hover"
             initial="rest"
             animate="rest"
-            onClick={() => window.location.href = `/projects/${project.title.toLowerCase().replace(/\s+/g, '-')}`}
+            onClick={() => {
+              if (project.href) {
+                window.location.href = project.href;
+              }
+            }}
             >
         <motion.div variants={fadeUp} className="aspect-[16/9] w-full overflow-hidden bg-black/10">
             <img
