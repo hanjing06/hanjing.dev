@@ -11,15 +11,15 @@ const navLinks = [
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-50 border-b border-black/10 bg-[#efefec]/70 backdrop-blur-md">
-      <nav className="mx-auto flex max-w-[920px] items-center justify-between py-3 px-6">
-        <Link href="/" className="text-[20px] tracking-[6.40px]">
+    <header className="sticky top-0 z-50 w-full border-b border-black/10 bg-[#efefec]/70 backdrop-blur-md">
+      <nav className="site-container flex items-center justify-between py-3">
+        <Link href="/" className="brand-wordmark text-[20px]">
           <motion.span transition={{ duration: 0.2, ease: "easeOut" }}>
             Hanjing
           </motion.span>
         </Link>
 
-        <ul className="flex items-center gap-8">
+        <ul className="flex items-center gap-9">
           {navLinks.map(({ href, label }) => (
             <li key={href}>
               <Link href={href}>

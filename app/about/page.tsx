@@ -77,12 +77,12 @@ function InstrumentWord({ name }: { name: string }) {
 
 export default function About() {
   return (
-    <main className="min-h-screen px-6 mx-auto">
+    <main className="min-h-screen">
       <motion.div
         variants={container}
         initial="hidden"
         animate="show"
-        className="mx-auto max-w-[920px] py-32 md:px-3"
+        className="site-container py-32"
       >
         {/* Title */}
         <motion.h1
@@ -95,7 +95,7 @@ export default function About() {
         {/* Body */}
         <motion.div
           variants={fadeUp}
-          className="space-y-6 text-neutral-700 text-base leading-relaxed tracking-wide max-w-2xl"
+          className="space-y-6 text-base leading-relaxed tracking-wide text-neutral-700"
         >
           <p>
             I'm Hanjing — a second year software engineering student at the University of Western

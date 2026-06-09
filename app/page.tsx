@@ -50,7 +50,7 @@ export default function Home() {
         {/* Name */}
         <motion.div
           variants={fadeUp}
-          className="text-black text-6xl tracking-[6.40px]"
+          className="brand-wordmark text-6xl text-black"
         >
           Hanjing
         </motion.div>

@@ -21,3 +21,14 @@ body {
 html{
   scroll-behavior: smooth;
 }
+
+@utility site-container {
+  width: 100%;
+  max-width: 920px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+@utility brand-wordmark {
+  letter-spacing: 0.107em;
+}

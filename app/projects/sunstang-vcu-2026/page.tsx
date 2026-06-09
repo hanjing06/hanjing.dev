@@ -3,7 +3,7 @@
 import { motion, Variants } from 'framer-motion';
 import Link from 'next/link';
 
-const container = {
+const container: Variants = {
   hidden: {},
   show: {
     transition: {
@@ -36,7 +36,7 @@ export default function SunstangPage() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="mx-auto max-w-[920px] px-6 py-24 md:px-3"
+        className="site-container py-24"
       >
         {/* Back */}
         <motion.div variants={fadeUp}>
