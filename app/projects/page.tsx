@@ -34,7 +34,7 @@ export default function ProjectsPage() {
     {
       title: "The Perfect Squat",
       description: "Developing a computer vision program that detects the bar path of your squat.",
-      image: "/projects/project-2.jpg",
+      image: "/perfect-squat-cover.jpg",
       tags: ["Computer Vision", "Machine Learning"],
     }
   ];
