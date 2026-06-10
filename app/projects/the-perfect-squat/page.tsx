@@ -45,7 +45,7 @@ export default function SquatPage() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="site-container min-w-0 break-words py-16 sm:py-24 lg:max-w-[680px] xl:max-w-[820px] 2xl:max-w-[920px]"
+        className="site-container min-w-0 break-words py-16 sm:py-24"
       >
         {/* Back */}
         <motion.div variants={fadeUp}>

@@ -6,6 +6,11 @@ import Footer from "./components/Footer";
 export const metadata: Metadata = {
   title: "hanjing lin's portfolio",
   description: "hanjing lin's personal portfolio",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

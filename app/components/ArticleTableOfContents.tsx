@@ -99,7 +99,7 @@ export default function ArticleTableOfContents({
   return (
     <>
       <motion.aside
-        className={`sticky top-[53px] z-40 -mx-6 border-y border-black/10 bg-[#f8f7f5]/95 px-6 py-3 backdrop-blur-md lg:hidden ${
+        className={`sticky top-[49px] z-40 -mx-6 border-y border-black/10 bg-[#f8f7f5]/95 px-6 py-3 backdrop-blur-md sm:top-[53px] lg:hidden ${
           isVisible ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
         initial={{ opacity: 0 }}
