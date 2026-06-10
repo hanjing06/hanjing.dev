@@ -45,7 +45,7 @@ export default function SunstangPage() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="site-container py-24"
+        className="site-container min-w-0 break-words py-16 sm:py-24 lg:max-w-[680px] xl:max-w-[820px] 2xl:max-w-[920px]"
       >
         {/* Back */}
         <motion.div variants={fadeUp}>
@@ -77,9 +77,9 @@ export default function SunstangPage() {
         {/* Title + GitHub */}
         <motion.div
           variants={fadeUp}
-          className="mt-4 flex items-center gap-4"
+          className="mt-4 flex min-w-0 items-start gap-3 sm:items-center sm:gap-4"
         >
-          <h1 className="text-4xl tracking-tight text-black">
+          <h1 className="min-w-0 text-3xl tracking-tight text-black sm:text-4xl">
             Sunstang VCU 2026
           </h1>
           <a href="https://github.com/hanjing06/Sunstang-VCU-2026.git" target="_blank" rel="noopener noreferrer">
@@ -94,7 +94,7 @@ export default function SunstangPage() {
         {/* Subtitle */}
         <motion.p
           variants={fadeUp}
-          className="mt-3 text-lg tracking-wide text-neutral-500"
+          className="mt-3 text-base tracking-normal text-neutral-500 sm:text-lg sm:tracking-wide"
         >
           Designing the vehicle control unit for a solar powered car.
         </motion.p>

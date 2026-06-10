@@ -37,41 +37,48 @@ export default function Contact(){
          {/* Title */}
         <motion.h1
             variants={fadeUp}
-            className="text-6xl tracking-tight text-black mb-10"
+            className="mb-10 text-5xl tracking-tight text-black sm:text-6xl"
         >
-            let's talk.
+            let&apos;s talk.
         </motion.h1>
 
-        <motion.div 
-        variants={fadeUp}
-        className="space-y-6">
-            <p className="text-neutral-500 text-2xl tracking-[7.20px]">
-                EMAIL</p>
-
-        <a href="mailto:hlin389@uwo.ca"
-              className="text-neutral-500 border-b border-black/30 hover:border-black transition-colors duration-200 text-[20px]">
+        <motion.div
+          variants={fadeUp}
+          className="space-y-10"
+        >
+          <div>
+            <p className="text-sm tracking-normal text-neutral-500">Email</p>
+            <a
+              href="mailto:hlin389@uwo.ca"
+              className="mt-2 inline-block break-all border-b border-black/30 text-lg tracking-normal text-neutral-700 transition-colors duration-200 hover:border-black hover:text-black"
+            >
               hlin389@uwo.ca
-        </a>
-    
-            <p className="text-neutral-500 text-2xl tracking-[7.20px] mt-10">
-                GITHUB<br/></p>
+            </a>
+          </div>
 
-         <a href="https://www.github.com/hanjing06"
+          <div>
+            <p className="text-sm tracking-normal text-neutral-500">GitHub</p>
+            <a
+              href="https://www.github.com/hanjing06"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-500 border-b border-black/30 hover:border-black transition-colors duration-200 text-[20px]">
-              https://www.github.com/hanjing06
-        </a>
+              className="mt-2 inline-block break-all border-b border-black/30 text-lg tracking-normal text-neutral-700 transition-colors duration-200 hover:border-black hover:text-black"
+            >
+              github.com/hanjing06
+            </a>
+          </div>
 
-            <p className="text-neutral-500 text-2xl tracking-[7.20px] mt-10">
-                LINKEDIN<br/></p>
-
-        <a href="https://www.linkedin.com/in/hanjing-lin-790252113/"
+          <div>
+            <p className="text-sm tracking-normal text-neutral-500">LinkedIn</p>
+            <a
+              href="https://www.linkedin.com/in/hanjing-lin-790252113/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-neutral-500 border-b border-black/30 hover:border-black transition-colors duration-200 text-[20px]">
-              https://www.linkedin.com/in/hanjing-lin-790252113/
-        </a>
+              className="mt-2 inline-block break-all border-b border-black/30 text-lg tracking-normal text-neutral-700 transition-colors duration-200 hover:border-black hover:text-black"
+            >
+              linkedin.com/in/hanjing-lin-790252113
+            </a>
+          </div>
         </motion.div>
         
         </motion.div>

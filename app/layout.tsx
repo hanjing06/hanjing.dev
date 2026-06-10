@@ -16,11 +16,13 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className="bg-background">
+      <body className="flex min-h-screen flex-col bg-background">
         <Navbar />
 
         {/*Main Content*/}
-        <main className="flex flex-col gap-y-20 md:gap-y-32 overflow-hidden">{children}</main>
+        <main className="flex flex-1 flex-col gap-y-20 overflow-x-clip md:gap-y-32">
+          {children}
+        </main>
 
         <Footer />
       
