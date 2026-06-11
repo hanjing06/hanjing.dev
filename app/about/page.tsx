@@ -33,20 +33,33 @@ const instruments: Record<string, string> = {
 
 function InstrumentWord({ name }: { name: string }) {
   const [hovered, setHovered] = useState(false);
+  const tooltipId = `instrument-${name.replace(/\s+/g, '-')}`;
 
   return (
     <span
       className="relative inline-block"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') {
+          setHovered(false);
+          event.currentTarget.blur();
+        }
+      }}
+      tabIndex={0}
+      aria-describedby={tooltipId}
     >
-      <span className="border-b border-dashed border-neutral-400 cursor-default">
+      <span className="cursor-default border-b border-dashed border-neutral-600">
         {name}
       </span>
 
       <AnimatePresence>
         {hovered && (
           <motion.div
+            id={tooltipId}
+            role="tooltip"
             initial={{ opacity: 0, y: 4, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.95 }}
@@ -98,13 +111,13 @@ export default function About() {
           className="space-y-6 text-base leading-relaxed tracking-wide text-neutral-700"
         >
           <p>
-            I'm Hanjing — a second year software engineering student at the University of Western
+            I&apos;m Hanjing — a second year software engineering student at the University of Western
             Ontario. I am based in London, Ontario and Toronto.
           </p>
 
           <p>
             I like building things that revolve around real-time analysis, computer vision and low
-            level systems. Outside of regular school projects, I have shipped a PCB for my team's
+            level systems. Outside of regular school projects, I have shipped a PCB for my team&apos;s
             vehicle control unit. I am currently improving an AI model built for tracking and
             analyzing the biomechanics of a barbell back squat.
           </p>

@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="site-container flex flex-col gap-3 py-6 text-[15px] text-neutral-600 sm:flex-row sm:items-center sm:justify-between">
         <a
           href="mailto:hlin389@uwo.ca"
-          className="transition-colors duration-200 hover:text-black"
+          className="inline-flex min-h-11 items-center transition-colors duration-200 hover:text-black"
         >
           hlin389@uwo.ca
         </a>
