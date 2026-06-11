@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, Variants } from 'framer-motion';
+import Image from 'next/image';
 import Link from 'next/link';
 import ArticleTableOfContents from '../../components/ArticleTableOfContents';
 
@@ -51,7 +52,7 @@ export default function SquatPage() {
         <motion.div variants={fadeUp}>
           <Link
             href="/projects"
-            className="text-sm text-neutral-500 hover:text-black transition-colors duration-200"
+            className="inline-flex min-h-11 items-center text-sm text-neutral-600 transition-colors duration-200 hover:text-black"
           >
             ← back to projects
           </Link>
@@ -60,7 +61,7 @@ export default function SquatPage() {
         {/* Meta */}
         <motion.div
           variants={fadeUp}
-          className="mt-10 text-sm text-neutral-500"
+          className="mt-10 text-sm text-neutral-600"
         >
           Ongoing · Passion Project
         </motion.div>
@@ -71,13 +72,17 @@ export default function SquatPage() {
             The Perfect Squat
           </h1>
 
-            <a href="https://github.com/hanjing06/the-perfect-squat"
-            target="_blank"
-            rel="noopener noreferrer"
+            <a
+              href="https://github.com/hanjing06/the-perfect-squat"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="-m-2 inline-flex size-11 shrink-0 items-center justify-center"
           >
-            <img
+            <Image
               src="/github.png"
               alt="View The Perfect Squat repository on GitHub"
+              width={28}
+              height={28}
               className="w-7 h-7 opacity-70 hover:opacity-100 transition-opacity duration-200"
             />
           </a>
@@ -86,7 +91,7 @@ export default function SquatPage() {
         {/* Subtitle */}
         <motion.p
           variants={fadeUp}
-          className="mt-3 text-lg tracking-wide text-neutral-500"
+          className="mt-3 text-lg tracking-wide text-neutral-600"
         >
           Developing a computer vision program that detects the bar path of your squat.
         </motion.p>
@@ -124,15 +129,15 @@ export default function SquatPage() {
                 <a href="https://www.linkedin.com/in/mats-leis-4b9911271/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#C85A3F] border-b border-[#C85A3F]/30 hover:text-[#e0b24c] hover:border-[#e0b24c]/30 transition-colors duration-300"
+                className="border-b border-[#8f3f2c]/40 text-[#8f3f2c] transition-colors duration-300 hover:border-[#6f301f] hover:text-[#6f301f]"
               >
                 Mats Leis
               </a>{' '}
               and I started second semester of our second year. This came about when we were
-              discussing a LinkedIn post we both saw exploring MediaPipe's pose model detection. It
+              discussing a LinkedIn post we both saw exploring MediaPipe&apos;s pose model detection. It
               got us thinking about how we could utilize these tools in our everyday lives.
             </p>
-            <p>That's when 'The Perfect Squat' came alive.</p>
+            <p>That&apos;s when &apos;The Perfect Squat&apos; came alive.</p>
             <p>
               A computer vision system that analyzes barbell trajectory during a squat using the
               YOLOv8 pose model and OpenCV to process videos.
@@ -154,7 +159,7 @@ export default function SquatPage() {
 
         <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
           <p>
-            Right when Google's MediaPipe framework was growing immense traction back in November of 2025,
+            Right when Google&apos;s MediaPipe framework was growing immense traction back in November of 2025,
             it got Mats and I thinking about all the possibilites that could be possible with this technology.
           </p>
 
@@ -162,7 +167,7 @@ export default function SquatPage() {
 
           <p>We had no idea where to start.</p>
 
-          <p>That's when we started to fall in the hole of tutorial hell.</p>
+          <p>That&apos;s when we started to fall in the hole of tutorial hell.</p>
 
           </div>
 
@@ -221,7 +226,7 @@ export default function SquatPage() {
             Current stage
           </h2>
 
-          <p><i className="text-neutral-500">Updated: March 27 2026</i></p>
+          <p><i className="text-neutral-600">Updated: March 27 2026</i></p>
 
           <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
           <p>
@@ -241,7 +246,7 @@ export default function SquatPage() {
                 <p className="text-base tracking-wide text-black">
                   Hanjing Lin
                 </p>
-                <p className="mt-1 text-xs tracking-wide text-neutral-400">
+                <p className="mt-1 text-xs tracking-wide text-neutral-600">
                   The Perfect Squat · Project update
                 </p>
               </div>
@@ -265,9 +270,12 @@ export default function SquatPage() {
               </p>
             </div>
 
-            <img
+            <Image
               src="/perfect-squat-cover.jpg"
               alt="The Perfect Squat team presenting their project poster"
+              width={1800}
+              height={2400}
+              sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
               className="max-h-[680px] w-full object-cover object-center"
             />
 
@@ -275,7 +283,7 @@ export default function SquatPage() {
               href={linkedInPost}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between border-t border-black/10 px-6 py-4 text-sm tracking-wide text-neutral-500 transition-colors duration-200 hover:bg-black/[0.02] hover:text-black"
+              className="flex items-center justify-between border-t border-black/10 px-6 py-4 text-sm tracking-wide text-neutral-600 transition-colors duration-200 hover:bg-black/[0.02] hover:text-black"
             >
               <span>View the original post on LinkedIn</span>
               <span aria-hidden="true">↗</span>

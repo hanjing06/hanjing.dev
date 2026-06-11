@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, Variants } from 'framer-motion';
+import Image from 'next/image';
 import Link from 'next/link';
 import ArticleTableOfContents from '../../components/ArticleTableOfContents';
 
@@ -55,7 +56,7 @@ export default function TinySquaresPage() {
         <motion.div variants={fadeUp}>
           <Link
             href="/projects"
-            className="text-sm text-neutral-500 transition-colors duration-200 hover:text-black"
+            className="inline-flex min-h-11 items-center text-sm text-neutral-600 transition-colors duration-200 hover:text-black"
           >
             ← back to projects
           </Link>
@@ -63,7 +64,7 @@ export default function TinySquaresPage() {
 
         <motion.div
           variants={fadeUp}
-          className="mt-10 text-sm text-neutral-500"
+          className="mt-10 text-sm text-neutral-600"
         >
           Ongoing · Embedded Camera System
         </motion.div>
@@ -77,7 +78,7 @@ export default function TinySquaresPage() {
 
         <motion.p
           variants={fadeUp}
-          className="mt-3 text-lg tracking-wide text-neutral-500"
+          className="mt-3 text-lg tracking-wide text-neutral-600"
         >
           Engineering a camera that shoots, converts image, bitmaps jpg, and
           prints instantly.
@@ -99,12 +100,17 @@ export default function TinySquaresPage() {
           className="mt-16 border-t border-black/10"
         />
 
-        <motion.img
-          variants={fadeUp}
-          src="/tiny-squares-camera.jpg"
-          alt="ESP32 camera prototype connected to a thermal printer"
-          className="mt-14 max-h-[620px] w-full object-cover"
-        />
+        <motion.div variants={fadeUp} className="mt-14">
+          <Image
+            src="/tiny-squares-camera.jpg"
+            alt="ESP32 camera prototype connected to a thermal printer"
+            width={1800}
+            height={1350}
+            sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
+            className="max-h-[620px] w-full object-cover"
+            priority
+          />
+        </motion.div>
 
         <motion.div
           variants={fadeUp}

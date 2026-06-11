@@ -1,24 +1,35 @@
 "use client";
 import {motion, Variants} from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
 
 const container: Variants = {
   hidden: {},
   show: {
     transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.05,
+      staggerChildren: 0.1,
+      delayChildren: 0.08,
     },
   },
 };
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: 0, y: 8 },
   show: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 1.67,
-      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+      duration: 0.55,
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+    },
+  },
+};
+
+const projectGrid: Variants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.1,
     },
   },
 };
@@ -64,53 +75,56 @@ export default function ProjectsPage() {
           projects.
         </motion.h1>
 
-        <motion.div variants={fadeUp} className="grid grid-cols-1 gap-x-12 gap-y-14 md:grid-cols-2">
+        <motion.div variants={projectGrid} className="grid grid-cols-1 gap-x-12 gap-y-14 md:grid-cols-2">
           {projects.map((project) => (
             <motion.article
             key={project.title}
-            className={`flex h-full flex-col ${project.href ? 'cursor-pointer' : ''}`}
+            className="h-full"
+            variants={fadeUp}
             whileHover="hover"
-            initial="rest"
-            animate="rest"
-            onClick={() => {
-              if (project.href) {
-                window.location.href = project.href;
-              }
-            }}
             >
-        <motion.div variants={fadeUp} className="aspect-[16/9] w-full overflow-hidden bg-black/10">
-            <img
-            src={project.image}
-            alt={project.title}
-            className="h-full w-full object-cover"
-            />
-        </motion.div>
+        <Link
+          href={project.href}
+          className="flex h-full flex-col"
+          aria-label={`View project: ${project.title}`}
+        >
+          <div className="relative aspect-[16/9] w-full overflow-hidden bg-black/10">
+              <Image
+              src={project.image}
+              alt=""
+              fill
+              sizes="(min-width: 768px) 436px, calc(100vw - 48px)"
+              className="object-cover"
+              />
+          </div>
 
-        <motion.div variants={fadeUp} className="mt-3 flex flex-1 flex-col">
+          <div className="mt-3 flex flex-1 flex-col">
             <motion.span className="relative inline-block text-[20px] text-black w-fit">
             {project.title}
             <motion.span
                 className="absolute bottom-1 left-0 h-[1px] bg-black"
                 variants={{
-                rest: { width: '0%' },
+                hidden: { width: '0%' },
+                show: { width: '0%' },
                 hover: { width: '100%' },
                 }}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             />
             </motion.span>
 
-            <p className="mt-1 min-h-[20px] text-[16px] text-black/55">
+            <p className="mt-1 min-h-[20px] text-[16px] text-black/65">
             {project.description}
             </p>
 
-            <motion.div variants={fadeUp} className="mt-auto pt-3 flex flex-wrap gap-3">
+            <div className="mt-auto pt-3 flex flex-wrap gap-3">
             {project.tags.map((tag) => (
                 <span key={tag} className="bg-[#e0b24c] px-3 py-1 text-[14px] text-black">
                 {tag}
                 </span>
             ))}
-            </motion.div>
-        </motion.div>
+            </div>
+          </div>
+        </Link>
         </motion.article>
 ))}
 </motion.div>

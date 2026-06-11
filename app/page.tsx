@@ -48,12 +48,12 @@ export default function Home() {
         className="flex flex-col items-center text-center"
       >
         {/* Name */}
-        <motion.div
+        <motion.h1
           variants={fadeUp}
           className="brand-wordmark text-6xl text-black"
         >
           Hanjing
-        </motion.div>
+        </motion.h1>
 
         {/* What I do */}
         <motion.div
@@ -69,25 +69,29 @@ export default function Home() {
           variants={buttonGroup}
           className="mt-8 flex gap-4"
         >
-         <Link href="/projects">
-            <motion.button
+          <motion.div
               whileHover={{ y: -2, cursor:'pointer' }}
               transition={{ ease: 'easeInOut', duration: 0.34 }}
-              className="w-36 py-2.5 text-base tracking-wider border-[1.5px] border-transparent bg-[#1d1d1f] text-[#f5f5f7] transition-colors duration-200 hover:bg-[#3a3a3c]"
+            >
+            <Link
+              href="/projects"
+              className="inline-flex min-h-11 w-36 items-center justify-center border-[1.5px] border-transparent bg-[#1d1d1f] py-2.5 text-base tracking-wider text-[#f5f5f7] transition-colors duration-200 hover:bg-[#3a3a3c]"
             >
               projects →
-            </motion.button>
-          </Link>
+            </Link>
+          </motion.div>
 
-          <Link href="/about">
-            <motion.button
+          <motion.div
               whileHover={{ y: -2, cursor:'pointer' }}
               transition={{ ease: 'easeInOut', duration: 0.34 }}
-              className="w-36 py-2.5 text-base tracking-wider border-[1.5px] border-[#1d1d1f] text-[#1d1d1f] transition-colors duration-200 hover:bg-[#1d1d1f] hover:text-[#f5f5f7]"
+            >
+            <Link
+              href="/about"
+              className="inline-flex min-h-11 w-36 items-center justify-center border-[1.5px] border-[#1d1d1f] py-2.5 text-base tracking-wider text-[#1d1d1f] transition-colors duration-200 hover:bg-[#1d1d1f] hover:text-[#f5f5f7]"
             >
               about →
-            </motion.button>
-          </Link>
+            </Link>
+          </motion.div>
         </motion.div>
       </motion.div>
     </main>

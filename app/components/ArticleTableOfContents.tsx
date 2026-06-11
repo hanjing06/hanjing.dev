@@ -6,7 +6,7 @@ import {
   useScroll,
   useTransform,
 } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type TableOfContentsSection = {
   id: string;
@@ -21,6 +21,7 @@ export default function ArticleTableOfContents({
   const [activeSection, setActiveSection] = useState(sections[0]?.id ?? '');
   const [isVisible, setIsVisible] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const mobileToggleRef = useRef<HTMLButtonElement>(null);
   const { scrollYProgress } = useScroll();
   const progressHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
   const progressWidth = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
@@ -67,6 +68,22 @@ export default function ArticleTableOfContents({
     return () => observer.disconnect();
   }, [sections]);
 
+  useEffect(() => {
+    if (!isMobileOpen) {
+      return;
+    }
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMobileOpen(false);
+        mobileToggleRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [isMobileOpen]);
+
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({
       behavior: 'smooth',
@@ -87,8 +104,9 @@ export default function ArticleTableOfContents({
         key={id}
         type="button"
         onClick={() => scrollToSection(id)}
-        className={`w-full cursor-pointer break-words text-left transition-colors duration-200 ${
-          isActive ? 'text-black' : 'text-neutral-400 hover:text-neutral-700'
+        aria-current={isActive ? 'location' : undefined}
+        className={`flex min-h-11 w-full cursor-pointer items-center break-words text-left transition-colors duration-200 lg:min-h-0 ${
+          isActive ? 'text-black' : 'text-neutral-600 hover:text-neutral-800'
         }`}
       >
         {title}
@@ -109,13 +127,14 @@ export default function ArticleTableOfContents({
       >
         <button
           type="button"
+          ref={mobileToggleRef}
           onClick={() => setIsMobileOpen((isOpen) => !isOpen)}
-          className="flex w-full min-w-0 items-center justify-between gap-4 text-left"
+          className="flex min-h-11 w-full min-w-0 items-center justify-between gap-4 text-left"
           aria-expanded={isMobileOpen}
           aria-controls="mobile-article-contents"
         >
           <span className="min-w-0">
-            <span className="block text-[10px] uppercase tracking-[0.16em] text-neutral-400">
+            <span className="block text-[10px] uppercase tracking-[0.16em] text-neutral-600">
               Contents
             </span>
             <span className="mt-0.5 block truncate text-sm text-black">

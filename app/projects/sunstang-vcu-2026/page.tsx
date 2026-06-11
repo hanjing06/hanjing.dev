@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, Variants } from 'framer-motion';
+import Image from 'next/image';
 import Link from 'next/link';
 import ArticleTableOfContents from '../../components/ArticleTableOfContents';
 
@@ -51,7 +52,7 @@ export default function SunstangPage() {
         <motion.div variants={fadeUp}>
           <Link
             href="/projects"
-            className="text-sm text-neutral-500 hover:text-neutral-700 transition-colors duration-200"
+            className="inline-flex min-h-11 items-center text-sm text-neutral-600 transition-colors duration-200 hover:text-neutral-800"
           >
             ← back to projects
           </Link>
@@ -59,9 +60,11 @@ export default function SunstangPage() {
 
         {/* Logo */}
         <motion.div variants={fadeUp} className="mt-4">
-          <img
+          <Image
             src="/SunstangLogo.png"
             alt="Sunstang Solar Car Project"
+            width={550}
+            height={94}
             className="h-16 w-auto object-contain"
           />
         </motion.div>
@@ -69,7 +72,7 @@ export default function SunstangPage() {
         {/* Meta */}
         <motion.div
           variants={fadeUp}
-          className="mt-4 text-sm text-neutral-500"
+          className="mt-4 text-sm text-neutral-600"
         >
           2026 · Sunstang Driver Controls
         </motion.div>
@@ -82,10 +85,17 @@ export default function SunstangPage() {
           <h1 className="min-w-0 text-3xl tracking-tight text-black sm:text-4xl">
             Sunstang VCU 2026
           </h1>
-          <a href="https://github.com/hanjing06/Sunstang-VCU-2026.git" target="_blank" rel="noopener noreferrer">
-            <img
+          <a
+            href="https://github.com/hanjing06/Sunstang-VCU-2026.git"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="-m-2 inline-flex size-11 shrink-0 items-center justify-center"
+          >
+            <Image
               src="/github.png"
               alt="View the Sunstang VCU repository on GitHub"
+              width={28}
+              height={28}
               className="w-7 h-7 opacity-70 hover:opacity-100 transition-opacity duration-200"
             />
           </a>
@@ -94,7 +104,7 @@ export default function SunstangPage() {
         {/* Subtitle */}
         <motion.p
           variants={fadeUp}
-          className="mt-3 text-base tracking-normal text-neutral-500 sm:text-lg sm:tracking-wide"
+          className="mt-3 text-base tracking-normal text-neutral-600 sm:text-lg sm:tracking-wide"
         >
           Designing the vehicle control unit for a solar powered car.
         </motion.p>
@@ -115,13 +125,17 @@ export default function SunstangPage() {
         <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
 
         {/* Hero image */}
-        <motion.img
-          variants={fadeUp}
-          src="/SunstangThumbnail.jpeg"
-          alt="Sunstang vehicle control unit development workspace"
-          className="mt-14 w-full object-cover"
-          style={{ maxHeight: '560px' }}
-        />
+        <motion.div variants={fadeUp} className="mt-14">
+          <Image
+            src="/SunstangThumbnail.jpeg"
+            alt="Sunstang vehicle control unit development workspace"
+            width={5712}
+            height={4284}
+            sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
+            className="max-h-[560px] w-full object-cover"
+            priority
+          />
+        </motion.div>
 
         {/* Divider */}
         <motion.div variants={fadeUp} className="mt-16 border-t border-black/10" />
@@ -161,12 +175,15 @@ export default function SunstangPage() {
 
         {/* High-level diagram */}
         <motion.div variants={fadeUp} className="mt-14">
-          <img
+          <Image
             src="/SunstangHighLevel.png"
             alt="High-level diagram of the Sunstang vehicle control unit"
+            width={1047}
+            height={812}
+            sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
             className="w-full object-cover"
           />
-          <p className="mt-2 text-xs text-neutral-400">
+          <p className="mt-2 text-xs text-neutral-600">
             High-Level Diagram
           </p>
         </motion.div>
@@ -204,10 +221,10 @@ export default function SunstangPage() {
               },
             ].map(({ title, items }) => (
               <div key={title}>
-                <p className="text-sm text-black">{title}</p>
+                <h3 className="text-sm text-black">{title}</h3>
                 <ul className="mt-3 space-y-1.5">
                   {items.map((item) => (
-                    <li key={item} className="text-sm leading-relaxed tracking-wide text-neutral-500">
+                    <li key={item} className="text-sm leading-relaxed tracking-wide text-neutral-600">
                       · {item}
                     </li>
                   ))}
@@ -267,12 +284,15 @@ export default function SunstangPage() {
           </div>
 
           <figure className="mt-10">
-            <img
+            <Image
               src="/SunstangSchematic.png"
               alt="KiCad schematic for the Sunstang vehicle control unit"
+              width={1592}
+              height={1192}
+              sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
               className="w-full object-cover"
             />
-            <figcaption className="mt-2 text-xs text-neutral-400">
+            <figcaption className="mt-2 text-xs text-neutral-600">
               Functional circuit blocks in the KiCad schematic.
             </figcaption>
           </figure>
@@ -311,12 +331,15 @@ export default function SunstangPage() {
           </div>
 
           <figure className="mt-10">
-            <img
+            <Image
               src="/SunstangPCB.png"
               alt="KiCad PCB layout for the Sunstang vehicle control unit"
+              width={1734}
+              height={1203}
+              sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
               className="w-full object-cover"
             />
-            <figcaption className="mt-2 text-xs text-neutral-400">
+            <figcaption className="mt-2 text-xs text-neutral-600">
               Component placement and routed board in KiCad.
             </figcaption>
           </figure>
@@ -357,12 +380,15 @@ export default function SunstangPage() {
           </div>
 
           <figure className="mt-10">
-            <img
+            <Image
               src="/SunstangBoard.jpg"
               alt="Assembled Sunstang vehicle control unit PCB"
+              width={4889}
+              height={3741}
+              sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
               className="w-full object-cover"
             />
-            <figcaption className="mt-2 text-xs text-neutral-400">
+            <figcaption className="mt-2 text-xs text-neutral-600">
               The manufactured PCB during assembly and validation.
             </figcaption>
           </figure>
@@ -382,7 +408,7 @@ export default function SunstangPage() {
             <a href="https://www.linkedin.com/in/xiuting-s/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#C85A3F] border-b border-[#C85A3F]/30 hover:text-[#e0b24c] hover:border-[#e0b24c]/30 transition-colors duration-300">
+              className="border-b border-[#8f3f2c]/40 text-[#8f3f2c] transition-colors duration-300 hover:border-[#6f301f] hover:text-[#6f301f]">
               Xiuting Shi
             </a>{' '}
             for teaching and mentoring me through the whole process. From explaining what a MOSFET is, to finalizing the design, thank you.
