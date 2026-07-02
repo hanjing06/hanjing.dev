@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'About',
   description: 'About Hanjing Lin, a software engineering student building embedded and intelligent systems.',
+  alternates: {
+    canonical: '/about',
+  },
 };
 
 export default function AboutLayout({

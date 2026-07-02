@@ -18,7 +18,7 @@ export default function Navbar() {
       <nav aria-label="Main navigation" className="site-container flex items-center justify-between py-0.5">
         <Link href="/" className="brand-wordmark inline-flex min-h-11 items-center text-[16px] sm:text-[20px]">
           <motion.span transition={{ duration: 0.2, ease: "easeOut" }}>
-            Hanjing
+            Hanjing Lin
           </motion.span>
         </Link>
 
