@@ -4,6 +4,7 @@ import { motion, Variants } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import ArticleTableOfContents from '../../components/ArticleTableOfContents';
+import ExpandableImage from '../../components/ExpandableImage';
 
 const container: Variants = {
   hidden: {},
@@ -126,12 +127,11 @@ export default function SunstangPage() {
 
         {/* Hero image */}
         <motion.div variants={fadeUp} className="mt-14">
-          <Image
+          <ExpandableImage
             src="/SunstangThumbnail.jpeg"
             alt="Sunstang vehicle control unit development workspace"
             width={5712}
             height={4284}
-            sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
             className="max-h-[560px] w-full object-cover"
             priority
           />
@@ -175,17 +175,14 @@ export default function SunstangPage() {
 
         {/* High-level diagram */}
         <motion.div variants={fadeUp} className="mt-14">
-          <Image
+          <ExpandableImage
             src="/SunstangHighLevel.png"
             alt="High-level diagram of the Sunstang vehicle control unit"
             width={1047}
             height={812}
-            sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
             className="w-full object-cover"
+            caption="High-Level Diagram"
           />
-          <p className="mt-2 text-xs text-neutral-600">
-            High-Level Diagram
-          </p>
         </motion.div>
 
         {/* Functional Responsibilities */}
@@ -283,19 +280,15 @@ export default function SunstangPage() {
             </p>
           </div>
 
-          <figure className="mt-10">
-            <Image
+          <ExpandableImage
+            figureClassName="mt-10"
               src="/SunstangSchematic.png"
               alt="KiCad schematic for the Sunstang vehicle control unit"
               width={1592}
               height={1192}
-              sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
               className="w-full object-cover"
-            />
-            <figcaption className="mt-2 text-xs text-neutral-600">
-              Functional circuit blocks in the KiCad schematic.
-            </figcaption>
-          </figure>
+            caption="Functional circuit blocks in the KiCad schematic."
+          />
         </motion.section>
 
         <motion.section
@@ -330,19 +323,15 @@ export default function SunstangPage() {
             </p>
           </div>
 
-          <figure className="mt-10">
-            <Image
+          <ExpandableImage
+            figureClassName="mt-10"
               src="/SunstangPCB.png"
               alt="KiCad PCB layout for the Sunstang vehicle control unit"
               width={1734}
               height={1203}
-              sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
               className="w-full object-cover"
-            />
-            <figcaption className="mt-2 text-xs text-neutral-600">
-              Component placement and routed board in KiCad.
-            </figcaption>
-          </figure>
+            caption="Component placement and routed board in KiCad."
+          />
         </motion.section>
 
         <motion.section
@@ -379,19 +368,15 @@ export default function SunstangPage() {
             </p>
           </div>
 
-          <figure className="mt-10">
-            <Image
+          <ExpandableImage
+            figureClassName="mt-10"
               src="/SunstangBoard.jpg"
               alt="Assembled Sunstang vehicle control unit PCB"
               width={4889}
               height={3741}
-              sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
               className="w-full object-cover"
-            />
-            <figcaption className="mt-2 text-xs text-neutral-600">
-              The manufactured PCB during assembly and validation.
-            </figcaption>
-          </figure>
+            caption="The manufactured PCB during assembly and validation."
+          />
         </motion.section>
 
         {/* Divider */}
