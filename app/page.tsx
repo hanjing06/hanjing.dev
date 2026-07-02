@@ -52,7 +52,7 @@ export default function Home() {
           variants={fadeUp}
           className="brand-wordmark text-6xl text-black"
         >
-          Hanjing
+          Hanjing Lin
         </motion.h1>
 
         {/* What I do */}

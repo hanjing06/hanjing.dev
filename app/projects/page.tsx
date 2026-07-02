@@ -56,6 +56,14 @@ export default function ProjectsPage() {
       image: "/tiny-squares-camera.jpg",
       tags: ["Embedded Systems", "Computer Vision", "Image Processing"],
       href: "/projects/tiny-squares-camera-system",
+    },
+    {
+      title: "Moore FSM: A sequence detector",
+      description: "Designing and implementing a digital logic sequence detector with a Moore FSM.",
+      image: "/moore-fsm/cover-photo-hq.jpg",
+      imagePosition: "object-top",
+      tags: ["Digital Logic", "FPGA", "FSM Design"],
+      href: "/projects/moore-fsm-sequence-detector",
     }
   ];
 
@@ -94,7 +102,7 @@ export default function ProjectsPage() {
               alt=""
               fill
               sizes="(min-width: 768px) 436px, calc(100vw - 48px)"
-              className="object-cover"
+              className={`object-cover ${project.imagePosition ?? ""}`}
               />
           </div>
 
