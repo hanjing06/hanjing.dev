@@ -1,9 +1,9 @@
 'use client';
 
 import { motion, Variants } from 'framer-motion';
-import Image from 'next/image';
 import Link from 'next/link';
 import ArticleTableOfContents from '../../components/ArticleTableOfContents';
+import ExpandableImage from '../../components/ExpandableImage';
 
 const container: Variants = {
   hidden: {},
@@ -101,12 +101,11 @@ export default function TinySquaresPage() {
         />
 
         <motion.div variants={fadeUp} className="mt-14">
-          <Image
+          <ExpandableImage
             src="/tiny-squares-camera.jpg"
             alt="ESP32 camera prototype connected to a thermal printer"
             width={1800}
             height={1350}
-            sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
             className="max-h-[620px] w-full object-cover"
             priority
           />

@@ -4,6 +4,7 @@ import { motion, Variants } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import ArticleTableOfContents from '../../components/ArticleTableOfContents';
+import ExpandableImage from '../../components/ExpandableImage';
 
 const container: Variants = {
   hidden: {},
@@ -270,12 +271,11 @@ export default function SquatPage() {
               </p>
             </div>
 
-            <Image
+            <ExpandableImage
               src="/perfect-squat-cover.jpg"
               alt="The Perfect Squat team presenting their project poster"
               width={1800}
               height={2400}
-              sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
               className="max-h-[680px] w-full object-cover object-center"
             />
 
