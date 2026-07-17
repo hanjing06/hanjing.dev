@@ -1,7 +1,7 @@
 'use client';
 
-import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { useState } from 'react';
+import { motion, Variants } from 'framer-motion';
+import Image from 'next/image';
 
 const container: Variants = {
   hidden: {},
@@ -25,131 +25,79 @@ const fadeUp: Variants = {
   },
 };
 
-const instruments: Record<string, string> = {
-  guitar: '6 months',
-  piano: '12 yrs (inactive)',
-  'tenor sax': '3.5 yrs',
-};
-
-function InstrumentWord({ name }: { name: string }) {
-  const [hovered, setHovered] = useState(false);
-  const tooltipId = `instrument-${name.replace(/\s+/g, '-')}`;
-
-  return (
-    <span
-      className="relative inline-block"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocus={() => setHovered(true)}
-      onBlur={() => setHovered(false)}
-      onKeyDown={(event) => {
-        if (event.key === 'Escape') {
-          setHovered(false);
-          event.currentTarget.blur();
-        }
-      }}
-      tabIndex={0}
-      aria-describedby={tooltipId}
-    >
-      <span className="cursor-default border-b border-dashed border-neutral-600">
-        {name}
-      </span>
-
-      <AnimatePresence>
-        {hovered && (
-          <motion.div
-            id={tooltipId}
-            role="tooltip"
-            initial={{ opacity: 0, y: 4, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 4, scale: 0.95 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none"
-          >
-            {/* Bubble */}
-            <div className="bg-[#1d1d1f] text-[#f5f5f7] text-xs tracking-wider font-['Lora'] px-3 py-1.5 rounded-md whitespace-nowrap">
-              {instruments[name]}
-            </div>
-            {/* Arrow */}
-            <div className="flex justify-center">
-              <div
-                className="w-0 h-0"
-                style={{
-                  borderLeft: '5px solid transparent',
-                  borderRight: '5px solid transparent',
-                  borderTop: '5px solid #1d1d1f',
-                }}
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </span>
-  );
-}
-
 export default function About() {
   return (
     <main className="min-h-screen">
-      <motion.div
+      <motion.section
         variants={container}
         initial="hidden"
         animate="show"
         className="site-container py-32"
       >
-        {/* Title */}
         <motion.h1
           variants={fadeUp}
-          className="text-6xl tracking-tight text-black mb-10"
+          className="mb-10 text-5xl tracking-tight text-black sm:text-6xl"
         >
           about me.
         </motion.h1>
 
-        {/* Body */}
         <motion.div
           variants={fadeUp}
-          className="space-y-6 text-base leading-relaxed tracking-wide text-neutral-700"
+          className="grid items-start gap-10 md:grid-cols-[280px_minmax(0,1fr)]"
         >
-          <p>
-            I&apos;m Hanjing — a second year software engineering student at the University of Western
-            Ontario. I am based in London, Ontario and Toronto.
-          </p>
+          <div className="relative aspect-[3/4] w-full max-w-[280px] overflow-hidden bg-neutral-100">
+            <Image
+              src="/about-hanjing.jpeg"
+              alt="Hanjing Lin standing in front of an outdoor wall"
+              fill
+              priority
+              sizes="(min-width: 768px) 280px, calc(100vw - 48px)"
+              className="object-cover object-[50%_48%]"
+            />
+          </div>
 
-          <p>
-            I like building things that revolve around real-time analysis, computer vision and low
-            level systems. Outside of regular school projects, I have shipped a PCB for my team&apos;s
-            vehicle control unit. I am currently improving an AI model built for tracking and
-            analyzing the biomechanics of a barbell back squat.
-          </p>
+          <div className="space-y-6 text-base leading-relaxed tracking-wide text-neutral-700">
+            <p>
+              hi! im hanjing. i&apos;m a third year studying software enginerring
+              student at the university of western ontario.
+            </p>
 
-          <p>
-            Besides from academics, music and art is my life. I play the{' '}
-            <InstrumentWord name="guitar" />, <InstrumentWord name="piano" />,{' '}
-            <InstrumentWord name="tenor sax" />, and I am in the process of learning my first brass
-            instrument: the trumpet. Creativity and curiosity are my driving factors that inspire me
-            to keep building and creating.
-          </p>
+            <p>
+              i build things that revolve around computer vision, embedded
+              systems and RTOS.
+            </p>
 
-          <p>
-            If you have any inquiries or questions, you can email me at{' '}
-            
-            <a href="mailto:hlin389@uwo.ca"
-              className="border-b border-black/30 hover:border-black transition-colors duration-200">
-              hlin389@uwo.ca
-            </a>
-            {' '}
-            or send a message on{' '}
-            
-            <a href="https://www.linkedin.com/in/hanjing-lin-790252113/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border-b border-black/30 hover:border-black transition-colors duration-200">
-              LinkedIn
-            </a>
-            .
-          </p>
+            <p>
+              currently, i&apos;m working at interninsider as a creative. i&apos;m
+              focusing on learning the fundamentals of hardware design and
+              grinding leetcode!
+            </p>
+
+            <p>
+              outside of regular school projects, i have shipped a PCB for my
+              teams vehicle control unit, a computer vision project for physio,
+              and a instant camera using ESP32.
+            </p>
+
+            <p>
+              besides from academics, music and art is my life. i play the
+              guitar, piano, and tenor sax. creativity and curiosity are my
+              driving factors that inspire me to keep building and creating.
+            </p>
+
+            <p>
+              If you have any inquiries or questions, you can email me at{' '}
+              <a
+                href="mailto:hlin389@uwo.ca"
+                className="font-semibold text-neutral-700 transition-colors duration-200 hover:text-black"
+              >
+                hlin389 [at] uwo [dot] com
+              </a>{' '}
+              or send me a message on LinkedIn.
+            </p>
+          </div>
         </motion.div>
-      </motion.div>
+      </motion.section>
     </main>
   );
 }
