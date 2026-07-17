@@ -46,35 +46,35 @@ export default function Contact(){
           variants={fadeUp}
           className="space-y-10"
         >
-          <div>
-            <p className="text-sm tracking-normal text-neutral-600">Email</p>
+          <div className="flex flex-wrap items-baseline gap-x-2 text-lg tracking-normal">
+            <span className="text-neutral-600">email:</span>
             <a
               href="mailto:hlin389@uwo.ca"
-              className="mt-2 inline-flex min-h-11 items-center break-all border-b border-black/30 text-lg tracking-normal text-neutral-700 transition-colors duration-200 hover:border-black hover:text-black"
+              className="break-all border-b border-black/30 text-neutral-700 transition-colors duration-200 hover:border-black hover:text-black"
             >
-              hlin389@uwo.ca
+              hlin389 [at] uwo [dot] com
             </a>
           </div>
 
-          <div>
-            <p className="text-sm tracking-normal text-neutral-600">GitHub</p>
+          <div className="flex flex-wrap items-baseline gap-x-2 text-lg tracking-normal">
+            <span className="text-neutral-600">github:</span>
             <a
               href="https://www.github.com/hanjing06"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 inline-flex min-h-11 items-center break-all border-b border-black/30 text-lg tracking-normal text-neutral-700 transition-colors duration-200 hover:border-black hover:text-black"
+              className="break-all border-b border-black/30 text-neutral-700 transition-colors duration-200 hover:border-black hover:text-black"
             >
               github.com/hanjing06
             </a>
           </div>
 
-          <div>
-            <p className="text-sm tracking-normal text-neutral-600">LinkedIn</p>
+          <div className="flex flex-wrap items-baseline gap-x-2 text-lg tracking-normal">
+            <span className="text-neutral-600">linkedin:</span>
             <a
               href="https://www.linkedin.com/in/hanjing-lin-790252113/"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 inline-flex min-h-11 items-center break-all border-b border-black/30 text-lg tracking-normal text-neutral-700 transition-colors duration-200 hover:border-black hover:text-black"
+              className="break-all border-b border-black/30 text-neutral-700 transition-colors duration-200 hover:border-black hover:text-black"
             >
               linkedin.com/in/hanjing-lin-790252113
             </a>

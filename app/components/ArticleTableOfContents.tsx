@@ -105,7 +105,7 @@ export default function ArticleTableOfContents({
         type="button"
         onClick={() => scrollToSection(id)}
         aria-current={isActive ? 'location' : undefined}
-        className={`flex min-h-11 w-full cursor-pointer items-center break-words text-left transition-colors duration-200 lg:min-h-0 ${
+        className={`flex min-h-11 w-full cursor-pointer items-center break-words text-left transition-colors duration-200 2xl:min-h-0 ${
           isActive ? 'text-black' : 'text-neutral-600 hover:text-neutral-800'
         }`}
       >
@@ -117,7 +117,7 @@ export default function ArticleTableOfContents({
   return (
     <>
       <motion.aside
-        className={`sticky top-[49px] z-40 -mx-6 border-y border-black/10 bg-[#f8f7f5]/95 px-6 py-3 backdrop-blur-md sm:top-[53px] lg:hidden ${
+        className={`sticky top-[49px] z-40 -mx-6 border-t border-black/10 bg-white/95 px-6 py-3 backdrop-blur-md 2xl:hidden ${
           isVisible ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
         initial={{ opacity: 0 }}
@@ -173,7 +173,7 @@ export default function ArticleTableOfContents({
       </motion.aside>
 
       <motion.aside
-        className={`group fixed left-3 top-1/2 z-40 hidden -translate-y-1/2 items-stretch gap-4 rounded-r-sm bg-[#f8f7f5]/95 py-4 pr-4 backdrop-blur-md lg:flex xl:left-5 ${
+        className={`group fixed left-3 top-1/2 z-40 hidden -translate-y-1/2 items-stretch gap-4 rounded-r-sm bg-white/95 py-4 pr-4 backdrop-blur-md 2xl:flex 2xl:left-5 ${
           isVisible ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
         initial={{ opacity: 0 }}

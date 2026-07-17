@@ -14,7 +14,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-black/10 bg-[#efefec]/70 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-black/10 bg-white/90 backdrop-blur-md">
       <nav aria-label="Main navigation" className="site-container flex items-center justify-between py-0.5">
         <Link href="/" className="brand-wordmark inline-flex min-h-11 items-center text-[16px] sm:text-[20px]">
           <motion.span transition={{ duration: 0.2, ease: "easeOut" }}>
