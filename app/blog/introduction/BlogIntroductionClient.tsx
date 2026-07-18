@@ -4,7 +4,8 @@ import { track } from '@vercel/analytics/react';
 import { motion, Variants } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { getBlogReadEventName } from '@/lib/blogReadConfig';
 
 const container: Variants = {
   hidden: {},
@@ -39,18 +40,48 @@ const paragraphs = [
 ];
 
 export default function BlogIntroductionClient() {
-  useEffect(() => {
-    const sessionKey = 'blog-read:introduction';
+  const [readCount, setReadCount] = useState<number | null>(null);
 
-    if (sessionStorage.getItem(sessionKey)) {
-      return;
+  useEffect(() => {
+    const slug = 'introduction';
+    const sessionKey = `blog-read:${slug}`;
+    const eventName = getBlogReadEventName(slug);
+
+    async function syncReadCount() {
+      const hasReadThisSession = sessionStorage.getItem(sessionKey) === 'true';
+      const endpoint = `/api/blog/read?slug=${encodeURIComponent(slug)}`;
+
+      if (hasReadThisSession) {
+        const response = await fetch(endpoint, { cache: 'no-store' });
+        if (!response.ok) {
+          return;
+        }
+
+        const data = (await response.json()) as { count: number };
+        setReadCount(data.count);
+        return;
+      }
+
+      sessionStorage.setItem(sessionKey, 'true');
+      track(eventName, { slug, title: 'an introduction' });
+
+      const response = await fetch('/api/blog/read', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ slug }),
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      const data = (await response.json()) as { count: number };
+      setReadCount(data.count);
     }
 
-    sessionStorage.setItem(sessionKey, 'true');
-    track('blog_read', {
-      slug: 'introduction',
-      title: 'an introduction',
-    });
+    void syncReadCount();
   }, []);
 
   return (
@@ -122,7 +153,7 @@ export default function BlogIntroductionClient() {
               aria-hidden="true"
               className="opacity-60"
             />
-            <span>1 reads</span>
+            <span>{readCount ?? 0} reads</span>
           </motion.div>
         </div>
       </motion.article>

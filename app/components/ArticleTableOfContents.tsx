@@ -20,6 +20,7 @@ export default function ArticleTableOfContents({
 }) {
   const [activeSection, setActiveSection] = useState(sections[0]?.id ?? '');
   const [isVisible, setIsVisible] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { scrollYProgress } = useScroll();
   const progressHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
   const progressWidth = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
@@ -71,6 +72,7 @@ export default function ArticleTableOfContents({
       behavior: 'smooth',
       block: 'start',
     });
+    setIsMobileOpen(false);
   };
 
   const sectionButtons = sections.map(({ id, title }) => {
@@ -104,15 +106,23 @@ export default function ArticleTableOfContents({
         transition={{ duration: 0.25 }}
         aria-label="Table of contents"
       >
-        <div className="flex items-center justify-between gap-4 text-[10px] uppercase tracking-[0.16em] text-neutral-600">
+        <button
+          type="button"
+          onClick={() => setIsMobileOpen((current) => !current)}
+          className="flex min-h-11 w-full items-center justify-between gap-4 text-left text-[10px] uppercase tracking-[0.16em] text-neutral-600"
+          aria-expanded={isMobileOpen}
+          aria-controls="mobile-toc-nav"
+        >
           <span>Contents</span>
           <span
             aria-hidden="true"
-            className="text-sm leading-none transition-transform duration-300 group-hover:rotate-45 group-focus-within:rotate-45"
+            className={`text-sm leading-none transition-transform duration-300 ${
+              isMobileOpen ? 'rotate-45' : ''
+            }`}
           >
             +
           </span>
-        </div>
+        </button>
 
         <div className="relative mt-3 h-px overflow-hidden bg-black/15">
           <motion.div
@@ -121,8 +131,12 @@ export default function ArticleTableOfContents({
           />
         </div>
 
-        <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-hover:grid-rows-[1fr] group-focus-within:grid-rows-[1fr]">
-          <nav className="min-h-0 overflow-hidden">
+        <div
+          className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+            isMobileOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+          }`}
+        >
+          <nav id="mobile-toc-nav" className="min-h-0 overflow-hidden">
             <div className="grid grid-cols-1 gap-x-5 gap-y-1 pt-4 text-sm leading-snug sm:grid-cols-2">
               {sectionButtons}
             </div>
