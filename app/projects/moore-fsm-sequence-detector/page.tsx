@@ -17,12 +17,13 @@ const container: Variants = {
 };
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
   show: {
     opacity: 1,
     y: 0,
+    filter: 'blur(0px)',
     transition: {
-      duration: 0.45,
+      duration: 0.42,
       ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
     },
   },
@@ -102,7 +103,7 @@ function ExpandableFigure({
   image,
   onOpen,
   priority = false,
-  imageClassName = 'w-full border border-black/10 bg-white object-contain',
+  imageClassName = 'w-full bg-white object-contain outline outline-1 -outline-offset-1 outline-black/10',
 }: {
   image: ProjectImage;
   onOpen: (image: ProjectImage) => void;
@@ -114,7 +115,7 @@ function ExpandableFigure({
       <button
         type="button"
         onClick={() => onOpen(image)}
-        className="group block w-full cursor-zoom-in text-left"
+        className="group block w-full cursor-zoom-in text-left transition-transform duration-200 active:scale-[0.96]"
         aria-label={`Expand image: ${image.alt}`}
       >
         <Image
@@ -123,7 +124,7 @@ function ExpandableFigure({
           width={image.width}
           height={image.height}
           sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
-          className={`${imageClassName} transition duration-300 group-hover:opacity-90`}
+          className={`${imageClassName} transition-opacity duration-300 group-hover:opacity-90`}
           priority={priority}
         />
       </button>
@@ -420,14 +421,19 @@ export default function MooreFsmPage() {
         </motion.section>
       </motion.section>
 
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {selectedImage ? (
           <motion.div
             className="fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center bg-black/85 p-4 sm:p-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, filter: 'blur(0px)' }}
+            exit={{
+              opacity: 0,
+              y: -12,
+              filter: 'blur(4px)',
+              transition: { duration: 0.15, ease: 'easeIn' },
+            }}
+            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
             onClick={() => setSelectedImage(null)}
             role="dialog"
             aria-modal="true"
@@ -439,7 +445,7 @@ export default function MooreFsmPage() {
                 event.stopPropagation();
                 setSelectedImage(null);
               }}
-              className="absolute right-4 top-4 z-10 flex size-12 cursor-pointer items-center justify-center border border-white/50 bg-black/45 text-4xl leading-none text-white transition-colors duration-200 hover:bg-white hover:text-black sm:right-6 sm:top-6"
+              className="absolute right-4 top-4 z-10 flex size-12 cursor-pointer items-center justify-center border border-white/50 bg-black/45 text-4xl leading-none text-white transition-[background-color,color,scale] duration-200 hover:bg-white hover:text-black active:scale-[0.96] sm:right-6 sm:top-6"
               aria-label="Close expanded image"
             >
               ×

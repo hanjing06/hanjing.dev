@@ -35,7 +35,11 @@ export default function Navbar() {
                 }
               >
                 <motion.span
-                  className="relative text-xs tracking-wide text-neutral-700 transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-black after:transition-all after:duration-300 hover:text-black hover:after:w-full sm:text-sm sm:tracking-widest"
+                  className={`relative text-xs tracking-wide transition-colors duration-200 after:absolute after:bottom-0 after:left-0 after:h-px after:bg-black after:transition-[width] after:duration-300 hover:text-black hover:after:w-full sm:text-sm sm:tracking-widest ${
+                    pathname === href || pathname.startsWith(`${href}/`)
+                      ? 'text-black after:w-full'
+                      : 'text-neutral-700 after:w-0'
+                  }`}
                   transition={{ duration: 0.2, ease: "easeOut" }}
                 >
                   {label}

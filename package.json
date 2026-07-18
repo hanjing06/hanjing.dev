@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "framer-motion": "^12.29.2",
     "kill-port": "^2.0.1",
     "motion": "^12.29.2",

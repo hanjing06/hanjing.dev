@@ -6,7 +6,7 @@ import {
   useScroll,
   useTransform,
 } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type TableOfContentsSection = {
   id: string;
@@ -20,8 +20,6 @@ export default function ArticleTableOfContents({
 }) {
   const [activeSection, setActiveSection] = useState(sections[0]?.id ?? '');
   const [isVisible, setIsVisible] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const mobileToggleRef = useRef<HTMLButtonElement>(null);
   const { scrollYProgress } = useScroll();
   const progressHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
   const progressWidth = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
@@ -68,33 +66,12 @@ export default function ArticleTableOfContents({
     return () => observer.disconnect();
   }, [sections]);
 
-  useEffect(() => {
-    if (!isMobileOpen) {
-      return;
-    }
-
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsMobileOpen(false);
-        mobileToggleRef.current?.focus();
-      }
-    };
-
-    document.addEventListener('keydown', closeOnEscape);
-    return () => document.removeEventListener('keydown', closeOnEscape);
-  }, [isMobileOpen]);
-
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
     });
-    setIsMobileOpen(false);
   };
-
-  const showLabels = activeSection === sections[0]?.id;
-  const activeTitle =
-    sections.find(({ id }) => id === activeSection)?.title ?? 'Contents';
 
   const sectionButtons = sections.map(({ id, title }) => {
     const isActive = activeSection === id;
@@ -105,8 +82,10 @@ export default function ArticleTableOfContents({
         type="button"
         onClick={() => scrollToSection(id)}
         aria-current={isActive ? 'location' : undefined}
-        className={`flex min-h-11 w-full cursor-pointer items-center break-words text-left transition-colors duration-200 2xl:min-h-0 ${
-          isActive ? 'text-black' : 'text-neutral-600 hover:text-neutral-800'
+        className={`-mx-2 flex min-h-11 w-[calc(100%+1rem)] cursor-pointer items-center break-words px-2 text-left transition-[background-color,color,scale] duration-300 active:scale-[0.96] 2xl:min-h-0 ${
+          isActive
+            ? 'bg-black/[0.035] text-black'
+            : 'text-neutral-600 hover:bg-black/[0.025] hover:text-black'
         }`}
       >
         {title}
@@ -117,7 +96,7 @@ export default function ArticleTableOfContents({
   return (
     <>
       <motion.aside
-        className={`sticky top-[49px] z-40 -mx-6 border-t border-black/10 bg-white/95 px-6 py-3 backdrop-blur-md 2xl:hidden ${
+        className={`group sticky top-[49px] z-40 -mx-6 border-y border-black/[0.06] bg-white/95 px-6 py-3 backdrop-blur-md 2xl:hidden ${
           isVisible ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
         initial={{ opacity: 0 }}
@@ -125,31 +104,15 @@ export default function ArticleTableOfContents({
         transition={{ duration: 0.25 }}
         aria-label="Table of contents"
       >
-        <button
-          type="button"
-          ref={mobileToggleRef}
-          onClick={() => setIsMobileOpen((isOpen) => !isOpen)}
-          className="flex min-h-11 w-full min-w-0 items-center justify-between gap-4 text-left"
-          aria-expanded={isMobileOpen}
-          aria-controls="mobile-article-contents"
-        >
-          <span className="min-w-0">
-            <span className="block text-[10px] uppercase tracking-[0.16em] text-neutral-600">
-              Contents
-            </span>
-            <span className="mt-0.5 block truncate text-sm text-black">
-              {activeTitle}
-            </span>
-          </span>
+        <div className="flex items-center justify-between gap-4 text-[10px] uppercase tracking-[0.16em] text-neutral-600">
+          <span>Contents</span>
           <span
             aria-hidden="true"
-            className={`shrink-0 text-lg transition-transform duration-200 ${
-              isMobileOpen ? 'rotate-45' : ''
-            }`}
+            className="text-sm leading-none transition-transform duration-300 group-hover:rotate-45 group-focus-within:rotate-45"
           >
             +
           </span>
-        </button>
+        </div>
 
         <div className="relative mt-3 h-px overflow-hidden bg-black/15">
           <motion.div
@@ -158,14 +121,9 @@ export default function ArticleTableOfContents({
           />
         </div>
 
-        <div
-          id="mobile-article-contents"
-          className={`grid transition-[grid-template-rows] duration-300 ${
-            isMobileOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
-          }`}
-        >
+        <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-hover:grid-rows-[1fr] group-focus-within:grid-rows-[1fr]">
           <nav className="min-h-0 overflow-hidden">
-            <div className="grid grid-cols-1 gap-3 pt-4 text-sm leading-snug sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-x-5 gap-y-1 pt-4 text-sm leading-snug sm:grid-cols-2">
               {sectionButtons}
             </div>
           </nav>
@@ -173,7 +131,7 @@ export default function ArticleTableOfContents({
       </motion.aside>
 
       <motion.aside
-        className={`group fixed left-3 top-1/2 z-40 hidden -translate-y-1/2 items-stretch gap-4 rounded-r-sm bg-white/95 py-4 pr-4 backdrop-blur-md 2xl:flex 2xl:left-5 ${
+        className={`group fixed left-3 top-1/2 z-40 hidden -translate-y-1/2 items-stretch gap-4 border border-black/[0.06] bg-white/95 py-4 pr-4 backdrop-blur-md 2xl:left-5 2xl:flex ${
           isVisible ? 'pointer-events-auto' : 'pointer-events-none'
         }`}
         initial={{ opacity: 0 }}
@@ -181,20 +139,22 @@ export default function ArticleTableOfContents({
         transition={{ duration: 0.25 }}
         aria-label="Table of contents"
       >
-        <div className="relative h-64 w-px flex-none overflow-hidden bg-black/15">
-          <motion.div
-            className="absolute inset-x-0 top-0 bg-black"
-            style={{ height: progressHeight }}
-          />
+        <div className="flex h-64 flex-none flex-col items-center gap-3">
+          <span
+            aria-hidden="true"
+            className="text-sm leading-none text-neutral-600 transition-transform duration-300 group-hover:rotate-45 group-focus-within:rotate-45"
+          >
+            +
+          </span>
+          <div className="relative min-h-0 w-px flex-1 overflow-hidden bg-black/15">
+            <motion.div
+              className="absolute inset-x-0 top-0 bg-black"
+              style={{ height: progressHeight }}
+            />
+          </div>
         </div>
 
-        <nav
-          className={`flex h-64 flex-col justify-between overflow-hidden text-xs leading-snug tracking-wide transition-all duration-300 ease-out group-hover:max-w-32 group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:max-w-32 group-focus-within:translate-x-0 group-focus-within:opacity-100 xl:group-hover:max-w-48 xl:group-focus-within:max-w-48 ${
-            showLabels
-              ? 'max-w-0 -translate-x-3 opacity-0 2xl:max-w-48 2xl:translate-x-0 2xl:opacity-100'
-              : 'max-w-0 -translate-x-3 opacity-0'
-          }`}
-        >
+        <nav className="flex h-64 max-w-0 -translate-x-3 flex-col justify-between overflow-hidden text-xs leading-snug tracking-wide opacity-0 transition-[max-width,opacity,transform] duration-300 ease-out group-hover:max-w-48 group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:max-w-48 group-focus-within:translate-x-0 group-focus-within:opacity-100">
           {sectionButtons}
         </nav>
       </motion.aside>

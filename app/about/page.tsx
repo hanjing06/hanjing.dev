@@ -14,12 +14,13 @@ const container: Variants = {
 };
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
   show: {
     opacity: 1,
     y: 0,
+    filter: 'blur(0px)',
     transition: {
-      duration: 0.45,
+      duration: 0.42,
       ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
     },
   },
