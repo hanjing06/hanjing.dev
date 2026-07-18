@@ -44,25 +44,9 @@ export default function BlogIntroductionClient() {
 
   useEffect(() => {
     const slug = 'introduction';
-    const sessionKey = `blog-read:${slug}`;
     const eventName = getBlogReadEventName(slug);
 
     async function syncReadCount() {
-      const hasReadThisSession = sessionStorage.getItem(sessionKey) === 'true';
-      const endpoint = `/api/blog/read?slug=${encodeURIComponent(slug)}`;
-
-      if (hasReadThisSession) {
-        const response = await fetch(endpoint, { cache: 'no-store' });
-        if (!response.ok) {
-          return;
-        }
-
-        const data = (await response.json()) as { count: number };
-        setReadCount(data.count);
-        return;
-      }
-
-      sessionStorage.setItem(sessionKey, 'true');
       track(eventName, { slug, title: 'an introduction' });
 
       const response = await fetch('/api/blog/read', {
