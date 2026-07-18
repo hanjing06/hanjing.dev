@@ -44,20 +44,20 @@ export default function About() {
 
         <motion.div
           variants={fadeUp}
-          className="grid items-start gap-10 md:grid-cols-[280px_minmax(0,1fr)]"
+          className="grid grid-cols-[120px_minmax(0,1fr)] items-start gap-6 md:grid-cols-[280px_minmax(0,1fr)] md:gap-10"
         >
-          <div className="relative aspect-[3/4] w-full max-w-[280px] overflow-hidden bg-neutral-100">
+          <div className="relative aspect-[3/4] w-full max-w-[120px] overflow-hidden bg-neutral-100 md:max-w-[280px]">
             <Image
               src="/about-hanjing.jpeg"
               alt="Hanjing Lin standing in front of an outdoor wall"
               fill
               priority
-              sizes="(min-width: 768px) 280px, calc(100vw - 48px)"
+              sizes="(min-width: 768px) 280px, 120px"
               className="object-cover object-[50%_48%]"
             />
           </div>
 
-          <div className="space-y-6 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="space-y-4 text-sm leading-relaxed tracking-wide text-neutral-700 sm:text-base md:space-y-6">
             <p>
               hi! im hanjing. i&apos;m a third year studying software enginerring
               student at the university of western ontario.

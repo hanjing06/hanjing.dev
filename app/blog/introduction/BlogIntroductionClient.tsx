@@ -1,11 +1,8 @@
 'use client';
 
-import { track } from '@vercel/analytics/react';
 import { motion, Variants } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { getBlogReadEventName } from '@/lib/blogReadConfig';
 
 const container: Variants = {
   hidden: {},
@@ -40,34 +37,6 @@ const paragraphs = [
 ];
 
 export default function BlogIntroductionClient() {
-  const [readCount, setReadCount] = useState<number | null>(null);
-
-  useEffect(() => {
-    const slug = 'introduction';
-    const eventName = getBlogReadEventName(slug);
-
-    async function syncReadCount() {
-      track(eventName, { slug, title: 'an introduction' });
-
-      const response = await fetch('/api/blog/read', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ slug }),
-      });
-
-      if (!response.ok) {
-        return;
-      }
-
-      const data = (await response.json()) as { count: number };
-      setReadCount(data.count);
-    }
-
-    void syncReadCount();
-  }, []);
-
   return (
     <main className="min-h-screen overflow-x-hidden">
       <motion.article
@@ -123,21 +92,6 @@ export default function BlogIntroductionClient() {
             ))}
 
             <p className="pt-4 text-neutral-700">- hanjing</p>
-          </motion.div>
-
-          <motion.div
-            variants={fadeUp}
-            className="mt-10 flex items-center gap-2 text-[1.05rem] tracking-wide text-[#BEBEBE]"
-          >
-            <Image
-              src="/eye.png"
-              alt=""
-              width={18}
-              height={18}
-              aria-hidden="true"
-              className="opacity-60"
-            />
-            <span>{readCount ?? 0} reads</span>
           </motion.div>
         </div>
       </motion.article>
