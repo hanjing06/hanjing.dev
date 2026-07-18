@@ -32,6 +32,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+.envrc
+*.env
+*.secret
+secrets.*
+*.key
 
 # vercel
 .vercel
@@ -39,3 +44,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# local python/tooling caches
+__pycache__/
+*.py[cod]
