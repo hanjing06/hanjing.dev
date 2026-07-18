@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -61,9 +62,9 @@ export const metadata: Metadata = {
   },
   category: "technology",
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    icon: "/websitelogo.png",
+    shortcut: "/websitelogo.png",
+    apple: "/websitelogo.png",
   },
 };
 
@@ -120,7 +121,7 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en">
+    <html lang="en" className="antialiased">
       <body className="flex min-h-screen flex-col bg-background">
         <script
           type="application/ld+json"
@@ -139,6 +140,7 @@ export default function RootLayout({
 
           <Footer />
         </MotionProvider>
+        <Analytics />
       </body>
     </html>
   );

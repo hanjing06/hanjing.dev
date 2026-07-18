@@ -14,24 +14,26 @@ const container: Variants = {
 };
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 10 },
+  hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
   show: {
     opacity: 1,
     y: 0,
+    filter: 'blur(0px)',
     transition: {
-      duration: 2.3,
+      duration: 0.42,
       ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
     },
   },
 };
 
 const buttonGroup: Variants = {
-  hidden: { opacity: 0, y: 8 },
+  hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
   show: {
     opacity: 1,
     y: 0,
+    filter: 'blur(0px)',
     transition: {
-      duration: 1.67,
+      duration: 0.42,
       delay: 0.2,
       ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
     },
@@ -71,11 +73,11 @@ export default function Home() {
         >
           <motion.div
               whileHover={{ y: -2, cursor:'pointer' }}
-              transition={{ ease: 'easeInOut', duration: 0.34 }}
+              transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
             >
             <Link
               href="/projects"
-              className="inline-flex min-h-11 w-36 items-center justify-center border-[1.5px] border-transparent bg-[#1d1d1f] py-2.5 text-base tracking-wider text-[#f5f5f7] transition-colors duration-200 hover:bg-[#3a3a3c]"
+              className="inline-flex min-h-11 w-36 items-center justify-center border-[1.5px] border-transparent bg-[#1d1d1f] py-2.5 text-base tracking-wider text-[#f5f5f7] transition-[background-color,scale] duration-200 hover:bg-[#3a3a3c] active:scale-[0.96]"
             >
               projects →
             </Link>
@@ -83,11 +85,11 @@ export default function Home() {
 
           <motion.div
               whileHover={{ y: -2, cursor:'pointer' }}
-              transition={{ ease: 'easeInOut', duration: 0.34 }}
+              transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
             >
             <Link
               href="/about"
-              className="inline-flex min-h-11 w-36 items-center justify-center border-[1.5px] border-[#1d1d1f] py-2.5 text-base tracking-wider text-[#1d1d1f] transition-colors duration-200 hover:bg-[#1d1d1f] hover:text-[#f5f5f7]"
+              className="inline-flex min-h-11 w-36 items-center justify-center border-[1.5px] border-[#1d1d1f] py-2.5 text-base tracking-wider text-[#1d1d1f] transition-[background-color,color,scale] duration-200 hover:bg-[#1d1d1f] hover:text-[#f5f5f7] active:scale-[0.96]"
             >
               about →
             </Link>
