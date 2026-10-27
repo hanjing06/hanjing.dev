@@ -62,13 +62,13 @@ type ProjectImage = {
 
 const projectImages = {
   cover: {
-    src: '/moore-fsm/cover-photo-hq.jpg',
+    src: '/projects/moore-fsm-sequence-detector/cover.jpg',
     alt: 'DE10-Standard FPGA board used for the Moore FSM sequence detector',
     width: 2268,
     height: 3024,
   },
   stateDiagram: {
-    src: '/moore-fsm/state-diagram.png',
+    src: '/projects/moore-fsm-sequence-detector/state-diagram.png',
     alt: 'State diagram showing the bit sequences and Moore FSM states S0 through S7',
     width: 1600,
     height: 1284,
@@ -76,14 +76,14 @@ const projectImages = {
       'State diagram showing the target sequence, output states, and transitions.',
   },
   kMaps: {
-    src: '/moore-fsm/k-maps.jpg',
+    src: '/projects/moore-fsm-sequence-detector/k-maps.jpg',
     alt: 'Karnaugh maps and simplified Boolean equations for the Moore FSM',
     width: 1530,
     height: 2009,
     caption: 'K-maps used to simplify the next-state and output logic.',
   },
   quartusSchematic: {
-    src: '/moore-fsm/quartus-schematic.png',
+    src: '/projects/moore-fsm-sequence-detector/quartus-schematic.png',
     alt: 'Quartus schematic for the Moore FSM sequence detector circuit',
     width: 1928,
     height: 994,
@@ -91,7 +91,7 @@ const projectImages = {
       'Quartus gate-level schematic with D flip-flops, combinational logic, pins, and output z.',
   },
   waveform: {
-    src: '/moore-fsm/simulation-waveform.png',
+    src: '/projects/moore-fsm-sequence-detector/simulation-waveform.png',
     alt: 'Quartus simulation waveform for CLK, Rx, x, and z',
     width: 1816,
     height: 504,

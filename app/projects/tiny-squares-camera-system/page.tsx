@@ -106,7 +106,7 @@ export default function TinySquaresPage() {
 
         <motion.div variants={fadeUp} className="mt-14">
           <ExpandableImage
-            src="/tiny-squares-camera.jpg"
+            src="/projects/tiny-squares-camera-system/cover.jpg"
             alt="ESP32 camera prototype connected to a thermal printer"
             width={1800}
             height={1350}

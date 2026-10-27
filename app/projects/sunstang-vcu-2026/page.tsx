@@ -63,7 +63,7 @@ export default function SunstangPage() {
         {/* Logo */}
         <motion.div variants={fadeUp} className="mt-4">
           <Image
-            src="/SunstangLogo.png"
+            src="/projects/sunstang-vcu-2026/logo.png"
             alt="Sunstang Solar Car Project"
             width={550}
             height={94}
@@ -129,7 +129,7 @@ export default function SunstangPage() {
         {/* Hero image */}
         <motion.div variants={fadeUp} className="mt-14">
           <ExpandableImage
-            src="/SunstangThumbnail.jpeg"
+            src="/projects/sunstang-vcu-2026/thumbnail.jpeg"
             alt="Sunstang vehicle control unit development workspace"
             width={5712}
             height={4284}
@@ -177,7 +177,7 @@ export default function SunstangPage() {
         {/* High-level diagram */}
         <motion.div variants={fadeUp} className="mt-14">
           <ExpandableImage
-            src="/SunstangHighLevel.png"
+            src="/projects/sunstang-vcu-2026/high-level.png"
             alt="High-level diagram of the Sunstang vehicle control unit"
             width={1047}
             height={812}
@@ -283,7 +283,7 @@ export default function SunstangPage() {
 
           <ExpandableImage
             figureClassName="mt-10"
-              src="/SunstangSchematic.png"
+              src="/projects/sunstang-vcu-2026/schematic.png"
               alt="KiCad schematic for the Sunstang vehicle control unit"
               width={1592}
               height={1192}
@@ -326,7 +326,7 @@ export default function SunstangPage() {
 
           <ExpandableImage
             figureClassName="mt-10"
-              src="/SunstangPCB.png"
+              src="/projects/sunstang-vcu-2026/pcb.png"
               alt="KiCad PCB layout for the Sunstang vehicle control unit"
               width={1734}
               height={1203}
@@ -371,7 +371,7 @@ export default function SunstangPage() {
 
           <ExpandableImage
             figureClassName="mt-10"
-              src="/SunstangBoard.jpg"
+              src="/projects/sunstang-vcu-2026/board.jpg"
               alt="Assembled Sunstang vehicle control unit PCB"
               width={4889}
               height={3741}

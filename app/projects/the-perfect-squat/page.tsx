@@ -273,7 +273,7 @@ export default function SquatPage() {
             </div>
 
             <ExpandableImage
-              src="/perfect-squat-cover.jpg"
+              src="/projects/the-perfect-squat/cover.jpg"
               alt="The Perfect Squat team presenting their project poster"
               width={1800}
               height={2400}
