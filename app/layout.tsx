@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import MotionProvider from "./components/MotionProvider";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import MotionProvider from "@/components/MotionProvider";
+import { mailto, site } from "@/lib/site";
 
-const siteUrl = "https://hanjing.dev";
+const siteUrl = site.url;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -76,7 +77,7 @@ const structuredData = {
       name: "Hanjing Lin",
       alternateName: "Hanjing",
       url: siteUrl,
-      email: "mailto:hlin389@uwo.ca",
+      email: mailto,
       jobTitle: "Software Engineering Student",
       affiliation: {
         "@type": "CollegeOrUniversity",
@@ -84,8 +85,8 @@ const structuredData = {
         url: "https://www.uwo.ca/",
       },
       sameAs: [
-        "https://github.com/hanjing06",
-        "https://www.linkedin.com/in/hanjing-lin-790252113/",
+        site.github.url,
+        site.linkedin.url,
       ],
       knowsAbout: [
         "Software Engineering",

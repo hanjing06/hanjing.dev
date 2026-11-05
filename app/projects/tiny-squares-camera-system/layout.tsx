@@ -1,17 +1,7 @@
-import type { Metadata } from 'next';
+import { projectMetadata } from '@/content/projects';
 
-export const metadata: Metadata = {
-  title: 'Tiny Squares Camera System',
-  description: 'Engineering an embedded camera that captures, converts, and instantly prints images.',
-  alternates: {
-    canonical: '/projects/tiny-squares-camera-system',
-  },
-};
+export const metadata = projectMetadata('tiny-squares-camera-system');
 
-export default function TinySquaresLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ProjectLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

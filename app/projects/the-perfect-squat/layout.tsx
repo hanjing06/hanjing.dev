@@ -1,17 +1,7 @@
-import type { Metadata } from 'next';
+import { projectMetadata } from '@/content/projects';
 
-export const metadata: Metadata = {
-  title: 'The Perfect Squat',
-  description: 'Building a computer vision system that measures a barbell squat path.',
-  alternates: {
-    canonical: '/projects/the-perfect-squat',
-  },
-};
+export const metadata = projectMetadata('the-perfect-squat');
 
-export default function PerfectSquatLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ProjectLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

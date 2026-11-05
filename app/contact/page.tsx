@@ -1,35 +1,14 @@
 'use client';
 
-import { motion, Variants } from 'framer-motion';
-
-const container: Variants = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.14,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: {
-      duration: 0.42,
-      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-    },
-  },
-};
+import { motion } from 'framer-motion';
+import { pageContainer, fadeUp } from '@/lib/motion';
+import { mailto, site } from '@/lib/site';
 
 export default function Contact(){
     return(
     <main className="min-h-screen">
         <motion.div
-            variants={container}
+            variants={pageContainer}
             initial="hidden"
             animate="show"
             className="site-container py-32"
@@ -50,34 +29,34 @@ export default function Contact(){
           <div className="flex flex-wrap items-baseline gap-x-2 text-lg tracking-normal">
             <span className="text-neutral-600">email:</span>
             <a
-              href="mailto:hlin389@uwo.ca"
+              href={mailto}
               className="break-all border-b border-black/30 text-neutral-700 transition-colors duration-200 hover:border-black hover:text-black"
             >
-              hlin389 [at] uwo [dot] com
+              {site.emailLabel}
             </a>
           </div>
 
           <div className="flex flex-wrap items-baseline gap-x-2 text-lg tracking-normal">
             <span className="text-neutral-600">github:</span>
             <a
-              href="https://www.github.com/hanjing06"
+              href={site.github.profileUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="break-all border-b border-black/30 text-neutral-700 transition-colors duration-200 hover:border-black hover:text-black"
             >
-              github.com/hanjing06
+              {site.github.label}
             </a>
           </div>
 
           <div className="flex flex-wrap items-baseline gap-x-2 text-lg tracking-normal">
             <span className="text-neutral-600">linkedin:</span>
             <a
-              href="https://www.linkedin.com/in/hanjing-lin-790252113/"
+              href={site.linkedin.url}
               target="_blank"
               rel="noopener noreferrer"
               className="break-all border-b border-black/30 text-neutral-700 transition-colors duration-200 hover:border-black hover:text-black"
             >
-              linkedin.com/in/hanjing-lin-790252113
+              {site.linkedin.label}
             </a>
           </div>
         </motion.div>
