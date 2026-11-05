@@ -2,29 +2,11 @@
 import {motion, Variants} from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { projectHref, projects } from "@/content/projects";
+import { createFadeUp, easeOutExpo, easeOutQuint, staggerContainer } from "@/lib/motion";
 
-const container: Variants = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.08,
-    },
-  },
-};
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: {
-      duration: 0.42,
-      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-    },
-  },
-};
+const container = staggerContainer(0.1, 0.08);
+const fadeUp = createFadeUp(easeOutExpo);
 
 const projectGrid: Variants = {
   hidden: {},
@@ -44,7 +26,7 @@ const projectCard: Variants = {
     transition: {
       duration: 0.42,
       delay: index * 0.12,
-      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+      ease: easeOutQuint,
     },
   }),
   hover: {
@@ -58,38 +40,6 @@ const projectCard: Variants = {
 };
 
 export default function ProjectsPage() {
-  const projects = [
-    {
-      title: "Sunstang VCU 2026",
-      description: "Designing the vehicle control unit for a solar powered car.",
-      image: "/projects/sunstang-vcu-2026/thumbnail.jpeg",
-      tags: ["Embedded Systems", "PCB Design", "Hardware"],
-      href: "/projects/sunstang-vcu-2026",
-    },
-    {
-      title: "The Perfect Squat",
-      description: "Developing a computer vision program that detects the bar path of your squat.",
-      image: "/projects/the-perfect-squat/cover.jpg",
-      tags: ["Computer Vision", "Machine Learning"],
-      href: "/projects/the-perfect-squat",
-    },
-    {
-      title: "Tiny Squares: Camera System",
-      description: "Engineering a camera that shoots, converts image, bitmaps jpg, and prints instantly.",
-      image: "/projects/tiny-squares-camera-system/cover.jpg",
-      tags: ["Embedded Systems", "Computer Vision", "Image Processing"],
-      href: "/projects/tiny-squares-camera-system",
-    },
-    {
-      title: "Moore FSM: A Sequence Detector",
-      description: "Designing and implementing a digital logic sequence detector with a Moore FSM.",
-      image: "/projects/moore-fsm-sequence-detector/cover.jpg",
-      imagePosition: "object-top",
-      tags: ["Digital Logic", "FPGA", "FSM Design"],
-      href: "/projects/moore-fsm-sequence-detector",
-    }
-  ];
-
   return (
     <main className="min-h-screen">
       <motion.section
@@ -121,7 +71,7 @@ export default function ProjectsPage() {
             whileHover="hover"
             >
         <Link
-          href={project.href}
+          href={projectHref(project.slug)}
           className="flex h-full flex-col transition-transform duration-200 active:scale-[0.96]"
           aria-label={`View project: ${project.title}`}
         >
@@ -132,11 +82,11 @@ export default function ProjectsPage() {
                 transition={{ type: "spring", duration: 0.3, bounce: 0 }}
               >
                 <Image
-              src={project.image}
+              src={project.cover}
               alt=""
               fill
               sizes="(min-width: 768px) 436px, calc(100vw - 48px)"
-              className={`object-cover ${project.imagePosition ?? ""}`}
+              className={`object-cover ${project.coverPosition ?? ""}`}
               />
               </motion.div>
           </div>
@@ -156,7 +106,7 @@ export default function ProjectsPage() {
             </motion.span>
 
             <p className="mt-1 min-h-[20px] text-[16px] text-black/65">
-            {project.description}
+            {project.summary}
             </p>
 
             <div className="pt-3 flex flex-wrap gap-3">

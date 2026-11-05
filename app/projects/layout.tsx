@@ -1,17 +1,11 @@
-import type { Metadata } from 'next';
+import { pageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: 'Projects',
   description: 'Embedded systems, computer vision, and software engineering projects by Hanjing Lin.',
-  alternates: {
-    canonical: '/projects',
-  },
-};
+  path: '/projects',
+});
 
-export default function ProjectsLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ProjectsLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

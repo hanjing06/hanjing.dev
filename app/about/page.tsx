@@ -1,36 +1,15 @@
 'use client';
 
-import { motion, Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
-
-const container: Variants = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.14,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: {
-      duration: 0.42,
-      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-    },
-  },
-};
+import { pageContainer, fadeUp } from '@/lib/motion';
+import { mailto, site } from '@/lib/site';
 
 export default function About() {
   return (
     <main className="min-h-screen">
       <motion.section
-        variants={container}
+        variants={pageContainer}
         initial="hidden"
         animate="show"
         className="site-container py-32"
@@ -48,7 +27,7 @@ export default function About() {
         >
           <div className="relative aspect-[3/4] w-full max-w-[120px] overflow-hidden bg-neutral-100 md:max-w-[280px]">
             <Image
-              src="/about-hanjing.jpeg"
+              src="/about/hanjing.jpeg"
               alt="Hanjing Lin standing in front of an outdoor wall"
               fill
               priority
@@ -89,10 +68,10 @@ export default function About() {
             <p>
               If you have any inquiries or questions, you can email me at{' '}
               <a
-                href="mailto:hlin389@uwo.ca"
+                href={mailto}
                 className="font-semibold text-neutral-700 transition-colors duration-200 hover:text-black"
               >
-                hlin389 [at] uwo [dot] com
+                {site.emailLabel}
               </a>{' '}
               or send me a message on LinkedIn.
             </p>

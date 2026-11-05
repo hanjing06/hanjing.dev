@@ -1,33 +1,11 @@
 'use client';
 
-import { AnimatePresence, motion, Variants } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import ArticleTableOfContents from '../../components/ArticleTableOfContents';
-
-const container: Variants = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: {
-      duration: 0.42,
-      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-    },
-  },
-};
+import ArticleTableOfContents from '@/components/ArticleTableOfContents';
+import { articleContainer, fadeUp } from '@/lib/motion';
 
 const tags = ['Digital Logic', 'FPGA', 'FSM Design'];
 const tools = [
@@ -165,7 +143,7 @@ export default function MooreFsmPage() {
   return (
     <main className="min-h-screen">
       <motion.section
-        variants={container}
+        variants={articleContainer}
         initial="hidden"
         animate="show"
         className="site-container min-w-0 break-words py-16 sm:py-24"
