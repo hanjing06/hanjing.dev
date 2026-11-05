@@ -1,46 +1,32 @@
 'use client';
 
-import { motion, Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { pageContainer, fadeUp } from '@/lib/motion';
 
-const container: Variants = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.14,
-      delayChildren: 0.05,
-    },
-  },
+export type BlogPostProps = {
+  /** Small line above the title, e.g. "start here - july 2026". */
+  kicker: string;
+  title: string;
+  /** Hero image, usually `/blog/<slug>/cover.jpeg`. */
+  cover: { src: string; alt: string };
+  paragraphs: string[];
+  signature?: string;
 };
 
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: {
-      duration: 0.42,
-      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-    },
-  },
-};
-
-const paragraphs = [
-  'hello :) my name is hanjing and i’m an engineer. from a very young age, i really wanted a blog. somewhere to express myself in a format that i enjoy which is writing or video.',
-  'i started this not because i have anything valuable or astounding to say but i like to document my thoughts in order so when i come back to this time, im able to recall what i was making, thinking or doing at that time.',
-  'in my blog you’ll find notes on: engineering, tech, what i’m learning/what i’ve learned, and think pieces.',
-  'although i’m not an incredible writer, my main goal with my blog is to inspire. whether that’s creating, thinking, or revisiting a certain interest, if any of this helps you start, then my mission here is complete.',
-  'thank you for taking your time to visit, i hope we meet again.',
-  'in the mean time, feel free to look around my website.',
-];
-
-export default function BlogIntroductionClient() {
+/** Layout shared by every blog post: back link, kicker, title, hero, body. */
+export default function BlogPost({
+  kicker,
+  title,
+  cover,
+  paragraphs,
+  signature = '- hanjing',
+}: BlogPostProps) {
   return (
     <main className="min-h-screen overflow-x-hidden">
       <motion.article
-        variants={container}
+        variants={pageContainer}
         initial="hidden"
         animate="show"
         className="site-container min-w-0 break-words py-20 sm:py-32"
@@ -59,14 +45,14 @@ export default function BlogIntroductionClient() {
             variants={fadeUp}
             className="mt-10 text-lg tracking-normal text-neutral-600"
           >
-            start here - july 2026
+            {kicker}
           </motion.p>
 
           <motion.h1
             variants={fadeUp}
             className="mt-3 max-w-[12ch] text-4xl tracking-tight text-black sm:text-5xl md:text-6xl"
           >
-            an introduction.
+            {title}
           </motion.h1>
 
           <motion.div
@@ -74,8 +60,8 @@ export default function BlogIntroductionClient() {
             className="relative mt-8 aspect-[16/10] w-full overflow-hidden bg-neutral-100 sm:aspect-[16/9]"
           >
             <Image
-              src="/blog-intro.jpeg"
-              alt="A nighttime street photo introducing the blog"
+              src={cover.src}
+              alt={cover.alt}
               fill
               priority
               sizes="(min-width: 1024px) 880px, calc(100vw - 48px)"
@@ -91,7 +77,7 @@ export default function BlogIntroductionClient() {
               <p key={paragraph}>{paragraph}</p>
             ))}
 
-            <p className="pt-4 text-neutral-700">- hanjing</p>
+            <p className="pt-4 text-neutral-700">{signature}</p>
           </motion.div>
         </div>
       </motion.article>

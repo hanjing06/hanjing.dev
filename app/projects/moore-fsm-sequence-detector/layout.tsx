@@ -1,18 +1,7 @@
-import type { Metadata } from 'next';
+import { projectMetadata } from '@/content/projects';
 
-export const metadata: Metadata = {
-  title: 'Moore FSM: A Sequence Detector',
-  description:
-    'Designing, optimizing, and implementing a Moore finite state machine sequence detector.',
-  alternates: {
-    canonical: '/projects/moore-fsm-sequence-detector',
-  },
-};
+export const metadata = projectMetadata('moore-fsm-sequence-detector');
 
-export default function MooreFsmLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ProjectLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

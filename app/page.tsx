@@ -1,50 +1,16 @@
 'use client';
 
-import { motion, Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { createFadeUp, easeOutQuint, fadeUp, pageContainer } from '@/lib/motion';
 
-const container: Variants = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.14,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: {
-      duration: 0.42,
-      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-    },
-  },
-};
-
-const buttonGroup: Variants = {
-  hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: {
-      duration: 0.42,
-      delay: 0.2,
-      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
-    },
-  },
-};
+const buttonGroup = createFadeUp(easeOutQuint, 0.2);
 
 export default function Home() {
   return (
     <main className="min-h-screen flex items-center justify-center px-6 -mt-16">
       <motion.div
-        variants={container}
+        variants={pageContainer}
         initial="hidden"
         animate="show"
         className="flex flex-col items-center text-center"

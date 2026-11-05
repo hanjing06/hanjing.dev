@@ -1,17 +1,7 @@
-import type { Metadata } from 'next';
+import { projectMetadata } from '@/content/projects';
 
-export const metadata: Metadata = {
-  title: 'Sunstang VCU 2026',
-  description: 'Designing and routing a vehicle control unit PCB for the Sunstang solar car.',
-  alternates: {
-    canonical: '/projects/sunstang-vcu-2026',
-  },
-};
+export const metadata = projectMetadata('sunstang-vcu-2026');
 
-export default function SunstangLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ProjectLayout({ children }: { children: React.ReactNode }) {
   return children;
 }
