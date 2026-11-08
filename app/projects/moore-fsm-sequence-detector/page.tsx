@@ -1,10 +1,9 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import ArticleTableOfContents from '@/components/ArticleTableOfContents';
+import ExpandableImage from '@/components/ExpandableImage';
 import { articleContainer, fadeUp } from '@/lib/motion';
 
 const tags = ['Digital Logic', 'FPGA', 'FSM Design'];
@@ -77,69 +76,7 @@ const projectImages = {
   },
 } satisfies Record<string, ProjectImage>;
 
-function ExpandableFigure({
-  image,
-  onOpen,
-  priority = false,
-  imageClassName = 'w-full bg-white object-contain outline outline-1 -outline-offset-1 outline-black/10',
-}: {
-  image: ProjectImage;
-  onOpen: (image: ProjectImage) => void;
-  priority?: boolean;
-  imageClassName?: string;
-}) {
-  return (
-    <figure>
-      <button
-        type="button"
-        onClick={() => onOpen(image)}
-        className="group block w-full cursor-zoom-in text-left transition-transform duration-200 active:scale-[0.96]"
-        aria-label={`Expand image: ${image.alt}`}
-      >
-        <Image
-          src={image.src}
-          alt={image.alt}
-          width={image.width}
-          height={image.height}
-          sizes="(min-width: 920px) 872px, calc(100vw - 48px)"
-          className={`${imageClassName} transition-opacity duration-300 group-hover:opacity-90`}
-          priority={priority}
-        />
-      </button>
-      {image.caption ? (
-        <figcaption className="mt-2 text-xs text-neutral-600">
-          {image.caption}
-        </figcaption>
-      ) : null}
-    </figure>
-  );
-}
-
 export default function MooreFsmPage() {
-  const [selectedImage, setSelectedImage] = useState<ProjectImage | null>(null);
-
-  useEffect(() => {
-    if (!selectedImage) {
-      return;
-    }
-
-    const originalOverflow = document.body.style.overflow;
-
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setSelectedImage(null);
-      }
-    };
-
-    document.body.style.overflow = 'hidden';
-    document.addEventListener('keydown', closeOnEscape);
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      document.removeEventListener('keydown', closeOnEscape);
-    };
-  }, [selectedImage]);
-
   return (
     <main className="min-h-screen">
       <motion.section
@@ -196,11 +133,10 @@ export default function MooreFsmPage() {
         />
 
         <motion.div variants={fadeUp} className="mt-14">
-          <ExpandableFigure
-            image={projectImages.cover}
-            onOpen={setSelectedImage}
+          <ExpandableImage
+            {...projectImages.cover}
             priority
-            imageClassName="h-[420px] w-full object-cover object-top sm:h-[560px]"
+            className="h-[420px] w-full object-cover object-top sm:h-[560px]"
           />
         </motion.div>
 
@@ -266,9 +202,8 @@ export default function MooreFsmPage() {
           </div>
 
           <div className="mt-10">
-            <ExpandableFigure
-              image={projectImages.stateDiagram}
-              onOpen={setSelectedImage}
+            <ExpandableImage
+              {...projectImages.stateDiagram}
             />
           </div>
         </motion.section>
@@ -303,9 +238,8 @@ export default function MooreFsmPage() {
           </div>
 
           <div className="mt-10">
-            <ExpandableFigure
-              image={projectImages.kMaps}
-              onOpen={setSelectedImage}
+            <ExpandableImage
+              {...projectImages.kMaps}
             />
           </div>
         </motion.section>
@@ -341,13 +275,11 @@ export default function MooreFsmPage() {
           </div>
 
           <div className="mt-10 space-y-10">
-            <ExpandableFigure
-              image={projectImages.quartusSchematic}
-              onOpen={setSelectedImage}
+            <ExpandableImage
+              {...projectImages.quartusSchematic}
             />
-            <ExpandableFigure
-              image={projectImages.waveform}
-              onOpen={setSelectedImage}
+            <ExpandableImage
+              {...projectImages.waveform}
             />
           </div>
         </motion.section>
@@ -398,55 +330,6 @@ export default function MooreFsmPage() {
           </div>
         </motion.section>
       </motion.section>
-
-      <AnimatePresence initial={false}>
-        {selectedImage ? (
-          <motion.div
-            className="fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center bg-black/85 p-4 sm:p-8"
-            initial={{ opacity: 0, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, filter: 'blur(0px)' }}
-            exit={{
-              opacity: 0,
-              y: -12,
-              filter: 'blur(4px)',
-              transition: { duration: 0.15, ease: 'easeIn' },
-            }}
-            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-            onClick={() => setSelectedImage(null)}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Expanded project image"
-          >
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                setSelectedImage(null);
-              }}
-              className="absolute right-4 top-4 z-10 flex size-12 cursor-pointer items-center justify-center border border-white/50 bg-black/45 text-4xl leading-none text-white transition-[background-color,color,scale] duration-200 hover:bg-white hover:text-black active:scale-[0.96] sm:right-6 sm:top-6"
-              aria-label="Close expanded image"
-            >
-              ×
-            </button>
-
-            <div className="relative h-full max-h-[84vh] w-full max-w-7xl">
-              <Image
-                src={selectedImage.src}
-                alt={selectedImage.alt}
-                fill
-                sizes="100vw"
-                className="object-contain"
-              />
-            </div>
-
-            {selectedImage.caption ? (
-              <p className="absolute bottom-4 left-4 right-4 text-center text-xs leading-relaxed text-white/85 sm:bottom-6">
-                {selectedImage.caption}
-              </p>
-            ) : null}
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
     </main>
   );
 }
