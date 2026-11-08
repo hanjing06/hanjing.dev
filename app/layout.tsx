@@ -6,11 +6,14 @@ import MotionProvider from "@/components/MotionProvider";
 import { mailto, site } from "@/lib/site";
 
 const siteUrl = site.url;
+const defaultTitle = "Hanjing Lin | Software Engineering Portfolio";
+const socialDescription =
+  "Embedded systems, computer vision, intelligent software, and hardware projects by Hanjing Lin.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Hanjing Lin | Software Engineering Portfolio",
+    default: defaultTitle,
     template: "%s | Hanjing Lin",
   },
   description:
@@ -39,15 +42,13 @@ export const metadata: Metadata = {
     locale: "en_CA",
     url: siteUrl,
     siteName: "Hanjing Lin",
-    title: "Hanjing Lin | Software Engineering Portfolio",
-    description:
-      "Embedded systems, computer vision, intelligent software, and hardware projects by Hanjing Lin.",
+    title: defaultTitle,
+    description: socialDescription,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hanjing Lin | Software Engineering Portfolio",
-    description:
-      "Embedded systems, computer vision, intelligent software, and hardware projects by Hanjing Lin.",
+    title: defaultTitle,
+    description: socialDescription,
   },
   robots: {
     index: true,
