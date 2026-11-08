@@ -26,7 +26,6 @@ export default function Home() {
         {/* What I do */}
         <motion.div
           variants={fadeUp}
-          transition={{delay:0.09}}
           className="mt-3 text-neutral-600 text-xl tracking-widest"
         >
           building intelligent systems that interact with the real world.

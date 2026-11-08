@@ -8,15 +8,6 @@ import { createFadeUp, easeOutExpo, easeOutQuint, staggerContainer } from "@/lib
 const container = staggerContainer(0.1, 0.08);
 const fadeUp = createFadeUp(easeOutExpo);
 
-const projectGrid: Variants = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.14,
-    },
-  },
-};
-
 const projectCard: Variants = {
   hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
   show: (index: number) => ({
@@ -56,10 +47,8 @@ export default function ProjectsPage() {
           projects.
         </motion.h1>
 
-        <motion.div
-          variants={projectGrid}
-          className="grid grid-cols-1 gap-x-12 gap-y-14 md:grid-cols-2"
-        >
+        {/* Cards animate themselves (staggered by index), not via the parent. */}
+        <div className="grid grid-cols-1 gap-x-12 gap-y-14 md:grid-cols-2">
           {projects.map((project, index) => (
             <motion.article
             key={project.title}
@@ -120,7 +109,7 @@ export default function ProjectsPage() {
         </Link>
         </motion.article>
 ))}
-</motion.div>
+</div>
 </motion.section>
 </main>
   );

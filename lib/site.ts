@@ -4,7 +4,6 @@
  */
 export const site = {
   url: 'https://hanjing.dev',
-  name: 'Hanjing Lin',
   email: 'hlin389@uwo.ca',
   /** Obfuscated label shown wherever the email address is displayed. */
   emailLabel: 'hlin389 [at] uwo [dot] com',
