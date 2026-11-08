@@ -6,7 +6,7 @@ import {
   useScroll,
   useTransform,
 } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type TableOfContentsSection = {
   id: string;
@@ -22,14 +22,14 @@ export default function ArticleTableOfContents({
   const [isVisible, setIsVisible] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { scrollYProgress } = useScroll();
-  const progressHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
-  const progressWidth = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+  const progress = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+  const boundsRef = useRef<{ first: HTMLElement | null; last: HTMLElement | null }>({
+    first: null,
+    last: null,
+  });
 
   useMotionValueEvent(scrollYProgress, 'change', () => {
-    const firstSection = document.getElementById(sections[0]?.id ?? '');
-    const lastSection = document.getElementById(
-      sections[sections.length - 1]?.id ?? '',
-    );
+    const { first: firstSection, last: lastSection } = boundsRef.current;
 
     if (!firstSection || !lastSection) {
       setIsVisible(false);
@@ -46,6 +46,11 @@ export default function ArticleTableOfContents({
     const elements = sections
       .map(({ id }) => document.getElementById(id))
       .filter((element): element is HTMLElement => Boolean(element));
+
+    boundsRef.current = {
+      first: document.getElementById(sections[0]?.id ?? ''),
+      last: document.getElementById(sections[sections.length - 1]?.id ?? ''),
+    };
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -127,7 +132,7 @@ export default function ArticleTableOfContents({
         <div className="relative mt-3 h-px overflow-hidden bg-black/15">
           <motion.div
             className="absolute inset-y-0 left-0 bg-black"
-            style={{ width: progressWidth }}
+            style={{ width: progress }}
           />
         </div>
 
@@ -163,7 +168,7 @@ export default function ArticleTableOfContents({
           <div className="relative min-h-0 w-px flex-1 overflow-hidden bg-black/15">
             <motion.div
               className="absolute inset-x-0 top-0 bg-black"
-              style={{ height: progressHeight }}
+              style={{ height: progress }}
             />
           </div>
         </div>

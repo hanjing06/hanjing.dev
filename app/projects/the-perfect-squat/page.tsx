@@ -80,7 +80,7 @@ export default function SquatPage() {
           {tags.map((tag) => (
             <span
               key={tag}
-              className="bg-[#e0b24c] px-3 py-1 text-xs font-['Lora'] tracking-widest text-black"
+              className="bg-[#e0b24c] px-3 py-1 text-xs tracking-widest text-black"
             >
               {tag}
             </span>

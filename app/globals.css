@@ -2,15 +2,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #FFFFFF;
   --foreground: #1A1A1A;
 }
 
 @theme {
   --font-family-lora: 'Lora', Georgia, serif;
-  
+
   --color-background: #FFFFFF;
-  --color-foreground: #1A1A1A;
 }
 
 body {
