@@ -29,6 +29,9 @@ export default function ExpandableImage({
   figureClassName,
 }: ExpandableImageProps) {
   const [isOpen, setIsOpen] = useState(false);
+  // Keep the portal (and AnimatePresence) mounted after the first open so the
+  // exit animation can play when the lightbox closes.
+  const [hasOpened, setHasOpened] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
@@ -53,7 +56,7 @@ export default function ExpandableImage({
   }, [isOpen]);
 
   const lightbox = (
-    <AnimatePresence initial={false}>
+    <AnimatePresence>
       {isOpen ? (
         <motion.div
           className="fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center bg-black/85 p-4 sm:p-8"
@@ -108,7 +111,10 @@ export default function ExpandableImage({
       <figure className={figureClassName}>
         <button
           type="button"
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            setHasOpened(true);
+            setIsOpen(true);
+          }}
           className="group block w-full cursor-zoom-in text-left transition-transform duration-200 active:scale-[0.96]"
           aria-label={`Expand image: ${alt}`}
         >
@@ -129,9 +135,7 @@ export default function ExpandableImage({
         ) : null}
       </figure>
 
-      {isOpen && typeof document !== 'undefined'
-        ? createPortal(lightbox, document.body)
-        : null}
+      {hasOpened ? createPortal(lightbox, document.body) : null}
     </>
   );
 }
