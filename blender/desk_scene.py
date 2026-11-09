@@ -6,7 +6,8 @@ Builds the home-page hero scene and exports it to public/desk/desk.glb:
 - `Item_<id>`: miniature parts packed inside the case. Each is one page of the
   site (see components/desk/items.ts). Their exported positions are their
   "home" spots inside the case.
-- A cozy software-engineering desk around it: cutting mat, keyboard, monitor,
+- A cozy software-engineering desk around it: cutting mat, a 65% keyboard
+  (`Key_<KeyboardEvent.code>` per key), the monitor (`Monitor`, the terminal),
   architect's lamp, triangular scale ruler, books, mug, plant, sticky note.
 
 Run from the repo root:
@@ -45,7 +46,7 @@ PALETTE = {
     "cam_lens": "#1d2022", "glass": "#3a6ea8", "print": "#ffffff", "chrome": "#c9cfd4", "plate_black": "#202325",
     "card": "#fafafa", "card_face": "#ffffff", "note": "#fffdf6", "note_face": "#ffffff", "pick": "#f2a93b",
     # desk
-    "desk_wood": "#c89a6a", "mat": "#2c6b66", "kb_case": "#3a3836", "kb_key": "#ece6da", "kb_accent": "#6cc2f7",
+    "desk_wood": "#c89a6a", "mat": "#2c6b66", "kb_case": "#3a3836", "kb_key": "#ece6da",
     "monitor": "#1c1d1f", "screen": "#111418", "lamp": "#efe9dc", "lamp_joint": "#b9bec4", "lamp_bulb": "#fff2d6",
     "mug": "#9fb8a3", "coffee": "#3b2416", "pot": "#c56f4a", "soil": "#3a2a1e", "leaf": "#4f7d4a",
     "book_1": "#2f4a6b", "book_2": "#c9b28a", "book_3": "#8a3b32", "scale_ruler": "#d6d9dc",
@@ -342,29 +343,48 @@ def build_items():
 
 # --------------------------------------------------------------------------- desk environment
 
+# 65% ANSI layout: (KeyboardEvent.code, width in units). Every key is named
+# "Key_<code>" so the page can press the matching key when the visitor types.
+KEY_ROWS = [
+    [("Escape", 1)] + [(f"Digit{d}", 1) for d in "1234567890"] + [("Minus", 1), ("Equal", 1), ("Backspace", 2), ("Delete", 1)],
+    [("Tab", 1.5)] + [(f"Key{c}", 1) for c in "QWERTYUIOP"] + [("BracketLeft", 1), ("BracketRight", 1), ("Backslash", 1.5), ("PageUp", 1)],
+    [("CapsLock", 1.75)] + [(f"Key{c}", 1) for c in "ASDFGHJKL"] + [("Semicolon", 1), ("Quote", 1), ("Enter", 2.25), ("PageDown", 1)],
+    [("ShiftLeft", 2.25)] + [(f"Key{c}", 1) for c in "ZXCVBNM"] + [("Comma", 1), ("Period", 1), ("Slash", 1), ("ShiftRight", 1.75), ("ArrowUp", 1), ("End", 1)],
+    [("ControlLeft", 1.25), ("AltLeft", 1.25), ("MetaLeft", 1.25), ("Space", 6.25), ("MetaRight", 1), ("AltRight", 1),
+     ("ControlRight", 1), ("ArrowLeft", 1), ("ArrowDown", 1), ("ArrowRight", 1)],
+]
+
+
+def build_keyboard(env):
+    kx, ky = 0.02, 0.3
+    u = 0.0205  # one key unit
+    kb = empty("Keyboard", (kx, ky, 0), parent=env)
+    box("KeyboardCase", (16 * u + 0.022, 5 * u + 0.016, 0.02), (kx, ky, 0.01), "kb_case", bevel_w=0.006, parent=kb)
+    for row, keys in enumerate(KEY_ROWS):
+        assert abs(sum(w for _, w in keys) - 16) < 1e-6, f"row {row} isn't 16u"
+        x = kx - 8 * u
+        y = ky + (2 - row) * u
+        for code, w in keys:
+            box(f"Key_{code}", (w * u - 0.0028, u - 0.0028, 0.008), (x + w * u / 2, y, 0.024), "kb_key",
+                bevel_w=0.0016, parent=kb, segments=1)
+            x += w * u
+    kb.rotation_euler = (0, 0, math.radians(-2))
+
+
 def build_desk():
     env = empty("Desk")
     # large enough that the full-window camera never sees past its edges
     box("DeskTop", (2.4, 1.4, 0.03), (0, 0.05, -0.015), "desk_wood", bevel_w=0.004, parent=env)
     box("CuttingMat", (0.6, 0.45, 0.002), (0, -0.02, 0.001), "mat", bevel_w=0.0008, parent=env)
 
-    # keyboard behind the mat
-    kb = empty("Keyboard", (0.02, 0.3, 0), parent=env)
-    box("KeyboardCase", (0.36, 0.12, 0.022), (0.02, 0.3, 0.011), "kb_case", bevel_w=0.006, parent=kb)
-    pitch = 0.0225
-    for row in range(5):
-        for col in range(15):
-            accent = (row, col) in ((0, 0), (2, 14), (3, 14))
-            w = 0.019
-            box(f"Key{row}_{col}", (w, 0.018, 0.008), (0.02 - 0.157 + col * pitch, 0.3 + 0.045 - row * pitch, 0.026),
-                "kb_accent" if accent else "kb_key", bevel_w=0.002, parent=kb, segments=1)
-    kb.rotation_euler = (0, 0, math.radians(-2))
+    build_keyboard(env)
 
-    # monitor at the back, screen facing the viewer
-    box("MonitorFoot", (0.22, 0.15, 0.008), (0.02, 0.56, 0.004), "monitor", bevel_w=0.004, parent=env)
-    box("MonitorNeck", (0.045, 0.03, 0.2), (0.02, 0.6, 0.1), "monitor", bevel_w=0.006, parent=env)
-    box("MonitorBody", (0.62, 0.028, 0.37), (0.02, 0.585, 0.28), "monitor", bevel_w=0.008, parent=env)
-    plane("MonitorScreen", (0.6, 0.35), (0.02, 0.5705, 0.28), "screen", rotation=(math.radians(90), 0, 0), parent=env)
+    # monitor at the back, screen facing the viewer (group "Monitor" is clickable: it's the terminal)
+    mon = empty("Monitor", (0.02, 0.585, 0.28), parent=env)
+    box("MonitorFoot", (0.22, 0.15, 0.008), (0.02, 0.56, 0.004), "monitor", bevel_w=0.004, parent=mon)
+    box("MonitorNeck", (0.045, 0.03, 0.2), (0.02, 0.6, 0.1), "monitor", bevel_w=0.006, parent=mon)
+    box("MonitorBody", (0.62, 0.028, 0.37), (0.02, 0.585, 0.28), "monitor", bevel_w=0.008, parent=mon)
+    plane("MonitorScreen", (0.6, 0.35), (0.02, 0.5705, 0.28), "screen", rotation=(math.radians(90), 0, 0), parent=mon)
 
     # architect's swing-arm lamp, head aimed at the mat
     base = (-0.47, 0.28, 0.0)

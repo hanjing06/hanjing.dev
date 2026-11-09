@@ -49,6 +49,7 @@ export default function DeskScene({ fonts, events, controllerRef, onError, class
         onSelect: (...args) => eventsRef.current.onSelect?.(...args),
         onOpen: (...args) => eventsRef.current.onOpen?.(...args),
         onHint: (...args) => eventsRef.current.onHint?.(...args),
+        onMode: (...args) => eventsRef.current.onMode?.(...args),
       });
       dispose = () => engine.dispose();
       await engine.load();

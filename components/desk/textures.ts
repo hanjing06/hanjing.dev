@@ -168,64 +168,6 @@ export function woodTexture() {
   return toTexture(el);
 }
 
-/** The monitor: an editor open on the Sunstang VCU firmware. Also its emissive map. */
-export function screenTexture() {
-  const { el, ctx } = canvas(1600, 934);
-  ctx.fillStyle = '#14171c';
-  ctx.fillRect(0, 0, el.width, el.height);
-  // title bar + file tree + status bar
-  ctx.fillStyle = '#1c2027';
-  ctx.fillRect(0, 0, el.width, 46);
-  ctx.fillRect(0, 46, 300, el.height - 92);
-  ctx.fillStyle = '#2b6cb0';
-  ctx.fillRect(0, el.height - 46, el.width, 46);
-  ctx.font = `24px ${MONO}`;
-  ctx.fillStyle = '#9aa5b1';
-  ctx.fillText('vcu.c — sunstang-vcu-2026', 330, 31);
-  const tree = ['▾ sunstang-vcu-2026', '  ▾ firmware', '    can.c', '    vcu.c', '    pedals.c', '    hv_enable.c', '  ▾ hardware', '    vcu.kicad_pcb', '    vcu.kicad_sch', '  README.md'];
-  tree.forEach((line, i) => {
-    ctx.fillStyle = line.trim() === 'vcu.c' ? '#e6edf3' : '#7d8794';
-    ctx.fillText(line, 18, 90 + i * 36);
-  });
-  ctx.fillStyle = '#e6edf3';
-  ctx.fillText('main  ✓ build passed   Ln 14, Col 9   UTF-8   C', 20, el.height - 15);
-
-  const code: [string, string][][] = [
-    [['// vcu.c: vehicle control unit, sunstang 2026', '#6a9955']],
-    [['#include ', '#c586c0'], ['"stm32f3xx_hal.h"', '#ce9178']],
-    [['#include ', '#c586c0'], ['"can.h"', '#ce9178']],
-    [],
-    [['static ', '#569cd6'], ['vcu_state_t ', '#4ec9b0'], ['state = ', '#d4d4d4'], ['VCU_IDLE', '#4fc1ff'], [';', '#d4d4d4']],
-    [],
-    [['void ', '#569cd6'], ['vcu_tick', '#dcdcaa'], ['(', '#d4d4d4'], ['void', '#569cd6'], [') {', '#d4d4d4']],
-    [['  uint16_t ', '#569cd6'], ['throttle = ', '#d4d4d4'], ['pedal_read', '#dcdcaa'], ['(', '#d4d4d4'], ['PEDAL_THROTTLE', '#4fc1ff'], [');', '#d4d4d4']],
-    [['  if ', '#c586c0'], ['(!', '#d4d4d4'], ['hv_interlock_ok', '#dcdcaa'], ['()) {', '#d4d4d4']],
-    [['    state = ', '#d4d4d4'], ['VCU_FAULT', '#4fc1ff'], [';', '#d4d4d4']],
-    [['    return', '#c586c0'], [';', '#d4d4d4']],
-    [['  }', '#d4d4d4']],
-    [['  can_send', '#dcdcaa'], ['(', '#d4d4d4'], ['CAN_ID_THROTTLE', '#4fc1ff'], [', throttle);', '#d4d4d4']],
-    [['  // TODO: regen braking curve', '#6a9955']],
-    [['}', '#d4d4d4']],
-  ];
-  code.forEach((tokens, i) => {
-    const y = 96 + i * 40;
-    ctx.fillStyle = '#4b5563';
-    ctx.textAlign = 'right';
-    ctx.fillText(String(i + 1), 380, y);
-    ctx.textAlign = 'left';
-    let x = 410;
-    for (const [text, color] of tokens) {
-      ctx.fillStyle = color;
-      ctx.fillText(text, x, y);
-      x += ctx.measureText(text).width;
-    }
-  });
-  // cursor line
-  ctx.fillStyle = 'rgba(255,255,255,0.04)';
-  ctx.fillRect(300, 96 + 13 * 40 - 28, el.width - 300, 38);
-  return toTexture(el);
-}
-
 /** Student card face. */
 export function cardTexture(fonts: DeskFonts) {
   const { el, ctx } = canvas(856, 540);
