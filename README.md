@@ -10,6 +10,7 @@ npm run dev        # http://localhost:3000
 npm run build      # production build
 npm run lint
 npm run typecheck
+npm run models     # regenerate the home-page pencil-case model (needs Blender on PATH)
 ```
 
 ## Project structure
@@ -17,7 +18,7 @@ npm run typecheck
 ```
 app/                     Routes only (Next.js App Router)
   layout.tsx             Root layout: global metadata, JSON-LD, navbar, footer
-  page.tsx               Home
+  page.tsx               Home (currently just the pencil-case hero)
   about/ contact/        Static pages (layout.tsx holds metadata, page.tsx the UI)
   projects/
     page.tsx             Projects index, rendered from content/projects.ts
@@ -28,6 +29,8 @@ app/                     Routes only (Next.js App Router)
   sitemap.ts robots.ts   Generated from content/ + lib/site.ts
   opengraph-image.tsx    Social preview image
   api/health/            Health-check endpoint
+
+blender/desk_scene.py    Blender script that models the home-page pencil case -> public/desk/desk.glb
 
 components/              Reusable UI (Navbar, Footer, BlogPost,
                          ArticleTableOfContents, ExpandableImage, ...)
@@ -43,6 +46,7 @@ public/                  Static assets, grouped by page
   about/                 About-page images
   blog/<slug>/           Images for each blog post
   projects/<slug>/       Images for each project
+  desk/                  Generated pencil-case model for the home hero (don't edit by hand)
   icons/                 Shared icons
   websitelogo.png        Favicon
 ```
@@ -92,3 +96,15 @@ The blog is currently `noIndex`, so search engines don't index it and it's left 
 ## Changing personal details
 
 Email, GitHub, LinkedIn, and the site URL are all in `lib/site.ts`.
+
+## Pencil-case hero (home page)
+
+The home page is a three.js prototype of a cozy software-engineering desk at dusk: window-mullion shadows, an architect's lamp, a keyboard, monitor, mug, and a cutting mat with the 2000s pencil case on it. Click the case to open it, drag the parts out onto the mat (tap on touch screens), and drop them back in. Each part is a page of the site; its card links there, or double-click the part. Hovering anything outlines it in white, and a subtle title at the bottom names it and where it leads. The 3D version fills the whole window: the navbar and footer are covered and the page doesn't scroll.
+
+**Lite version:** low-powered machines (no WebGL, 4 or fewer cores with 4 GB or less memory, reduced motion, or data saver) get a plain React grid with the same links, and three.js never downloads. The lite version keeps the normal navbar and footer. A toggle in the hero switches either way and is remembered per browser.
+
+- **Parts and where they lead:** `components/desk/items.ts`. Project and blog text comes from `content/projects.ts` and `content/posts.ts`. To add a part, model an `Item_<id>` group in the Blender script, run `npm run models`, and add it here.
+- **Modeling:** `blender/desk_scene.py` builds the case (hollow body, hinged `CaseLid`, `CaseTape`), the parts (`Item_*`, exported in their spots inside the case), and the desk, then exports `public/desk/desk.glb`. Materials are named by role; keep those names stable.
+- **Look:** `components/desk/look.ts` maps roles to three.js materials and sets up the lighting (window sun with a shadow-only window frame, lamp spotlight, monitor glow), bloom, and vignette.
+- **Textures** (label tape, cutting mat, oak, monitor code, student card, note, thermal print, sticky note) are drawn on canvases in `components/desk/textures.ts`. Label text is `LABEL_STRIPS`; strip lengths must match `LABEL_LENGTHS` in the Blender script.
+- **Interaction:** `components/desk/engine.ts` (lid, drag and drop, tap-out, double-click, camera framing, render loop). The outline is `components/desk/SilhouetteOutlinePass.ts`. `components/desk/DeskHero.tsx` holds the overlays and the lite version.
