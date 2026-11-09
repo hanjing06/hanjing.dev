@@ -8,7 +8,6 @@ import {
   matTexture,
   noteTexture,
   printTexture,
-  screenTexture,
   stickyTexture,
   tapeTextures,
   woodTexture,
@@ -32,6 +31,8 @@ type LookContext = {
   renderer: THREE.WebGLRenderer;
   model: THREE.Object3D;
   fonts: DeskFonts;
+  /** Live texture for the monitor (the terminal). */
+  screenMap: THREE.Texture;
   /** Add a post-processing pass (inserted before the output + outline). */
   addPass: (pass: Pass) => void;
   /** Register a GPU resource to free when the scene is disposed. */
@@ -46,7 +47,7 @@ const metal = (color: string, roughness = 0.3) => new THREE.MeshStandardMaterial
 const matte = (color: string, roughness = 0.7) => new THREE.MeshStandardMaterial({ color, roughness });
 const mapped = (map: THREE.Texture, roughness = 0.85) => new THREE.MeshStandardMaterial({ map, roughness });
 
-function material(role: string, fonts: DeskFonts, track: LookContext['track']): THREE.Material | undefined {
+function material(role: string, { fonts, screenMap, track }: Pick<LookContext, 'fonts' | 'screenMap' | 'track'>): THREE.Material | undefined {
   switch (role) {
     // pencil case
     case 'case_body': return plastic('#6cc2f7');
@@ -86,13 +87,11 @@ function material(role: string, fonts: DeskFonts, track: LookContext['track']): 
     case 'desk_wood': return new THREE.MeshPhysicalMaterial({ map: track(woodTexture()), roughness: 0.5, clearcoat: 0.25, clearcoatRoughness: 0.5 });
     case 'mat': return mapped(track(matTexture(fonts)), 0.92);
     case 'kb_case': return matte('#3a3836', 0.6);
-    case 'kb_key': return matte('#ece6da', 0.55);
-    case 'kb_accent': return plastic('#6cc2f7', 0.45);
+    // keycaps are set up in keyboard.ts (legend atlas + key presses)
     case 'monitor': return matte('#1c1d1f', 0.45);
-    case 'screen': {
-      const map = track(screenTexture());
-      return new THREE.MeshStandardMaterial({ map, emissiveMap: map, emissive: '#ffffff', emissiveIntensity: 0.9, roughness: 0.25 });
-    }
+    case 'screen':
+      // unlit: a glowing display, no lamp glare across the text
+      return new THREE.MeshBasicMaterial({ map: screenMap, color: '#e9edf2' });
     case 'lamp': return new THREE.MeshPhysicalMaterial({ color: '#efe9dc', roughness: 0.4, clearcoat: 0.8, side: THREE.DoubleSide });
     case 'lamp_joint': return metal('#b9bec4', 0.3);
     case 'lamp_bulb': return new THREE.MeshStandardMaterial({ color: '#fff2d6', emissive: '#ffd9a0', emissiveIntensity: 6 });
@@ -195,7 +194,7 @@ function windowGobo(sunDirection: THREE.Vector3, centre: THREE.Vector3, track: L
   return group;
 }
 
-export function applyLook({ scene, renderer, model, fonts, addPass, track }: LookContext) {
+export function applyLook({ scene, renderer, model, fonts, screenMap, addPass, track }: LookContext) {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = true;
@@ -217,7 +216,7 @@ export function applyLook({ scene, renderer, model, fonts, addPass, track }: Loo
     const role = mesh.userData.role as string;
     if (role === 'desk_wood' || role === 'mat') planarUVs(mesh);
     if (!byRole.has(role)) {
-      const created = material(role, fonts, track);
+      const created = material(role, { fonts, screenMap, track });
       byRole.set(role, created && track(created));
     }
     const replacement = byRole.get(role);

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import DeskScene, { type DeskController } from './DeskScene';
-import type { DeskEvents, DeskTarget } from './engine';
+import type { DeskEvents, DeskMode, DeskTarget } from './engine';
 import { ALL_ITEMS, CONTACT_ITEM, getDeskItem } from './items';
 import type { DeskFonts } from './textures';
 
@@ -71,6 +71,7 @@ type Caption = { title: string; detail: string };
 function captionFor(target: DeskTarget, lidOpen: boolean, inCase: boolean): Caption | null {
   if (target === 'case') return { title: 'the pencil case', detail: lidOpen ? 'click to close it' : 'click to open it' };
   if (target === 'contact') return { title: CONTACT_ITEM.title, detail: 'contact · click to read' };
+  if (target === 'monitor') return { title: 'terminal', detail: 'click it or start typing' };
   const item = getDeskItem(target);
   if (!item) return null;
   return { title: item.title, detail: `${item.kicker} · ${inCase ? 'drag it out' : 'double-click to visit'}` };
@@ -91,6 +92,7 @@ export default function DeskHero() {
   const [hovered, setHovered] = useState<Caption | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [hint, setHint] = useState('setting up the desk…');
+  const [deskMode, setDeskMode] = useState<DeskMode>('desk');
   const controllerRef = useRef<DeskController | null>(null);
 
   const events = useMemo<DeskEvents>(
@@ -99,6 +101,7 @@ export default function DeskHero() {
       onSelect: setSelected,
       onOpen: (href) => router.push(href),
       onHint: setHint,
+      onMode: setDeskMode,
     }),
     [router],
   );
@@ -116,8 +119,11 @@ export default function DeskHero() {
     };
   }, [fullscreen]);
 
-  const item = selected ? getDeskItem(selected) : null;
-  const caption = hovered ?? { title: 'Hanjing Lin', detail: hint };
+  const typing = deskMode === 'terminal';
+  const item = selected && !typing ? getDeskItem(selected) : null;
+  const caption = typing
+    ? { title: 'terminal', detail: 'type help · esc to go back' }
+    : (hovered ?? { title: 'Hanjing Lin', detail: hint });
 
   if (mode === null) {
     // server render / first paint: the desk's background, so the navbar never flashes

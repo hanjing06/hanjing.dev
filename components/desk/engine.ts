@@ -4,20 +4,25 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { CONTACT_ITEM, DESK_ITEMS } from './items';
+import { setupKeyboard, type DeskKeyboard } from './keyboard';
 import { applyLook } from './look';
 import { OUTLINE_LAYER, SilhouetteOutlinePass } from './SilhouetteOutlinePass';
+import { Terminal, TerminalScreen } from './terminal';
 import type { DeskFonts } from './textures';
 
 const MODEL_URL = '/desk/desk.glb';
 
 /** Hover/selection targets reported to React. */
-export type DeskTarget = string; // an item id, 'case', or 'contact'
+export type DeskTarget = string; // an item id, 'case', 'contact', or 'monitor'
+export type DeskMode = 'desk' | 'terminal';
 
 export type DeskEvents = {
   onHover?: (target: DeskTarget | null, state: { lidOpen: boolean; inCase: boolean }) => void;
   onSelect?: (id: string | null) => void;
   onOpen?: (href: string) => void;
   onHint?: (hint: string) => void;
+  /** 'terminal' while the camera is on the monitor and typing goes to the terminal. */
+  onMode?: (mode: DeskMode) => void;
 };
 
 // ---------------------------------------------------------------- layout (metres, three.js axes)
@@ -43,6 +48,20 @@ const NO_SHADOW_CAST = new Set(['label_1', 'label_2', 'screen', 'sticky_face', '
 const MAX_PIXEL_RATIO = 1.5;
 const DRAG_THRESHOLD_PX = 5;
 const DOUBLE_CLICK_MS = 350;
+
+// terminal view: frame the monitor and the keyboard in front of it
+const MONITOR_PITCH = THREE.MathUtils.degToRad(30);
+const MONITOR_TARGET = new THREE.Vector3(0.02, 0.2, -0.46);
+const MONITOR_FRAME: [number, number, number][] = [
+  [-0.29, 0.465, -0.571], [0.33, 0.465, -0.571], [-0.29, 0.095, -0.571], [0.33, 0.095, -0.571], // screen
+  [-0.16, 0.03, -0.24], [0.2, 0.03, -0.24], [-0.16, 0.03, -0.36], [0.2, 0.03, -0.36], // keyboard
+];
+const CURSOR_BLINK_S = 0.53;
+const NAVIGATE_DELAY_MS = 450;
+
+const isEditable = (target: EventTarget | null) =>
+  target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
+const isControl = (target: EventTarget | null) => target instanceof HTMLButtonElement || target instanceof HTMLAnchorElement;
 
 type Item = {
   id: string;
@@ -93,6 +112,16 @@ export class DeskEngine {
   private resources: Disposable[] = [];
   private tweens: Tween[] = [];
 
+  // typing: the desk keyboard mirrors real keys, the monitor runs a terminal
+  private keyboard: DeskKeyboard | null = null;
+  private terminal = new Terminal();
+  private screen = new TerminalScreen();
+  private mode: DeskMode = 'desk';
+  private viewMix = 0;
+  private monitorPosition = new THREE.Vector3();
+  private cursorClock = 0;
+  private cursorOn = true;
+
   private items: Item[] = [];
   private caseRoot: THREE.Object3D | null = null;
   private lid: THREE.Object3D | null = null;
@@ -130,6 +159,7 @@ export class DeskEngine {
     this.outline.enabled = false;
     this.composer.addPass(this.outline);
 
+    this.screen.draw(this.terminal, true);
     this.timer.connect(document);
     this.resizeObserver = new ResizeObserver(this.resize);
     this.resizeObserver.observe(container);
@@ -142,6 +172,9 @@ export class DeskEngine {
     canvas.addEventListener('pointerup', this.onPointerUp);
     canvas.addEventListener('pointercancel', this.onPointerCancel);
     canvas.addEventListener('pointerleave', this.onPointerLeave);
+    window.addEventListener('keydown', this.onKeyDown);
+    window.addEventListener('keyup', this.onKeyUp);
+    window.addEventListener('blur', this.onBlur);
   }
 
   async load() {
@@ -163,6 +196,8 @@ export class DeskEngine {
     this.lid = model.getObjectByName('CaseLid') ?? null;
     this.tapeRoot = model.getObjectByName(CONTACT_ITEM.node) ?? null;
     if (this.caseRoot) this.pickRoots.set(this.caseRoot, 'case');
+    const monitor = model.getObjectByName('Monitor');
+    if (monitor) this.pickRoots.set(monitor, 'monitor');
     if (this.tapeRoot) this.pickRoots.set(this.tapeRoot, 'contact');
     for (const info of DESK_ITEMS) {
       const root = model.getObjectByName(info.node);
@@ -182,14 +217,22 @@ export class DeskEngine {
       renderer: this.renderer,
       model,
       fonts: this.fonts,
+      screenMap: this.screen.texture,
       addPass: (pass) => this.composer.insertPass(pass, this.composer.passes.indexOf(this.output)),
       track: (resource) => {
         this.resources.push(resource);
         return resource;
       },
     });
+    const keyboardRoot = model.getObjectByName('Keyboard');
+    if (keyboardRoot) {
+      this.keyboard = setupKeyboard(keyboardRoot, this.fonts, (resource) => {
+        this.resources.push(resource);
+        return resource;
+      });
+    }
     this.renderer.compile(this.scene, this.camera);
-    this.events.onHint?.('click the pencil case to open it');
+    this.events.onHint?.('click the pencil case, or start typing');
   }
 
   /** Put every part back in the case and close the lid. */
@@ -213,6 +256,10 @@ export class DeskEngine {
     canvas.removeEventListener('pointerup', this.onPointerUp);
     canvas.removeEventListener('pointercancel', this.onPointerCancel);
     canvas.removeEventListener('pointerleave', this.onPointerLeave);
+    window.removeEventListener('keydown', this.onKeyDown);
+    window.removeEventListener('keyup', this.onKeyUp);
+    window.removeEventListener('blur', this.onBlur);
+    this.screen.dispose();
     for (const pass of this.composer.passes) pass.dispose();
     this.composer.dispose();
     for (const resource of this.resources) resource.dispose();
@@ -277,6 +324,15 @@ export class DeskEngine {
 
   private click(root: THREE.Object3D | null, touch: boolean) {
     const target = root ? this.pickRoots.get(root) : null;
+    if (this.mode === 'terminal') {
+      // in the terminal view, clicking anything but the monitor goes back to the desk
+      if (target !== 'monitor') this.setMode('desk');
+      return;
+    }
+    if (target === 'monitor') {
+      this.setMode('terminal');
+      return;
+    }
     if (!root || !target) {
       this.events.onSelect?.(null);
       return;
@@ -332,7 +388,7 @@ export class DeskEngine {
   private onPointerMove = (event: PointerEvent) => {
     this.updateNdc(event);
     const down = this.down;
-    if (down && !this.drag && !down.touch && Math.hypot(event.clientX - down.x, event.clientY - down.y) > DRAG_THRESHOLD_PX) {
+    if (down && !this.drag && !down.touch && this.mode === 'desk' && Math.hypot(event.clientX - down.x, event.clientY - down.y) > DRAG_THRESHOLD_PX) {
       const item = this.items.find((i) => i.root === down.root);
       if (item && (item.out || this.lidOpen)) this.beginDrag(item, event);
     }
@@ -403,6 +459,119 @@ export class DeskEngine {
     );
   }
 
+  // ---------------------------------------------------------------- keyboard + terminal
+
+  private setMode(mode: DeskMode) {
+    if (mode === this.mode) return;
+    this.mode = mode;
+    this.cursorOn = true;
+    this.cursorClock = 0;
+    this.screen.draw(this.terminal, true);
+    if (mode === 'terminal') this.events.onSelect?.(null);
+    this.events.onMode?.(mode);
+  }
+
+  private redraw() {
+    this.cursorOn = true;
+    this.cursorClock = 0;
+    this.screen.draw(this.terminal, true);
+  }
+
+  private onKeyDown = (event: KeyboardEvent) => {
+    if (!this.running || this.disposed || isEditable(event.target)) return;
+    this.keyboard?.press(event.code);
+    // leave focused buttons/links and browser shortcuts alone
+    if (isControl(event.target) || event.metaKey) return;
+    const t = this.terminal;
+    if (event.ctrlKey) {
+      if (this.mode === 'terminal' && event.key.toLowerCase() === 'c') {
+        t.cancel();
+        this.redraw();
+        event.preventDefault();
+      }
+      return;
+    }
+    if (event.key === 'Escape') {
+      if (this.mode === 'terminal') this.setMode('desk');
+      return;
+    }
+    if (event.key.length === 1) {
+      this.setMode('terminal');
+      t.type(event.key);
+      this.redraw();
+      event.preventDefault();
+      return;
+    }
+    if (this.mode !== 'terminal') return;
+    switch (event.key) {
+      case 'Backspace':
+        t.backspace();
+        break;
+      case 'Enter':
+        this.runAction(t.submit());
+        break;
+      case 'ArrowUp':
+        t.historyStep(-1);
+        break;
+      case 'ArrowDown':
+        t.historyStep(1);
+        break;
+      case 'Tab':
+        t.complete();
+        break;
+      default:
+        return;
+    }
+    this.redraw();
+    event.preventDefault();
+  };
+
+  private onKeyUp = (event: KeyboardEvent) => {
+    this.keyboard?.release(event.code);
+  };
+
+  private onBlur = () => {
+    this.keyboard?.releaseAll();
+  };
+
+  private runAction(action: ReturnType<Terminal['submit']>) {
+    if (!action) return;
+    if (action.type === 'exit') {
+      window.setTimeout(() => this.setMode('desk'), this.reducedMotion ? 0 : 400);
+    } else if (action.type === 'open-case') {
+      window.setTimeout(() => {
+        this.setMode('desk');
+        this.setLid(true);
+      }, this.reducedMotion ? 0 : 400);
+    } else if (action.type === 'navigate') {
+      window.setTimeout(() => this.events.onOpen?.(action.href), NAVIGATE_DELAY_MS);
+    }
+  }
+
+  /** Camera position that frames the monitor and keyboard for the current aspect. */
+  private fitMonitorView() {
+    const dir = new THREE.Vector3(0, Math.sin(MONITOR_PITCH), Math.cos(MONITOR_PITCH));
+    const points = MONITOR_FRAME.map((p) => new THREE.Vector3(...p));
+    const cam = this.camera.clone();
+    const fits = (d: number) => {
+      cam.position.copy(dir).multiplyScalar(d).add(MONITOR_TARGET);
+      cam.lookAt(MONITOR_TARGET);
+      cam.updateMatrixWorld();
+      return points.every((p) => {
+        const q = p.clone().project(cam);
+        return Math.abs(q.x) <= 0.92 && Math.abs(q.y) <= 0.86 && q.z < 1;
+      });
+    };
+    let lo = 0.2;
+    let hi = 4;
+    for (let i = 0; i < 24; i += 1) {
+      const mid = (lo + hi) / 2;
+      if (fits(mid)) hi = mid;
+      else lo = mid;
+    }
+    this.monitorPosition.copy(dir).multiplyScalar(hi).add(MONITOR_TARGET);
+  }
+
   // ---------------------------------------------------------------- loop
 
   private tween(obj: THREE.Object3D, dur: number, update: (k: number) => void, done?: () => void) {
@@ -439,6 +608,7 @@ export class DeskEngine {
     this.camera.updateProjectionMatrix();
     const halfWidth = this.camera.aspect >= 1 ? FRAME_HALF_WIDTH.wide : FRAME_HALF_WIDTH.narrow;
     this.distance = halfWidth / (Math.tan(THREE.MathUtils.degToRad(FOV / 2)) * this.camera.aspect);
+    this.fitMonitorView();
   };
 
   private loop = () => {
@@ -457,14 +627,31 @@ export class DeskEngine {
       }
     }
 
-    // camera: fixed framing + gentle parallax (held still while dragging)
+    // camera: desk framing (with gentle parallax) blended with the terminal view
     const inView = Math.abs(this.ndc.x) <= 1 && Math.abs(this.ndc.y) <= 1;
     const goal = this.reducedMotion || !inView || this.drag ? new THREE.Vector2() : this.ndc;
     this.parallax.lerp(goal, 1 - Math.exp(-dt * 2.5));
     const yaw = this.parallax.x * 0.03;
     const pitch = PITCH + this.parallax.y * 0.015;
-    this.camera.position.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).multiplyScalar(this.distance).add(TARGET);
-    this.camera.lookAt(TARGET);
+    const deskPosition = new THREE.Vector3(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch))
+      .multiplyScalar(this.distance)
+      .add(TARGET);
+    const wanted = this.mode === 'terminal' ? 1 : 0;
+    this.viewMix = this.reducedMotion ? wanted : this.viewMix + (wanted - this.viewMix) * (1 - Math.exp(-dt * 3.2));
+    const mix = this.viewMix * this.viewMix * (3 - 2 * this.viewMix);
+    this.camera.position.lerpVectors(deskPosition, this.monitorPosition, mix);
+    this.camera.lookAt(new THREE.Vector3().lerpVectors(TARGET, MONITOR_TARGET, mix));
+
+    // keys spring back; the terminal cursor blinks while it has focus
+    this.keyboard?.update(dt);
+    if (this.mode === 'terminal') {
+      this.cursorClock += dt;
+      if (this.cursorClock > CURSOR_BLINK_S) {
+        this.cursorClock = 0;
+        this.cursorOn = !this.cursorOn;
+        this.screen.draw(this.terminal, this.cursorOn);
+      }
+    }
 
     // dragging: ease toward the pointer, tilting with motion
     if (this.drag) {
