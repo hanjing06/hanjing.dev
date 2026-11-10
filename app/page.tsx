@@ -1,5 +1,5 @@
-import DeskHero from '@/components/desk/DeskHero';
+import HomeExperience from '@/components/home/HomeExperience';
 
 export default function Home() {
-  return <DeskHero />;
+  return <HomeExperience />;
 }

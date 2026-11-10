@@ -1,32 +1,30 @@
 'use client';
 
-import { useEffect, useRef, useState, type RefObject } from 'react';
+import { useEffect, useRef } from 'react';
 import type { DeskEvents } from './engine';
 import type { DeskFonts } from './textures';
-
-export type DeskController = { packUp: () => void };
 
 type DeskSceneProps = {
   fonts: DeskFonts;
   events: DeskEvents;
-  /** Filled with imperative controls once the scene has loaded. */
-  controllerRef?: RefObject<DeskController | null>;
-  /** Called if WebGL or the model fails, so the page can fall back to lite mode. */
+  /** Download progress of the model, 0 to 1. */
+  onProgress?: (fraction: number) => void;
+  /** The scene has loaded and drawn its first frames. */
+  onReady?: () => void;
+  /** WebGL or the model failed to load. */
   onError?: () => void;
   className?: string;
 };
 
 /** Mounts the three.js desk. The engine (and three.js) is code-split and only loads here. */
-export default function DeskScene({ fonts, events, controllerRef, onError, className = '' }: DeskSceneProps) {
+export default function DeskScene({ fonts, events, onProgress, onReady, onError, className = '' }: DeskSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const eventsRef = useRef(events);
-  const errorRef = useRef(onError);
-  const [ready, setReady] = useState(false);
+  // keep callbacks in refs so React re-renders never rebuild the scene
+  const callbacks = useRef({ events, onProgress, onReady, onError });
 
   useEffect(() => {
-    eventsRef.current = events;
-    errorRef.current = onError;
-  }, [events, onError]);
+    callbacks.current = { events, onProgress, onReady, onError };
+  }, [events, onProgress, onReady, onError]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -43,38 +41,30 @@ export default function DeskScene({ fonts, events, controllerRef, onError, class
       ]).catch(() => undefined);
       const { DeskEngine } = await import('./engine');
       if (cancelled) return;
-      // forward events through a ref so React re-renders never rebuild the scene
+      const events = () => callbacks.current.events;
       const engine = new DeskEngine(container, fonts, {
-        onHover: (...args) => eventsRef.current.onHover?.(...args),
-        onSelect: (...args) => eventsRef.current.onSelect?.(...args),
-        onOpen: (...args) => eventsRef.current.onOpen?.(...args),
-        onHint: (...args) => eventsRef.current.onHint?.(...args),
-        onMode: (...args) => eventsRef.current.onMode?.(...args),
-        onSimple: () => eventsRef.current.onSimple?.(),
+        onHover: (...args) => events().onHover?.(...args),
+        onSelect: (...args) => events().onSelect?.(...args),
+        onOpen: (...args) => events().onOpen?.(...args),
+        onHint: (...args) => events().onHint?.(...args),
+        onMode: (...args) => events().onMode?.(...args),
+        onSimple: () => events().onSimple?.(),
       });
       dispose = () => engine.dispose();
-      await engine.load();
+      await engine.load((fraction) => callbacks.current.onProgress?.(fraction));
       if (cancelled) return;
-      if (controllerRef) controllerRef.current = { packUp: () => engine.packUp() };
-      setReady(true);
+      // give the first frames (and shader compiles) a moment before revealing
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      if (!cancelled) callbacks.current.onReady?.();
     })().catch(() => {
-      if (!cancelled) errorRef.current?.();
+      if (!cancelled) callbacks.current.onError?.();
     });
 
     return () => {
       cancelled = true;
-      if (controllerRef) controllerRef.current = null;
       dispose?.();
     };
-  }, [fonts, controllerRef]);
+  }, [fonts]);
 
-  return (
-    <div ref={containerRef} className={`relative ${className}`} aria-hidden="true">
-      {!ready ? (
-        <p className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm tracking-widest text-white/60">
-          setting up the desk…
-        </p>
-      ) : null}
-    </div>
-  );
+  return <div ref={containerRef} className={`relative ${className}`} aria-hidden="true" />;
 }

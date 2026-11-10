@@ -68,3 +68,18 @@ figcaption {
     transform: translateY(4px);
   }
 }
+
+/* start screen steam (components/home/gates/LampGate.tsx) */
+@keyframes gate-steam {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  40% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+}

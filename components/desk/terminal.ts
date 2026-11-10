@@ -370,8 +370,9 @@ export class Terminal {
         this.reset(this.mode);
         return null;
       case 'simple':
+      case 'normal':
       case 'lite':
-        this.print('switching to the simple version…', 'accent');
+        this.print('taking you back to the start…', 'accent');
         return { type: 'simple' };
       // small extras, not listed in help
       case 'pwd':
