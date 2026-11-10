@@ -34,7 +34,7 @@ export default function OpenGraphImage() {
             width: "100%",
           }}
         >
-          <div style={{ display: "flex", fontSize: 30, letterSpacing: "0.08em" }}>
+          <div style={{ display: "flex", fontSize: 30 }}>
             HANJING.DEV
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>

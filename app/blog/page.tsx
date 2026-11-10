@@ -16,7 +16,7 @@ export default function BlogPage() {
       >
         <motion.h1
           variants={fadeUp}
-          className="mb-10 text-5xl tracking-tight text-black sm:text-6xl"
+          className="mb-10 text-5xl text-black sm:text-6xl"
         >
           hanjing&apos;s blog.
         </motion.h1>
@@ -32,13 +32,13 @@ export default function BlogPage() {
               className="group inline-block text-black"
               aria-label={`Read ${post.listTitle.replace(/\.$/, '')}`}
             >
-              <p className="text-lg font-semibold tracking-normal text-black transition-colors duration-200 group-hover:text-neutral-600">
+              <p className="text-lg font-semibold text-black transition-colors duration-200 group-hover:text-neutral-600">
                 {post.listTitle}
               </p>
-              <p className="text-lg tracking-normal text-neutral-800">
+              <p className="text-lg text-neutral-800">
                 {post.listSubtitle}
               </p>
-              <p className="text-lg tracking-normal text-neutral-600">
+              <p className="text-lg text-neutral-600">
                 {post.dateLabel}
               </p>
             </Link>

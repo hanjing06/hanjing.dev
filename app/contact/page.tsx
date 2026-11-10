@@ -17,7 +17,7 @@ export default function Contact(){
          {/* Title */}
         <motion.h1
             variants={fadeUp}
-            className="mb-10 text-5xl tracking-tight text-black sm:text-6xl"
+            className="mb-10 text-5xl text-black sm:text-6xl"
         >
             let&apos;s talk.
         </motion.h1>
@@ -26,7 +26,7 @@ export default function Contact(){
           variants={fadeUp}
           className="space-y-10"
         >
-          <div className="flex flex-wrap items-baseline gap-x-2 text-lg tracking-normal">
+          <div className="flex flex-wrap items-baseline gap-x-2 text-lg">
             <span className="text-neutral-600">email:</span>
             <a
               href={mailto}
@@ -36,7 +36,7 @@ export default function Contact(){
             </a>
           </div>
 
-          <div className="flex flex-wrap items-baseline gap-x-2 text-lg tracking-normal">
+          <div className="flex flex-wrap items-baseline gap-x-2 text-lg">
             <span className="text-neutral-600">github:</span>
             <a
               href={site.github.profileUrl}
@@ -48,7 +48,7 @@ export default function Contact(){
             </a>
           </div>
 
-          <div className="flex flex-wrap items-baseline gap-x-2 text-lg tracking-normal">
+          <div className="flex flex-wrap items-baseline gap-x-2 text-lg">
             <span className="text-neutral-600">linkedin:</span>
             <a
               href={site.linkedin.url}
