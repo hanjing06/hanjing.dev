@@ -72,6 +72,7 @@ function captionFor(target: DeskTarget, lidOpen: boolean, inCase: boolean): Capt
   if (target === 'case') return { title: 'the pencil case', detail: lidOpen ? 'click to close it' : 'click to open it' };
   if (target === 'contact') return { title: CONTACT_ITEM.title, detail: 'contact · click to read' };
   if (target === 'monitor') return { title: 'terminal', detail: 'click it or start typing' };
+  if (target === 'sticky') return { title: 'the simple version', detail: 'click to switch to a plain page' };
   const item = getDeskItem(target);
   if (!item) return null;
   return { title: item.title, detail: `${item.kicker} · ${inCase ? 'drag it out' : 'double-click to visit'}` };
@@ -102,6 +103,7 @@ export default function DeskHero() {
       onOpen: (href) => router.push(href),
       onHint: setHint,
       onMode: setDeskMode,
+      onSimple: () => writeMode('lite'),
     }),
     [router],
   );
@@ -121,9 +123,8 @@ export default function DeskHero() {
 
   const typing = deskMode === 'terminal';
   const item = selected && !typing ? getDeskItem(selected) : null;
-  const caption = typing
-    ? { title: 'terminal', detail: 'type help · esc to go back' }
-    : (hovered ?? { title: 'Hanjing Lin', detail: hint });
+  // in the terminal the monitor explains itself, so nothing sits over the keyboard
+  const caption = typing ? null : (hovered ?? { title: 'Hanjing Lin', detail: hint });
 
   if (mode === null) {
     // server render / first paint: the desk's background, so the navbar never flashes
@@ -181,22 +182,25 @@ export default function DeskHero() {
         ))}
       </ul>
 
-      <div className="absolute right-4 top-4 flex gap-2 sm:right-6 sm:top-6">
+      {/* keyboard users: a skip link to the simple version, visible only when focused */}
+      <button
+        type="button"
+        onClick={() => writeMode('lite')}
+        className="sr-only left-4 top-4 bg-white px-3 py-2 text-sm text-black focus:not-sr-only focus:absolute sm:left-6 sm:top-6"
+      >
+        switch to the simple version
+      </button>
+
+      {!typing ? (
         <button
           type="button"
           onClick={() => controllerRef.current?.packUp()}
-          className="min-h-9 bg-white/80 px-3 text-sm text-black transition-colors duration-200 hover:bg-white"
+          className="absolute right-4 top-4 min-h-9 bg-white/80 px-3 text-sm text-black transition-colors duration-200 hover:bg-white sm:right-6 sm:top-6"
         >
           put everything back
         </button>
-        <button
-          type="button"
-          onClick={() => writeMode('lite')}
-          className="min-h-9 bg-white/80 px-3 text-sm text-black transition-colors duration-200 hover:bg-white"
-        >
-          lite version
-        </button>
-      </div>
+      ) : null}
+
 
       {item ? (
         <div className="absolute left-4 right-4 top-16 flex flex-col gap-1.5 border border-black/10 bg-white p-4 sm:bottom-6 sm:left-auto sm:right-6 sm:top-auto sm:w-[340px]">
@@ -220,15 +224,17 @@ export default function DeskHero() {
       ) : null}
 
       {/* subtle title: names what you're pointing at and where it leads */}
-      <div
-        aria-live="polite"
-        className="pointer-events-none absolute inset-x-4 bottom-5 flex flex-col items-center gap-1 text-center text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.55)] sm:bottom-7"
-      >
-        <p key={caption.title} className="text-lg leading-tight tracking-wide sm:text-xl motion-safe:animate-[caption-in_0.25s_ease-out]">
-          {caption.title}
-        </p>
-        <p className={`${tapeFont.className} text-[11px] tracking-[0.2em] text-white/70 uppercase sm:text-xs`}>{caption.detail}</p>
-      </div>
+      {caption ? (
+        <div
+          aria-live="polite"
+          className="pointer-events-none absolute inset-x-4 bottom-5 flex flex-col items-center gap-1 text-center text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.55)] sm:bottom-7"
+        >
+          <p key={caption.title} className="text-lg leading-tight tracking-wide sm:text-xl motion-safe:animate-[caption-in_0.25s_ease-out]">
+            {caption.title}
+          </p>
+          <p className={`${tapeFont.className} text-[11px] tracking-[0.2em] text-white/70 uppercase sm:text-xs`}>{caption.detail}</p>
+        </div>
+      ) : null}
     </section>
   );
 }

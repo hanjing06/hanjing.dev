@@ -5,10 +5,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import ArticleTableOfContents from '@/components/ArticleTableOfContents';
 import ExpandableImage from '@/components/ExpandableImage';
+import { getProject } from '@/content/projects';
 import { articleContainer, fadeUp } from '@/lib/motion';
 
 const tags = ["Embedded Systems", "PCB Design"];
-const tools = ["KiCad", "STM32", "Embedded C", "GPIO Control", "CAN", "UART"];
+const { tools } = getProject('sunstang-vcu-2026');
 const articleSections = [
   { id: 'overview', title: 'Overview' },
   { id: 'functional-responsibilities', title: 'Functional Responsibilities' },

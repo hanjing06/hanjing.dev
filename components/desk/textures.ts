@@ -255,7 +255,7 @@ export function printTexture() {
   return toTexture(el);
 }
 
-/** Sticky note on the desk. */
+/** Sticky note on the desk: the switch to the simple version of the site. */
 export function stickyTexture(fonts: DeskFonts) {
   const { el, ctx } = canvas(512, 512);
   ctx.fillStyle = '#ffe873';
@@ -263,11 +263,11 @@ export function stickyTexture(fonts: DeskFonts) {
   ctx.fillStyle = 'rgba(0,0,0,0.05)';
   ctx.fillRect(0, 0, 512, 64);
   ctx.fillStyle = '#26315f';
-  ctx.font = `italic 64px ${fonts.serif}`;
-  ctx.fillText('to do:', 40, 150);
-  ctx.font = `italic 52px ${fonts.serif}`;
-  ctx.fillText('· leetcode x2', 40, 245);
-  ctx.fillText('· route VCU rev B', 40, 330);
-  ctx.fillText('· practice sax', 40, 415);
+  ctx.font = `italic 70px ${fonts.serif}`;
+  ctx.fillText('too much?', 44, 170);
+  ctx.font = `italic 56px ${fonts.serif}`;
+  ctx.fillText('click here for', 44, 280);
+  ctx.fillText('the simple', 44, 350);
+  ctx.fillText('version →', 44, 420);
   return toTexture(el);
 }

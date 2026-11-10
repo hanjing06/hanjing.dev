@@ -4,23 +4,11 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import ArticleTableOfContents from '@/components/ArticleTableOfContents';
 import ExpandableImage from '@/components/ExpandableImage';
+import { getProject } from '@/content/projects';
 import { articleContainer, fadeUp } from '@/lib/motion';
 
 const tags = ['Digital Logic', 'FPGA', 'FSM Design'];
-const tools = [
-  'Altera Quartus',
-  'DE1-SoC',
-  'Moore FSM',
-  'D Flip-Flops',
-  'Karnaugh Maps',
-  'Boolean Algebra',
-  'Gate-Level Design',
-  'FPGA Implementation',
-  'Testing',
-  'Debugging',
-  'Verification',
-  'Simulation',
-];
+const { tools } = getProject('moore-fsm-sequence-detector');
 const articleSections = [
   { id: 'overview', title: 'Overview' },
   { id: 'state-design', title: 'State design' },

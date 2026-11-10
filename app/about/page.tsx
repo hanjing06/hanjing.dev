@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { pageContainer, fadeUp } from '@/lib/motion';
+import { aboutParagraphs } from '@/content/about';
 import { mailto, site } from '@/lib/site';
 
 export default function About() {
@@ -37,33 +38,9 @@ export default function About() {
           </div>
 
           <div className="space-y-4 text-sm leading-relaxed tracking-wide text-neutral-700 sm:text-base md:space-y-6">
-            <p>
-              hi! im hanjing. i&apos;m a third year studying software enginerring
-              student at the university of western ontario.
-            </p>
-
-            <p>
-              i build things that revolve around computer vision, embedded
-              systems and RTOS.
-            </p>
-
-            <p>
-              currently, i&apos;m working at interninsider as a creative. i&apos;m
-              focusing on learning the fundamentals of hardware design and
-              grinding leetcode!
-            </p>
-
-            <p>
-              outside of regular school projects, i have shipped a PCB for my
-              teams vehicle control unit, a computer vision project for physio,
-              and a instant camera using ESP32.
-            </p>
-
-            <p>
-              besides from academics, music and art is my life. i play the
-              guitar, piano, and tenor sax. creativity and curiosity are my
-              driving factors that inspire me to keep building and creating.
-            </p>
+            {aboutParagraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
 
             <p>
               If you have any inquiries or questions, you can email me at{' '}

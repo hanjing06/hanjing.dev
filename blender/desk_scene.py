@@ -445,9 +445,10 @@ def build_desk():
     ruler.rotation_euler = (0, 0, math.radians(-3))
     finish(ruler, "ScaleRuler", "scale_ruler", env)
 
-    # sticky note on the desk
-    box("Sticky", (0.076, 0.076, 0.003), (0.41, -0.13, 0.0015), "sticky", rotation=(0, 0, math.radians(8)), parent=env)
-    plane("StickyFace", (0.076, 0.076), (0.41, -0.13, 0.0031), "sticky_face", rotation=(0, 0, math.radians(8)), parent=env)
+    # sticky note on the desk: group "StickyNote" is clickable (switches to the simple version)
+    note = empty("StickyNote", (0.41, -0.13, 0), parent=env)
+    box("Sticky", (0.076, 0.076, 0.003), (0.41, -0.13, 0.0015), "sticky", rotation=(0, 0, math.radians(8)), parent=note)
+    plane("StickyFace", (0.076, 0.076), (0.41, -0.13, 0.0031), "sticky_face", rotation=(0, 0, math.radians(8)), parent=note)
 
 
 # --------------------------------------------------------------------------- main
