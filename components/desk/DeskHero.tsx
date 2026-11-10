@@ -3,98 +3,53 @@
 import { Barlow_Condensed } from 'next/font/google';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import DeskScene, { type DeskController } from './DeskScene';
+import { useMemo, useState } from 'react';
+import DeskScene from './DeskScene';
 import type { DeskEvents, DeskMode, DeskTarget } from './engine';
 import { ALL_ITEMS, CONTACT_ITEM, getDeskItem } from './items';
 import type { DeskFonts } from './textures';
 
 const tapeFont = Barlow_Condensed({ weight: '600', subsets: ['latin'] });
-const fonts: DeskFonts = { tape: tapeFont.style.fontFamily, serif: "Lora, Georgia, serif" };
+const fonts: DeskFonts = { tape: tapeFont.style.fontFamily, serif: 'Lora, Georgia, serif' };
 
-// ---------------------------------------------------------------- 3D vs lite preference
-
-type Mode = '3d' | 'lite';
-const MODE_KEY = 'hanjing.hero-mode';
-const listeners = new Set<() => void>();
-let autoLite: boolean | null = null;
-
-/** Lite by default when WebGL is missing, the machine is low-end, or motion is reduced. */
-function prefersLite() {
-  if (autoLite !== null) return autoLite;
-  const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
-  let webgl = false;
-  try {
-    const probe = document.createElement('canvas');
-    webgl = !!(probe.getContext('webgl2') || probe.getContext('webgl'));
-  } catch {
-    webgl = false;
-  }
-  const lowEnd = (nav.hardwareConcurrency ?? 8) <= 4 && (nav.deviceMemory ?? 8) <= 4;
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  autoLite = !webgl || lowEnd || reduced || !!nav.connection?.saveData;
-  return autoLite;
-}
-
-function readMode(): Mode {
-  try {
-    const stored = localStorage.getItem(MODE_KEY);
-    if (stored === '3d' || stored === 'lite') return stored;
-  } catch {
-    // storage blocked: fall through to detection
-  }
-  return prefersLite() ? 'lite' : '3d';
-}
-
-function writeMode(mode: Mode) {
-  try {
-    localStorage.setItem(MODE_KEY, mode);
-  } catch {
-    // storage blocked: the choice lasts until reload
-  }
-  listeners.forEach((listener) => listener());
-}
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-// ---------------------------------------------------------------- hero
-
-/** The 3D version covers the whole window (navbar and footer included). */
+/** The 3D desk covers the whole window (navbar and footer included). */
 const FULLSCREEN = 'fixed inset-0 z-[60] h-[100svh] w-full overflow-hidden bg-[#1b1714]';
+const CAPTION_FONT = "font-['Times_New_Roman',Times,serif]";
 
 type Caption = { title: string; detail: string };
 
-/** The subtle title at the bottom: what you're pointing at and where it leads. */
+/** The caption at the bottom: what you're pointing at and what it does. */
 function captionFor(target: DeskTarget, lidOpen: boolean, inCase: boolean): Caption | null {
-  if (target === 'case') return { title: 'the pencil case', detail: lidOpen ? 'click to close it' : 'click to open it' };
+  if (target === 'case') return { title: 'hanjing’s everyday essentials', detail: lidOpen ? 'click to close' : 'click to open' };
   if (target === 'contact') return { title: CONTACT_ITEM.title, detail: 'contact · click to read' };
   if (target === 'monitor') return { title: 'terminal', detail: 'click it or start typing' };
-  if (target === 'sticky') return { title: 'the simple version', detail: 'click to switch to a plain page' };
+  if (target === 'sticky') return { title: 'back to the start', detail: 'choose the 3d desk or the simple site · drag to move it' };
+  if (target === 'wall-note') return { title: 'back to the start', detail: 'choose the 3d desk or the simple site' };
   const item = getDeskItem(target);
   if (!item) return null;
-  return { title: item.title, detail: `${item.kicker} · ${inCase ? 'drag it out' : 'double-click to visit'}` };
+  return { title: item.title, detail: inCase ? item.kicker : `${item.kicker} · double-click to visit` };
 }
 
-/**
- * Home-page hero: a full-window cozy desk with the 2000s pencil case. Open it,
- * drag the parts out onto the cutting mat, and each one leads to a page of
- * the site. Low-powered machines get the lite version: the same links, no
- * WebGL, with the normal navbar and footer.
- */
-export default function DeskHero() {
-  const router = useRouter();
-  const storedMode = useSyncExternalStore(subscribe, readMode, () => null);
-  const [failed, setFailed] = useState(false);
-  const mode: Mode | null = failed ? 'lite' : storedMode;
+type DeskHeroProps = {
+  /** The visitor wants to go back to the start (a sticky note, or `simple` in the terminal). */
+  onLeave: () => void;
+  onProgress?: (fraction: number) => void;
+  onReady?: () => void;
+  onError?: () => void;
+};
 
+/**
+ * The 3D home: a full-window cozy desk with the 2000s pencil case. Open it,
+ * drag the parts out onto the cutting mat, or type to use the terminal on the
+ * monitor. Rendered by components/home/HomeExperience.tsx after the visitor
+ * chooses 3D on the start screen.
+ */
+export default function DeskHero({ onLeave, onProgress, onReady, onError }: DeskHeroProps) {
+  const router = useRouter();
   const [hovered, setHovered] = useState<Caption | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
-  const [hint, setHint] = useState('setting up the desk…');
+  const [hint, setHint] = useState('');
   const [deskMode, setDeskMode] = useState<DeskMode>('desk');
-  const controllerRef = useRef<DeskController | null>(null);
 
   const events = useMemo<DeskEvents>(
     () => ({
@@ -103,75 +58,26 @@ export default function DeskHero() {
       onOpen: (href) => router.push(href),
       onHint: setHint,
       onMode: setDeskMode,
-      onSimple: () => writeMode('lite'),
+      onSimple: onLeave,
     }),
-    [router],
+    [router, onLeave],
   );
-  const onError = useCallback(() => setFailed(true), []);
-
-  // the full-window desk shouldn't scroll the (hidden) page underneath it
-  const fullscreen = mode !== 'lite';
-  useEffect(() => {
-    if (!fullscreen) return;
-    const root = document.documentElement;
-    const previous = root.style.overflow;
-    root.style.overflow = 'hidden';
-    return () => {
-      root.style.overflow = previous;
-    };
-  }, [fullscreen]);
 
   const typing = deskMode === 'terminal';
   const item = selected && !typing ? getDeskItem(selected) : null;
   // in the terminal the monitor explains itself, so nothing sits over the keyboard
-  const caption = typing ? null : (hovered ?? { title: 'Hanjing Lin', detail: hint });
-
-  if (mode === null) {
-    // server render / first paint: the desk's background, so the navbar never flashes
-    return <section aria-label="Pencil case desk" className={FULLSCREEN} />;
-  }
-
-  if (mode === 'lite') {
-    return (
-      <section aria-label="Pencil case contents" className="w-full border-b border-black/10 bg-[#2c6b66] bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:24px_24px]">
-        <div className="site-container flex flex-col gap-6 py-10">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className={`${tapeFont.className} -rotate-1 bg-[#c4161c] px-3 py-1.5 text-sm tracking-[0.22em] text-[#fff4f4]`}>
-              PROPERTY OF HANJING LIN
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                setFailed(false);
-                writeMode('3d');
-              }}
-              className="min-h-11 border border-white/30 bg-white/10 px-4 text-sm tracking-wider text-white transition-colors duration-200 hover:bg-white/20"
-            >
-              3d version
-            </button>
-          </div>
-          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {ALL_ITEMS.map((part) => (
-              <li key={part.id}>
-                <Link
-                  href={part.href}
-                  className="flex h-full flex-col gap-1 border border-black/10 bg-white p-4 transition-transform duration-200 hover:-translate-y-1 hover:-rotate-[0.6deg]"
-                >
-                  <span className={`${tapeFont.className} text-xs tracking-[0.16em] text-[#c4161c] uppercase`}>{part.kicker}</span>
-                  <span className="text-lg text-black">{part.title}</span>
-                  <span className="text-sm text-neutral-600">{part.summary}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-    );
-  }
+  const caption = typing ? null : (hovered ?? { title: 'welcome to hanjing’s desk', detail: hint });
 
   return (
     <section aria-label="A desk with a 2000s pencil case. Drag the parts out to explore the site." className={FULLSCREEN}>
-      <DeskScene fonts={fonts} events={events} controllerRef={controllerRef} onError={onError} className="h-full w-full" />
+      <DeskScene
+        fonts={fonts}
+        events={events}
+        onProgress={onProgress}
+        onReady={onReady}
+        onError={onError}
+        className="h-full w-full"
+      />
 
       {/* the same links for keyboard and screen-reader users */}
       <ul className="sr-only">
@@ -182,28 +88,17 @@ export default function DeskHero() {
         ))}
       </ul>
 
-      {/* keyboard users: a skip link to the simple version, visible only when focused */}
+      {/* keyboard users: back to the start screen, visible only when focused */}
       <button
         type="button"
-        onClick={() => writeMode('lite')}
+        onClick={onLeave}
         className="sr-only left-4 top-4 bg-white px-3 py-2 text-sm text-black focus:not-sr-only focus:absolute sm:left-6 sm:top-6"
       >
-        switch to the simple version
+        back to the start (3d or simple site)
       </button>
 
-      {!typing ? (
-        <button
-          type="button"
-          onClick={() => controllerRef.current?.packUp()}
-          className="absolute right-4 top-4 min-h-9 bg-white/80 px-3 text-sm text-black transition-colors duration-200 hover:bg-white sm:right-6 sm:top-6"
-        >
-          put everything back
-        </button>
-      ) : null}
-
-
       {item ? (
-        <div className="absolute left-4 right-4 top-16 flex flex-col gap-1.5 border border-black/10 bg-white p-4 sm:bottom-6 sm:left-auto sm:right-6 sm:top-auto sm:w-[340px]">
+        <div className="absolute left-4 right-4 top-4 flex flex-col gap-1.5 border border-black/10 bg-white p-4 sm:bottom-6 sm:left-auto sm:right-6 sm:top-auto sm:w-[340px]">
           <div className="flex items-start justify-between gap-3">
             <span className={`${tapeFont.className} text-xs tracking-[0.16em] text-[#c4161c] uppercase`}>{item.kicker}</span>
             <button
@@ -223,16 +118,16 @@ export default function DeskHero() {
         </div>
       ) : null}
 
-      {/* subtle title: names what you're pointing at and where it leads */}
+      {/* caption: names what you're pointing at, or how to get started */}
       {caption ? (
         <div
           aria-live="polite"
-          className="pointer-events-none absolute inset-x-4 bottom-5 flex flex-col items-center gap-1 text-center text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.55)] sm:bottom-7"
+          className={`${CAPTION_FONT} pointer-events-none absolute inset-x-4 bottom-5 flex flex-col items-center gap-1 text-center text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.55)] sm:bottom-7`}
         >
-          <p key={caption.title} className="text-lg leading-tight tracking-wide sm:text-xl motion-safe:animate-[caption-in_0.25s_ease-out]">
+          <p key={caption.title} className="text-xl leading-tight sm:text-2xl motion-safe:animate-[caption-in_0.25s_ease-out]">
             {caption.title}
           </p>
-          <p className={`${tapeFont.className} text-[11px] tracking-[0.2em] text-white/70 uppercase sm:text-xs`}>{caption.detail}</p>
+          <p className="text-sm tracking-wide text-white/75 sm:text-base">{caption.detail}</p>
         </div>
       ) : null}
     </section>

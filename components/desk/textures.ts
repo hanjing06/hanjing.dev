@@ -255,19 +255,36 @@ export function printTexture() {
   return toTexture(el);
 }
 
-/** Sticky note on the desk: the switch to the simple version of the site. */
-export function stickyTexture(fonts: DeskFonts) {
+/** Handwritten sticky note texture (yellow paper, dark blue ink). */
+function noteCanvas(fonts: DeskFonts, lines: [string, number][], top = 170) {
   const { el, ctx } = canvas(512, 512);
   ctx.fillStyle = '#ffe873';
   ctx.fillRect(0, 0, 512, 512);
   ctx.fillStyle = 'rgba(0,0,0,0.05)';
   ctx.fillRect(0, 0, 512, 64);
   ctx.fillStyle = '#26315f';
-  ctx.font = `italic 70px ${fonts.serif}`;
-  ctx.fillText('too much?', 44, 170);
-  ctx.font = `italic 56px ${fonts.serif}`;
-  ctx.fillText('click here for', 44, 280);
-  ctx.fillText('the simple', 44, 350);
-  ctx.fillText('version →', 44, 420);
+  lines.forEach(([text, size], i) => {
+    ctx.font = `italic ${size}px ${fonts.serif}`;
+    ctx.fillText(text, 44, top + i * 78);
+  });
   return toTexture(el);
+}
+
+/** Sticky note on the desk: drag it around, click it for the normal site. */
+export function stickyTexture(fonts: DeskFonts) {
+  return noteCanvas(fonts, [
+    ['just want', 64],
+    ['the normal', 64],
+    ['website?', 64],
+    ['click me →', 56],
+  ], 150);
+}
+
+/** Sticky note on the wall (terminal view): back to the normal site. */
+export function wallNoteTexture(fonts: DeskFonts) {
+  return noteCanvas(fonts, [
+    ['too techy?', 64],
+    ['← back to the', 52],
+    ['normal site', 52],
+  ], 180);
 }

@@ -36,6 +36,9 @@ const LID_OPEN = -1.95; // CaseLid rotation.x when open (~112 deg)
 const CASE_BOUNDS = { minX: -0.125, maxX: 0.125, minZ: -0.035, maxZ: 0.075 };
 /** Where parts can be set down on the mat. */
 const MAT_BOUNDS = { minX: -0.28, maxX: 0.28, minZ: -0.19, maxZ: 0.19 };
+/** Where free objects (the sticky note) can go: anywhere on the visible desk. */
+const DESK_BOUNDS = { minX: -0.62, maxX: 0.62, minZ: -0.24, maxZ: 0.34 };
+const WELCOME_HINT = 'start by opening the pencil case, or start typing to enter the terminal';
 /** Spots used when a part is tapped out (touch) instead of dragged. */
 const TAP_SLOTS: [number, number][] = [
   [-0.21, -0.12], [-0.07, -0.15], [0.08, -0.14], [0.22, -0.11], [-0.22, 0.14], [0.22, 0.14], [0.0, 0.15],
@@ -46,7 +49,7 @@ const FOV = 32;
 const PITCH = THREE.MathUtils.degToRad(52);
 const TARGET = new THREE.Vector3(0, 0.0, 0.0);
 const FRAME_HALF_WIDTH = { wide: 0.5, narrow: 0.19 };
-const NO_SHADOW_CAST = new Set(['label_1', 'label_2', 'screen', 'sticky_face', 'card_face', 'note_face', 'print', 'mat', 'desk_wood']);
+const NO_SHADOW_CAST = new Set(['label_1', 'label_2', 'screen', 'sticky_face', 'card_face', 'note_face', 'print', 'mat', 'desk_wood', 'wall', 'wall_note_face']);
 const MAX_PIXEL_RATIO = 1.5;
 const DRAG_THRESHOLD_PX = 5;
 const DOUBLE_CLICK_MS = 350;
@@ -73,6 +76,8 @@ type Item = {
   homePos: THREE.Vector3;
   homeQuat: THREE.Quaternion;
   out: boolean;
+  /** Not part of the pencil case (the sticky note): drags anywhere on the desk. */
+  free?: boolean;
 };
 
 type Tween = {
@@ -182,8 +187,11 @@ export class DeskEngine {
     window.addEventListener('blur', this.onBlur);
   }
 
-  async load() {
-    const gltf = await new GLTFLoader().loadAsync(MODEL_URL);
+  /** Loads the model and applies the look. `onProgress` gets the download fraction (0 to 1). */
+  async load(onProgress?: (fraction: number) => void) {
+    const gltf = await new GLTFLoader().loadAsync(MODEL_URL, (event) => {
+      if (event.lengthComputable && event.total) onProgress?.(event.loaded / event.total);
+    });
     if (this.disposed) return;
     const model = gltf.scene;
 
@@ -204,7 +212,12 @@ export class DeskEngine {
     const monitor = model.getObjectByName('Monitor');
     if (monitor) this.pickRoots.set(monitor, 'monitor');
     const sticky = model.getObjectByName('StickyNote');
-    if (sticky) this.pickRoots.set(sticky, 'sticky');
+    if (sticky) {
+      this.pickRoots.set(sticky, 'sticky');
+      this.items.push({ id: 'sticky', href: '', root: sticky, homePos: sticky.position.clone(), homeQuat: sticky.quaternion.clone(), out: true, free: true });
+    }
+    const wallNote = model.getObjectByName('WallNote');
+    if (wallNote) this.pickRoots.set(wallNote, 'wall-note');
     if (this.tapeRoot) this.pickRoots.set(this.tapeRoot, 'contact');
     for (const info of DESK_ITEMS) {
       const root = model.getObjectByName(info.node);
@@ -239,17 +252,7 @@ export class DeskEngine {
       });
     }
     this.renderer.compile(this.scene, this.camera);
-    this.events.onHint?.('click the pencil case, or start typing');
-  }
-
-  /** Put every part back in the case and close the lid. */
-  packUp() {
-    this.items.forEach((item, i) => {
-      if (!item.out) return;
-      window.setTimeout(() => this.sendHome(item), i * 70);
-    });
-    window.setTimeout(() => this.setLid(false), this.reducedMotion ? 0 : 750);
-    this.events.onSelect?.(null);
+    this.events.onHint?.(WELCOME_HINT);
   }
 
   dispose() {
@@ -287,7 +290,9 @@ export class DeskEngine {
     this.tween(lid, 0.7, (k) => {
       lid.rotation.x = from + (to - from) * ease(k);
     });
-    this.events.onHint?.(open ? 'drag things out onto the mat' : 'click the pencil case to open it');
+    this.events.onHint?.(open ? 'drag things out onto the mat' : WELCOME_HINT);
+    // refresh the caption now if the pointer is still on the case
+    if (this.hovered && this.hovered === this.caseRoot) this.events.onHover?.('case', { lidOpen: open, inCase: false });
   }
 
   /** Move an item to (x, z) on the mat, or home if `home`. */
@@ -309,7 +314,7 @@ export class DeskEngine {
   }
 
   private setDown(item: Item, x: number, z: number) {
-    const wasOut = this.items.some((i) => i.out);
+    const wasOut = this.items.some((i) => i.out && !i.free);
     item.out = true;
     const yaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.random() - 0.5) * 0.35);
     const quat = item.homeQuat.clone().premultiply(yaw);
@@ -322,7 +327,7 @@ export class DeskEngine {
   private tapOut(item: Item) {
     const taken = this.items.filter((i) => i.out).map((i) => i.root.position);
     const free = TAP_SLOTS.find(([x, z]) => taken.every((p) => Math.hypot(p.x - x, p.z - z) > 0.06)) ?? TAP_SLOTS[0];
-    const wasOut = this.items.some((i) => i.out);
+    const wasOut = this.items.some((i) => i.out && !i.free);
     item.out = true;
     const yaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.random() - 0.5) * 0.35);
     this.move(item, new THREE.Vector3(free[0], MAT_Y, free[1]), item.homeQuat.clone().premultiply(yaw), 0.08, 0.6);
@@ -333,8 +338,9 @@ export class DeskEngine {
   private click(root: THREE.Object3D | null, touch: boolean) {
     const target = root ? this.pickRoots.get(root) : null;
     if (this.mode === 'terminal') {
-      // in the terminal view, clicking anything but the monitor goes back to the desk
-      if (target !== 'monitor') this.setMode('desk');
+      // in the terminal view: the wall note goes to the normal site, anything but the monitor goes back to the desk
+      if (target === 'wall-note') this.events.onSimple?.();
+      else if (target !== 'monitor') this.setMode('desk');
       return;
     }
     if (target === 'monitor') {
@@ -410,13 +416,15 @@ export class DeskEngine {
   /** Where the dragged part should be: under the pointer, on a plane just above the mat. */
   private updateDragTarget() {
     if (!this.drag) return;
-    const { offset, target } = this.drag;
+    const { item, offset, target } = this.drag;
     this.raycaster.setFromCamera(this.ndc, this.camera);
     if (!this.raycaster.ray.intersectPlane(this.dragPlane, this.hit)) return;
+    const bounds = item.free ? DESK_BOUNDS : MAT_BOUNDS;
+    const slack = item.free ? 0 : 0.04;
     target.set(
-      THREE.MathUtils.clamp(this.hit.x + offset.x, MAT_BOUNDS.minX - 0.04, MAT_BOUNDS.maxX + 0.04),
+      THREE.MathUtils.clamp(this.hit.x + offset.x, bounds.minX - slack, bounds.maxX + slack),
       DRAG_Y,
-      THREE.MathUtils.clamp(this.hit.z + offset.z, MAT_BOUNDS.minZ - 0.04, MAT_BOUNDS.maxZ + 0.04),
+      THREE.MathUtils.clamp(this.hit.z + offset.z, bounds.minZ - slack, bounds.maxZ + slack),
     );
   }
 
@@ -448,7 +456,7 @@ export class DeskEngine {
     const offset = new THREE.Vector3(item.root.position.x - this.hit.x, 0, item.root.position.z - this.hit.z);
     this.drag = { item, offset, target: item.root.position.clone().setY(DRAG_Y), last: item.root.position.clone() };
     this.renderer.domElement.style.cursor = 'grabbing';
-    this.events.onSelect?.(item.id);
+    if (!item.free) this.events.onSelect?.(item.id);
   }
 
   private endDrag() {
@@ -457,6 +465,17 @@ export class DeskEngine {
     this.drag = null;
     this.renderer.domElement.style.cursor = '';
     const { x, z } = target;
+    if (item.free) {
+      // the sticky note just gets set down wherever it was dropped
+      const yaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.random() - 0.5) * 0.25);
+      const at = new THREE.Vector3(
+        THREE.MathUtils.clamp(x, DESK_BOUNDS.minX, DESK_BOUNDS.maxX),
+        item.homePos.y,
+        THREE.MathUtils.clamp(z, DESK_BOUNDS.minZ, DESK_BOUNDS.maxZ),
+      );
+      this.move(item, at, item.homeQuat.clone().premultiply(yaw), 0, 0.3);
+      return;
+    }
     const overCase = x > CASE_BOUNDS.minX && x < CASE_BOUNDS.maxX && z > CASE_BOUNDS.minZ && z < CASE_BOUNDS.maxZ;
     if (overCase) {
       if (!this.lidOpen) this.setLid(true);

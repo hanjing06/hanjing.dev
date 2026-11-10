@@ -9,6 +9,7 @@ import {
   noteTexture,
   printTexture,
   stickyTexture,
+  wallNoteTexture,
   tapeTextures,
   woodTexture,
   type DeskFonts,
@@ -106,6 +107,8 @@ function material(role: string, { fonts, screenMap, track }: Pick<LookContext, '
     case 'scale_ruler': return metal('#d6d9dc', 0.35);
     case 'sticky': return matte('#ffe873', 0.9);
     case 'sticky_face': return mapped(track(stickyTexture(fonts)), 0.9);
+    case 'wall_note_face': return mapped(track(wallNoteTexture(fonts)), 0.9);
+    case 'wall': return matte('#4a3f36', 0.95);
     default: return undefined;
   }
 }

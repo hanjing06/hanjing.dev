@@ -8,7 +8,8 @@ Builds the home-page hero scene and exports it to public/desk/desk.glb:
   "home" spots inside the case.
 - A cozy software-engineering desk around it: cutting mat, a 65% keyboard
   (`Key_<KeyboardEvent.code>` per key), the monitor (`Monitor`, the terminal),
-  architect's lamp, triangular scale ruler, books, mug, plant, sticky note.
+  architect's lamp, triangular scale ruler, books, mug, plant, a draggable
+  sticky note (`StickyNote`), and a wall with another note (`WallNote`).
 
 Run from the repo root:
     npm run models
@@ -50,7 +51,7 @@ PALETTE = {
     "monitor": "#1c1d1f", "screen": "#111418", "lamp": "#efe9dc", "lamp_joint": "#b9bec4", "lamp_bulb": "#fff2d6",
     "mug": "#9fb8a3", "coffee": "#3b2416", "pot": "#c56f4a", "soil": "#3a2a1e", "leaf": "#4f7d4a",
     "book_1": "#2f4a6b", "book_2": "#c9b28a", "book_3": "#8a3b32", "scale_ruler": "#d6d9dc",
-    "sticky": "#ffe873", "sticky_face": "#ffffff",
+    "sticky": "#ffe873", "sticky_face": "#ffffff", "wall": "#4a3f36", "wall_note_face": "#ffffff",
 }
 
 _materials = {}
@@ -445,10 +446,18 @@ def build_desk():
     ruler.rotation_euler = (0, 0, math.radians(-3))
     finish(ruler, "ScaleRuler", "scale_ruler", env)
 
-    # sticky note on the desk: group "StickyNote" is clickable (switches to the simple version)
+    # sticky note on the desk: group "StickyNote" can be dragged around, and a click switches to the simple site
     note = empty("StickyNote", (0.41, -0.13, 0), parent=env)
     box("Sticky", (0.076, 0.076, 0.003), (0.41, -0.13, 0.0015), "sticky", rotation=(0, 0, math.radians(8)), parent=note)
     plane("StickyFace", (0.076, 0.076), (0.41, -0.13, 0.0031), "sticky_face", rotation=(0, 0, math.radians(8)), parent=note)
+
+    # wall behind the desk (seen in the terminal view), with a sticky note back to the simple site
+    wall_y = 0.76
+    plane("Wall", (3.2, 1.6), (0, wall_y, 0.8), "wall", rotation=(math.radians(90), 0, 0), parent=env)
+    wall_note = empty("WallNote", (0.43, wall_y - 0.003, 0.36), parent=env)
+    up = (math.radians(90), 0, math.radians(-4))
+    box("WallNotePad", (0.076, 0.076, 0.003), (0.43, wall_y - 0.0016, 0.36), "sticky", rotation=up, parent=wall_note)
+    plane("WallNoteFace", (0.076, 0.076), (0.43, wall_y - 0.0032, 0.36), "wall_note_face", rotation=up, parent=wall_note)
 
 
 # --------------------------------------------------------------------------- main
