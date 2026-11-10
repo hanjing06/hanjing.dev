@@ -198,7 +198,7 @@ export function applyLook({ scene, renderer, model, fonts, screenMap, addPass, t
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   scene.background = new THREE.Color('#1b1714');
 
   const pmrem = new THREE.PMREMGenerator(renderer);

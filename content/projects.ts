@@ -12,6 +12,10 @@ export type Project = {
   /** Optional Tailwind `object-position` class for the card image. */
   coverPosition?: string;
   tags: string[];
+  /** Tools and skills listed at the end of the write-up. */
+  tools: string[];
+  /** The write-up's overview, as plain paragraphs (printed by the desk terminal). */
+  overview: string[];
   /** Browser title + search description for the project page. */
   seo: {
     title: string;
@@ -31,6 +35,11 @@ export const projects: Project[] = [
     summary: 'Designing the vehicle control unit for a solar powered car.',
     cover: '/projects/sunstang-vcu-2026/thumbnail.jpeg',
     tags: ['Embedded Systems', 'PCB Design', 'Hardware'],
+    tools: ["KiCad", "STM32", "Embedded C", "GPIO Control", "CAN", "UART"],
+    overview: [
+      "The Sunstang VCU 2026 is a custom vehicle control unit PCB developed in KiCad. It brings driver inputs, pedal interfaces, high-voltage enable logic, lighting control, safety interlocks, and vehicle state management into one low-voltage control system.",
+      "The board is built around the STM32 Nucleo-F302R8. Its central engineering challenge was not simply connecting signals to a microcontroller; it was creating a dependable boundary between sensitive 3.3V logic and the car's 12V electrical system. Every input and output had to be considered in terms of voltage level, failure behavior, connector access, and how it would be diagnosed once installed in the vehicle.",
+    ],
     seo: {
       title: 'Sunstang VCU 2026',
       description:
@@ -44,6 +53,12 @@ export const projects: Project[] = [
       'Developing a computer vision program that detects the bar path of your squat.',
     cover: '/projects/the-perfect-squat/cover.jpg',
     tags: ['Computer Vision', 'Machine Learning'],
+    tools: ["OpenCV", "Python", "YOLOv8", "PyTorch", "NumPy", "RoboFlow", "Google Colab"],
+    overview: [
+      "The Perfect Squat is a passion project that Mats Leis and I started second semester of our second year. This came about when we were discussing a LinkedIn post we both saw exploring MediaPipe's pose model detection. It got us thinking about how we could utilize these tools in our everyday lives.",
+      "That's when 'The Perfect Squat' came alive.",
+      "A computer vision system that analyzes barbell trajectory during a squat using the YOLOv8 pose model and OpenCV to process videos.",
+    ],
     seo: {
       title: 'The Perfect Squat',
       description:
@@ -57,6 +72,12 @@ export const projects: Project[] = [
       'Engineering a camera that shoots, converts image, bitmaps jpg, and prints instantly.',
     cover: '/projects/tiny-squares-camera-system/cover.jpg',
     tags: ['Embedded Systems', 'Computer Vision', 'Image Processing'],
+    tools: ["ESP32", "Camera Module", "Embedded C++", "JPEG", "Bitmap Processing", "Thermal Printing"],
+    overview: [
+      "Tiny Squares is a compact camera system built around the ESP32-Wrover-Kit by Espressif alongside the OV3660 camera module and a thermal printer.",
+      "This system combines camera control, constrained image processing, serial communication, and power management in one small, embedded pipeline. Each stage must operate within the ESP32's limited memory while still producing an image that remains recognizable on a thermal print.",
+      "In this post, the first part will be more of a personal story of how this came to be. The second part will be the technical aspect of the system.",
+    ],
     seo: {
       title: 'Tiny Squares Camera System',
       description:
@@ -71,6 +92,11 @@ export const projects: Project[] = [
     cover: '/projects/moore-fsm-sequence-detector/cover.jpg',
     coverPosition: 'object-top',
     tags: ['Digital Logic', 'FPGA', 'FSM Design'],
+    tools: ["Altera Quartus", "DE1-SoC", "Moore FSM", "D Flip-Flops", "Karnaugh Maps", "Boolean Algebra", "Gate-Level Design", "FPGA Implementation", "Testing", "Debugging", "Verification", "Simulation"],
+    overview: [
+      "This project was a complete Moore finite state machine sequence detector for ECE2277A. The circuit reads one input bit at a time, turns the output on after detecting a target four-bit sequence, and keeps that output high until a second four-bit sequence turns it back off.",
+      "The interesting part was not only making the detector function. The assignment required two state-assignment strategies, Boolean simplification, gate-cost comparison, a structural implementation in Quartus, and a simulation waveform that proved the selected design behaved correctly.",
+    ],
     seo: {
       title: 'Moore FSM: A Sequence Detector',
       description:

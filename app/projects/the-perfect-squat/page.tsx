@@ -5,10 +5,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import ArticleTableOfContents from '@/components/ArticleTableOfContents';
 import ExpandableImage from '@/components/ExpandableImage';
+import { getProject } from '@/content/projects';
 import { articleContainer, fadeUp } from '@/lib/motion';
 
 const tags = ["Computer Vision", "Machine Learning"];
-const tools = ["OpenCV", "Python", "YOLOv8", "PyTorch", "NumPy", "RoboFlow", "Google Colab"];
+const { tools } = getProject('the-perfect-squat');
 const articleSections = [
   { id: 'overview', title: 'Overview' },
   { id: 'the-beginning', title: 'The Beginning' },

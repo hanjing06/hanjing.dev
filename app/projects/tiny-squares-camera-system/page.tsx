@@ -4,17 +4,11 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import ArticleTableOfContents from '@/components/ArticleTableOfContents';
 import ExpandableImage from '@/components/ExpandableImage';
+import { getProject } from '@/content/projects';
 import { articleContainer, fadeUp } from '@/lib/motion';
 
 const tags = ['Embedded Systems', 'Computer Vision', 'Image Processing'];
-const tools = [
-  'ESP32',
-  'Camera Module',
-  'Embedded C++',
-  'JPEG',
-  'Bitmap Processing',
-  'Thermal Printing',
-];
+const { tools } = getProject('tiny-squares-camera-system');
 const articleSections = [
   { id: 'overview', title: 'Overview' },
   { id: 'film-costs', title: 'Films are so expensive' },

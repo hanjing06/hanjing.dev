@@ -13,7 +13,7 @@ import type { DeskFonts } from './textures';
 const MODEL_URL = '/desk/desk.glb';
 
 /** Hover/selection targets reported to React. */
-export type DeskTarget = string; // an item id, 'case', 'contact', or 'monitor'
+export type DeskTarget = string; // an item id, 'case', 'contact', 'monitor', or 'sticky'
 export type DeskMode = 'desk' | 'terminal';
 
 export type DeskEvents = {
@@ -23,6 +23,8 @@ export type DeskEvents = {
   onHint?: (hint: string) => void;
   /** 'terminal' while the camera is on the monitor and typing goes to the terminal. */
   onMode?: (mode: DeskMode) => void;
+  /** The visitor asked for the simple version (sticky note or `simple`). */
+  onSimple?: () => void;
 };
 
 // ---------------------------------------------------------------- layout (metres, three.js axes)
@@ -57,7 +59,8 @@ const MONITOR_FRAME: [number, number, number][] = [
   [-0.16, 0.03, -0.24], [0.2, 0.03, -0.24], [-0.16, 0.03, -0.36], [0.2, 0.03, -0.36], // keyboard
 ];
 const CURSOR_BLINK_S = 0.53;
-const NAVIGATE_DELAY_MS = 450;
+const EXIT_DELAY_MS = 1200;
+const WHEEL_ROW_PX = 40;
 
 const isEditable = (target: EventTarget | null) =>
   target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
@@ -121,6 +124,7 @@ export class DeskEngine {
   private monitorPosition = new THREE.Vector3();
   private cursorClock = 0;
   private cursorOn = true;
+  private wheelRemainder = 0;
 
   private items: Item[] = [];
   private caseRoot: THREE.Object3D | null = null;
@@ -172,6 +176,7 @@ export class DeskEngine {
     canvas.addEventListener('pointerup', this.onPointerUp);
     canvas.addEventListener('pointercancel', this.onPointerCancel);
     canvas.addEventListener('pointerleave', this.onPointerLeave);
+    canvas.addEventListener('wheel', this.onWheel, { passive: false });
     window.addEventListener('keydown', this.onKeyDown);
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('blur', this.onBlur);
@@ -198,6 +203,8 @@ export class DeskEngine {
     if (this.caseRoot) this.pickRoots.set(this.caseRoot, 'case');
     const monitor = model.getObjectByName('Monitor');
     if (monitor) this.pickRoots.set(monitor, 'monitor');
+    const sticky = model.getObjectByName('StickyNote');
+    if (sticky) this.pickRoots.set(sticky, 'sticky');
     if (this.tapeRoot) this.pickRoots.set(this.tapeRoot, 'contact');
     for (const info of DESK_ITEMS) {
       const root = model.getObjectByName(info.node);
@@ -256,6 +263,7 @@ export class DeskEngine {
     canvas.removeEventListener('pointerup', this.onPointerUp);
     canvas.removeEventListener('pointercancel', this.onPointerCancel);
     canvas.removeEventListener('pointerleave', this.onPointerLeave);
+    canvas.removeEventListener('wheel', this.onWheel);
     window.removeEventListener('keydown', this.onKeyDown);
     window.removeEventListener('keyup', this.onKeyUp);
     window.removeEventListener('blur', this.onBlur);
@@ -331,6 +339,10 @@ export class DeskEngine {
     }
     if (target === 'monitor') {
       this.setMode('terminal');
+      return;
+    }
+    if (target === 'sticky') {
+      this.events.onSimple?.();
       return;
     }
     if (!root || !target) {
@@ -464,11 +476,21 @@ export class DeskEngine {
   private setMode(mode: DeskMode) {
     if (mode === this.mode) return;
     this.mode = mode;
-    this.cursorOn = true;
-    this.cursorClock = 0;
-    this.screen.draw(this.terminal, true);
+    // leaving always returns the terminal to its welcome screen at ~
+    if (mode === 'desk') {
+      this.terminal.reset();
+      this.screen.follow();
+    }
+    this.redraw();
     if (mode === 'terminal') this.events.onSelect?.(null);
     this.events.onMode?.(mode);
+  }
+
+  private submit() {
+    const action = this.terminal.submit();
+    this.redraw();
+    if (action?.type === 'exit') window.setTimeout(() => this.setMode('desk'), EXIT_DELAY_MS);
+    if (action?.type === 'simple') window.setTimeout(() => this.events.onSimple?.(), 500);
   }
 
   private redraw() {
@@ -498,6 +520,7 @@ export class DeskEngine {
     if (event.key.length === 1) {
       this.setMode('terminal');
       t.type(event.key);
+      this.screen.follow();
       this.redraw();
       event.preventDefault();
       return;
@@ -506,24 +529,49 @@ export class DeskEngine {
     switch (event.key) {
       case 'Backspace':
         t.backspace();
+        this.screen.follow();
         break;
       case 'Enter':
-        this.runAction(t.submit());
+        // friendly mode: enter on an empty prompt runs the highlighted choice
+        if (!t.input && t.menu()) t.pickSelection();
+        this.submit();
         break;
       case 'ArrowUp':
-        t.historyStep(-1);
+      case 'ArrowDown': {
+        const direction = event.key === 'ArrowUp' ? -1 : 1;
+        // friendly mode moves the menu highlight; classic steps through history
+        if (t.menu()) t.moveSelection(direction);
+        else t.historyStep(direction);
+        this.screen.follow();
         break;
-      case 'ArrowDown':
-        t.historyStep(1);
-        break;
+      }
       case 'Tab':
         t.complete();
+        this.screen.follow();
+        break;
+      case 'PageUp':
+        this.screen.page(-1);
+        break;
+      case 'PageDown':
+        this.screen.page(1);
         break;
       default:
         return;
     }
     this.redraw();
     event.preventDefault();
+  };
+
+  /** Mouse wheel / trackpad scrolls the terminal while it's open. */
+  private onWheel = (event: WheelEvent) => {
+    if (this.mode !== 'terminal') return;
+    event.preventDefault();
+    this.wheelRemainder += event.deltaMode === 1 ? event.deltaY * WHEEL_ROW_PX : event.deltaY;
+    const rows = Math.trunc(this.wheelRemainder / WHEEL_ROW_PX);
+    if (!rows) return;
+    this.wheelRemainder -= rows * WHEEL_ROW_PX;
+    this.screen.scrollBy(rows);
+    this.redraw();
   };
 
   private onKeyUp = (event: KeyboardEvent) => {
@@ -534,19 +582,6 @@ export class DeskEngine {
     this.keyboard?.releaseAll();
   };
 
-  private runAction(action: ReturnType<Terminal['submit']>) {
-    if (!action) return;
-    if (action.type === 'exit') {
-      window.setTimeout(() => this.setMode('desk'), this.reducedMotion ? 0 : 400);
-    } else if (action.type === 'open-case') {
-      window.setTimeout(() => {
-        this.setMode('desk');
-        this.setLid(true);
-      }, this.reducedMotion ? 0 : 400);
-    } else if (action.type === 'navigate') {
-      window.setTimeout(() => this.events.onOpen?.(action.href), NAVIGATE_DELAY_MS);
-    }
-  }
 
   /** Camera position that frames the monitor and keyboard for the current aspect. */
   private fitMonitorView() {
