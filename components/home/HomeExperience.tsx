@@ -5,6 +5,7 @@ import DeskHero from '@/components/desk/DeskHero';
 import SimpleHome from '@/components/SimpleHome';
 import LampGate from './gates/LampGate';
 import { GateShell } from './gates/shared';
+import { clearSimple, returnToSimple, wantsSimple } from './returnToSimple';
 
 /**
  * The home page flow:
@@ -41,7 +42,8 @@ function prefersSimple() {
 const noSubscribe = () => () => {};
 
 export default function HomeExperience() {
-  const [stage, setStage] = useState<Stage>('choose');
+  // coming back from another page via the navbar's name: skip the start screen
+  const [stage, setStage] = useState<Stage>(() => (wantsSimple() ? 'simple' : 'choose'));
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(false);
   const recommendSimple = useSyncExternalStore(noSubscribe, prefersSimple, () => null);
@@ -64,6 +66,7 @@ export default function HomeExperience() {
   }, []);
 
   const enter = useCallback(() => {
+    clearSimple();
     setError(false);
     setProgress(0);
     setStage('loading');
@@ -73,13 +76,20 @@ export default function HomeExperience() {
     setStage('revealing');
     revealTimer.current = window.setTimeout(() => setStage('desk'), REVEAL_MS);
   }, []);
-  const leave = useCallback(() => setStage('choose'), []);
+  const leave = useCallback(() => {
+    clearSimple();
+    setStage('choose');
+  }, []);
+  const simple = useCallback(() => {
+    returnToSimple();
+    setStage('simple');
+  }, []);
   const failed = useCallback(() => {
     setError(true);
     setStage('choose');
   }, []);
 
-  if (stage === 'simple') return <SimpleHome />;
+  if (stage === 'simple') return <SimpleHome onEnter3D={enter} />;
 
   const deskMounted = stage === 'loading' || stage === 'revealing' || stage === 'desk';
 
@@ -94,7 +104,7 @@ export default function HomeExperience() {
             recommendSimple={recommendSimple}
             error={error}
             onEnter={enter}
-            onSimple={() => setStage('simple')}
+            onSimple={simple}
           />
         </GateShell>
       ) : null}

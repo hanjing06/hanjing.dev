@@ -43,14 +43,14 @@ export default function BlogPost({
 
           <motion.p
             variants={fadeUp}
-            className="mt-10 text-lg tracking-normal text-neutral-600"
+            className="mt-10 text-lg text-neutral-600"
           >
             {kicker}
           </motion.p>
 
           <motion.h1
             variants={fadeUp}
-            className="mt-3 max-w-[12ch] text-4xl tracking-tight text-black sm:text-5xl md:text-6xl"
+            className="mt-3 max-w-[12ch] text-4xl text-black sm:text-5xl md:text-6xl"
           >
             {title}
           </motion.h1>
@@ -71,7 +71,7 @@ export default function BlogPost({
 
           <motion.div
             variants={fadeUp}
-            className="mt-10 max-w-[860px] space-y-6 text-sm leading-relaxed tracking-wide text-neutral-600 sm:space-y-8 sm:text-base md:text-[1.05rem]"
+            className="mt-10 max-w-[860px] space-y-6 text-sm leading-relaxed text-neutral-600 sm:space-y-8 sm:text-base md:text-[1.05rem]"
           >
             {paragraphs.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>

@@ -114,7 +114,7 @@ export default function ArticleTableOfContents({
         <button
           type="button"
           onClick={() => setIsMobileOpen((current) => !current)}
-          className="flex min-h-11 w-full items-center justify-between gap-4 text-left text-[10px] uppercase tracking-[0.16em] text-neutral-600"
+          className="flex min-h-11 w-full items-center justify-between gap-4 text-left text-[10px] uppercase text-neutral-600"
           aria-expanded={isMobileOpen}
           aria-controls="mobile-toc-nav"
         >
@@ -173,7 +173,7 @@ export default function ArticleTableOfContents({
           </div>
         </div>
 
-        <nav className="flex h-64 max-w-0 -translate-x-3 flex-col justify-between overflow-hidden text-xs leading-snug tracking-wide opacity-0 transition-[max-width,opacity,transform] duration-300 ease-out group-hover:max-w-48 group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:max-w-48 group-focus-within:translate-x-0 group-focus-within:opacity-100">
+        <nav className="flex h-64 max-w-0 -translate-x-3 flex-col justify-between overflow-hidden text-xs leading-snug opacity-0 transition-[max-width,opacity,transform] duration-300 ease-out group-hover:max-w-48 group-hover:translate-x-0 group-hover:opacity-100 group-focus-within:max-w-48 group-focus-within:translate-x-0 group-focus-within:opacity-100">
           {sectionButtons}
         </nav>
       </motion.aside>

@@ -47,14 +47,14 @@ export default function TinySquaresPage() {
 
         <motion.h1
           variants={fadeUp}
-          className="mt-4 text-4xl tracking-tight text-black"
+          className="mt-4 text-4xl text-black"
         >
           Tiny Squares: Camera System
         </motion.h1>
 
         <motion.p
           variants={fadeUp}
-          className="mt-3 text-lg tracking-wide text-neutral-600"
+          className="mt-3 text-lg text-neutral-600"
         >
           Engineering a camera that shoots, converts image, bitmaps jpg, and
           prints instantly.
@@ -64,7 +64,7 @@ export default function TinySquaresPage() {
           {tags.map((tag) => (
             <span
               key={tag}
-              className="bg-[#e0b24c] px-3 py-1 text-xs tracking-widest text-black"
+              className="bg-[#e0b24c] px-3 py-1 text-xs text-black"
             >
               {tag}
             </span>
@@ -99,8 +99,8 @@ export default function TinySquaresPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">Overview</h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <h2 className="text-2xl text-black">Overview</h2>
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               Tiny Squares is a compact camera system built around the
               ESP32-Wrover-Kit by Espressif alongside the OV3660 camera module
@@ -131,10 +131,10 @@ export default function TinySquaresPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Films are so expensive
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               Lately, I&apos;ve noticed a growing trend of people intentionally
               disconnecting from their phones. Whether it&apos;s building custom
@@ -163,10 +163,10 @@ export default function TinySquaresPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             I have no idea how image processing works
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               Before starting this project, my experience was mostly embedded
               systems and PCB design. I understood microcontrollers,
@@ -191,10 +191,10 @@ export default function TinySquaresPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Lots of relearning
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               Since it was summer and I hadn&apos;t worked with some embedded
               concepts in a while, a large part of the project involved
@@ -251,10 +251,10 @@ export default function TinySquaresPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             From capture to print
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               The system begins by capturing a JPEG frame from the camera. That
               compressed image is useful for storage and transport, but the
@@ -281,10 +281,10 @@ export default function TinySquaresPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Converting the image
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               A thermal printer only produces black or white dots, so the
               captured color image must lose most of its original information.
@@ -311,10 +311,10 @@ export default function TinySquaresPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Printing instantly
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               Once the bitmap is packed into bytes, it is sent to the thermal
               printer one row at a time. The printer&apos;s width determines the
@@ -341,11 +341,11 @@ export default function TinySquaresPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">Current stage</h2>
-          <p className="mt-3 text-sm tracking-wide text-neutral-500">
+          <h2 className="text-2xl text-black">Current stage</h2>
+          <p className="mt-3 text-sm text-neutral-500">
             Updated: June 11, 2026
           </p>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               The current prototype can capture camera frames and produce
               recognizable monochrome prints using a process called dithering.
@@ -361,7 +361,7 @@ export default function TinySquaresPage() {
         />
 
         <motion.section variants={fadeUp} className="mt-14 pb-8">
-          <h2 className="text-2xl tracking-tight text-black">Tools & Skills</h2>
+          <h2 className="text-2xl text-black">Tools & Skills</h2>
           <div className="mt-5 flex flex-wrap gap-2">
             {tools.map((tool) => (
               <span

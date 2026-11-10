@@ -122,7 +122,7 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en" className="antialiased">
+    <html lang="en" className="antialiased" data-scroll-behavior="smooth">
       <body className="flex min-h-screen flex-col bg-background">
         <script
           type="application/ld+json"

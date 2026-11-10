@@ -91,14 +91,14 @@ export default function MooreFsmPage() {
 
         <motion.h1
           variants={fadeUp}
-          className="mt-4 text-4xl tracking-tight text-black"
+          className="mt-4 text-4xl text-black"
         >
           Moore FSM: A sequence detector
         </motion.h1>
 
         <motion.p
           variants={fadeUp}
-          className="mt-3 text-lg tracking-wide text-neutral-600"
+          className="mt-3 text-lg text-neutral-600"
         >
           Designing a finite state machine that detects a bit sequence, compares
           state assignments, and verifies the final circuit in Quartus.
@@ -108,7 +108,7 @@ export default function MooreFsmPage() {
           {tags.map((tag) => (
             <span
               key={tag}
-              className="bg-[#e0b24c] px-3 py-1 text-xs tracking-widest text-black"
+              className="bg-[#e0b24c] px-3 py-1 text-xs text-black"
             >
               {tag}
             </span>
@@ -140,8 +140,8 @@ export default function MooreFsmPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">Overview</h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <h2 className="text-2xl text-black">Overview</h2>
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               This project was a complete Moore finite state machine sequence
               detector for ECE2277A. The circuit reads one input bit at a time,
@@ -169,10 +169,10 @@ export default function MooreFsmPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Building the state design
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               I started by mapping the detector into states that represented how
               much of the current sequence had already been matched. Because the
@@ -206,10 +206,10 @@ export default function MooreFsmPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Comparing state assignments
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               I compared a guideline-based state assignment against a Gray-code
               assignment. The goal was to keep related states adjacent where it
@@ -242,10 +242,10 @@ export default function MooreFsmPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Implementing and verifying the circuit
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               The final circuit was implemented structurally in Quartus with
               D flip-flops, AND gates, OR gates, and inverters. I kept the logic
@@ -282,8 +282,8 @@ export default function MooreFsmPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">Takeaways</h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <h2 className="text-2xl text-black">Takeaways</h2>
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               This project made digital logic feel less abstract. A small change
               in state assignment could affect the amount of hardware needed,
@@ -305,7 +305,7 @@ export default function MooreFsmPage() {
         />
 
         <motion.section variants={fadeUp} className="mt-14 pb-8">
-          <h2 className="text-2xl tracking-tight text-black">Tools & Skills</h2>
+          <h2 className="text-2xl text-black">Tools & Skills</h2>
           <div className="mt-5 flex flex-wrap gap-2">
             {tools.map((tool) => (
               <span

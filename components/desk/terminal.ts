@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { aboutParagraphs } from '@/content/about';
+import { aboutParagraphs, aboutSignoffText } from '@/content/about';
 import { getPost, posts } from '@/content/posts';
 import { getProject, projects } from '@/content/projects';
 import { site } from '@/lib/site';
@@ -87,7 +87,7 @@ function page(path: string[], mode: TerminalMode): Line[] {
     return [
       { text: 'about', kind: 'title' },
       BLANK,
-      ...aboutParagraphs.flatMap((text) => [{ text, kind: 'out' as const }, BLANK]),
+      ...[...aboutParagraphs, aboutSignoffText].flatMap((text) => [{ text, kind: 'out' as const }, BLANK]),
       ...back('type .. to go back'),
     ];
   }

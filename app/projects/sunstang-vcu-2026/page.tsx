@@ -62,7 +62,7 @@ export default function SunstangPage() {
           variants={fadeUp}
           className="mt-4 flex min-w-0 items-start gap-3 sm:items-center sm:gap-4"
         >
-          <h1 className="min-w-0 text-3xl tracking-tight text-black sm:text-4xl">
+          <h1 className="min-w-0 text-3xl text-black sm:text-4xl">
             Sunstang VCU 2026
           </h1>
           <a
@@ -84,7 +84,7 @@ export default function SunstangPage() {
         {/* Subtitle */}
         <motion.p
           variants={fadeUp}
-          className="mt-3 text-base tracking-normal text-neutral-600 sm:text-lg sm:tracking-wide"
+          className="mt-3 text-base text-neutral-600 sm:text-lg"
         >
           Designing the vehicle control unit for a solar powered car.
         </motion.p>
@@ -127,10 +127,10 @@ export default function SunstangPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Overview
           </h2>
-          <div className="mt-8 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-8 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               The Sunstang VCU 2026 is a custom vehicle control unit PCB developed
               in KiCad. It brings driver inputs, pedal interfaces, high-voltage
@@ -170,7 +170,7 @@ export default function SunstangPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Functional Responsibilities
           </h2>
           <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
@@ -200,7 +200,7 @@ export default function SunstangPage() {
                 <h3 className="text-sm text-black">{title}</h3>
                 <ul className="mt-3 space-y-1.5">
                   {items.map((item) => (
-                    <li key={item} className="text-sm leading-relaxed tracking-wide text-neutral-600">
+                    <li key={item} className="text-sm leading-relaxed text-neutral-600">
                       · {item}
                     </li>
                   ))}
@@ -218,10 +218,10 @@ export default function SunstangPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Turning vehicle requirements into a circuit
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               As part of the Driver Controls Team, my main task was to build the
               PCB for the vehicle control unit. Its main role is to know what the
@@ -247,10 +247,10 @@ export default function SunstangPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-16"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Building the schematic in KiCad
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               We used KiCad because it is open source and easy to learn. There
               was also a legacy version of the old board that we were improving
@@ -275,10 +275,10 @@ export default function SunstangPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-16"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Placement before routing
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               There were a lot of iterations that were made before the final
               decision. It was important to think physically where everything
@@ -318,10 +318,10 @@ export default function SunstangPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-16"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Routing for clarity and reliability
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               Routing was a balancing act between electrical priorities and
               readability. I routed power and higher-current output paths first,
@@ -363,10 +363,10 @@ export default function SunstangPage() {
 
         {/* Thanks */}
         <motion.div variants={fadeUp} className="mt-14">
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             A special thanks
           </h2>
-          <p className="mt-4 text-base leading-relaxed tracking-wide text-neutral-700 max-w-2xl">
+          <p className="mt-4 text-base leading-relaxed text-neutral-700 max-w-2xl">
             I wanna give a special thank you to{' '}
             
             <a href="https://www.linkedin.com/in/xiuting-s/"
@@ -384,7 +384,7 @@ export default function SunstangPage() {
 
         {/* Tools */}
         <motion.div variants={fadeUp} className="mt-14 pb-8">
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Tools & Skills
           </h2>
           <div className="mt-5 flex flex-wrap gap-2">

@@ -48,7 +48,7 @@ export default function SquatPage() {
 
         {/* Title + GitHub */}
         <motion.div variants={fadeUp} className="mt-4 flex items-center gap-4">
-          <h1 className="text-4xl tracking-tight text-black">
+          <h1 className="text-4xl text-black">
             The Perfect Squat
           </h1>
 
@@ -71,7 +71,7 @@ export default function SquatPage() {
         {/* Subtitle */}
         <motion.p
           variants={fadeUp}
-          className="mt-3 text-lg tracking-wide text-neutral-600"
+          className="mt-3 text-lg text-neutral-600"
         >
           Developing a computer vision program that detects the bar path of your squat.
         </motion.p>
@@ -81,7 +81,7 @@ export default function SquatPage() {
           {tags.map((tag) => (
             <span
               key={tag}
-              className="bg-[#e0b24c] px-3 py-1 text-xs tracking-widest text-black"
+              className="bg-[#e0b24c] px-3 py-1 text-xs text-black"
             >
               {tag}
             </span>
@@ -99,10 +99,10 @@ export default function SquatPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight">
+          <h2 className="text-2xl">
             Overview
           </h2>
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
             <p>
               The Perfect Squat is a passion project that{' '}
               
@@ -133,11 +133,11 @@ export default function SquatPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             The Beginning
           </h2>
 
-        <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+        <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
           <p>
             Right when Google&apos;s MediaPipe framework was growing immense traction back in November of 2025,
             it got Mats and I thinking about all the possibilites that could be possible with this technology.
@@ -161,11 +161,11 @@ export default function SquatPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight">
+          <h2 className="text-2xl">
             Figuring out the tech stack
           </h2>
 
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
           <p>
             We knew from the get go that we wanted to track the linearity of a bar path but in order to do this,
             we needed to think about the: model, framework, data, libraries, and the gpu.
@@ -202,13 +202,13 @@ export default function SquatPage() {
           variants={fadeUp}
           className="scroll-mt-32 pt-14"
         >
-          <h2 className="text-2xl tracking-tight">
+          <h2 className="text-2xl">
             Current stage
           </h2>
 
           <p><i className="text-neutral-600">Updated: March 27 2026</i></p>
 
-          <div className="mt-6 space-y-5 text-base leading-relaxed tracking-wide text-neutral-700">
+          <div className="mt-6 space-y-5 text-base leading-relaxed text-neutral-700">
           <p>
             Currently, we have a working MVP. Being able to detect and track keypoints of a barbell and
             visualize this data to display the linearity of its path via video and graph.
@@ -223,22 +223,22 @@ export default function SquatPage() {
           <article className="mt-10 overflow-hidden border border-black/10 bg-white/30">
             <div className="flex items-start justify-between gap-5 p-6">
               <div>
-                <p className="text-base tracking-wide text-black">
+                <p className="text-base text-black">
                   Hanjing Lin
                 </p>
-                <p className="mt-1 text-xs tracking-wide text-neutral-600">
+                <p className="mt-1 text-xs text-neutral-600">
                   The Perfect Squat · Project update
                 </p>
               </div>
               <span
-                className="text-xs font-semibold tracking-wide text-[#0a66c2]"
+                className="text-xs font-semibold text-[#0a66c2]"
                 aria-label="LinkedIn"
               >
                 in
               </span>
             </div>
 
-            <div className="px-6 pb-6 text-base leading-relaxed tracking-wide text-neutral-700">
+            <div className="px-6 pb-6 text-base leading-relaxed text-neutral-700">
               <p className="text-xl leading-relaxed text-black">
                 We locked in and it actually worked.
               </p>
@@ -262,7 +262,7 @@ export default function SquatPage() {
               href={linkedInPost}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between border-t border-black/10 px-6 py-4 text-sm tracking-wide text-neutral-600 transition-colors duration-200 hover:bg-black/[0.02] hover:text-black"
+              className="flex items-center justify-between border-t border-black/10 px-6 py-4 text-sm text-neutral-600 transition-colors duration-200 hover:bg-black/[0.02] hover:text-black"
             >
               <span>View the original post on LinkedIn</span>
               <span aria-hidden="true">↗</span>
@@ -275,7 +275,7 @@ export default function SquatPage() {
 
         {/* Tools */}
         <motion.div variants={fadeUp} className="mt-14 pb-8">
-          <h2 className="text-2xl tracking-tight text-black">
+          <h2 className="text-2xl text-black">
             Tools & Skills
           </h2>
           <div className="mt-5 flex flex-wrap gap-2">
