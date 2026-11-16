@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "models": "blender -b --python blender/desk_scene.py"
+    "models": "blender -b --python blender/build_all.py"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

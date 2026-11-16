@@ -22,6 +22,9 @@ export class SilhouetteOutlinePass extends Pass {
   private mask: THREE.WebGLRenderTarget;
   private black = new THREE.MeshBasicMaterial({ color: '#000000' });
   private white = new THREE.MeshBasicMaterial({ color: '#ffffff', depthFunc: THREE.LessEqualDepth });
+  /** Cut-out variants of black/white for alpha-tested meshes (stickers), so the mask has their shape, not their quad. */
+  private cutouts = new Map<string, THREE.MeshBasicMaterial>();
+  private swapped: [THREE.Mesh, THREE.Material | THREE.Material[]][] = [];
   private quad: FullScreenQuad;
   private material: THREE.ShaderMaterial;
   private clearColor = new THREE.Color();
@@ -116,11 +119,9 @@ export class SilhouetteOutlinePass extends Pass {
     renderer.clear();
     renderer.autoClear = false;
 
-    scene.overrideMaterial = this.black;
-    renderer.render(scene, camera);
-    scene.overrideMaterial = this.white;
+    this.maskWith(this.black, () => renderer.render(scene, camera));
     camera.layers.set(OUTLINE_LAYER);
-    renderer.render(scene, camera);
+    this.maskWith(this.white, () => renderer.render(scene, camera));
 
     camera.layers.mask = prev.layers;
     scene.overrideMaterial = prev.override;
@@ -137,7 +138,44 @@ export class SilhouetteOutlinePass extends Pass {
     this.quad.render(renderer);
   }
 
+  /**
+   * Render with `base` everywhere (like overrideMaterial), except meshes whose
+   * own material cuts its shape out of a texture (alphaTest): they get a copy
+   * of `base` with the same map and cut-off.
+   */
+  private maskWith(base: THREE.MeshBasicMaterial, render: () => void) {
+    const { scene } = this;
+    scene.overrideMaterial = null;
+    scene.traverseVisible((o) => {
+      const mesh = o as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const own = mesh.material as THREE.MeshStandardMaterial;
+      let mask: THREE.Material = base;
+      if (!Array.isArray(own) && own.alphaTest > 0 && own.map) {
+        const key = `${base.uuid}:${own.map.uuid}`;
+        let cut = this.cutouts.get(key);
+        if (!cut) {
+          cut = base.clone();
+          cut.map = own.map;
+          cut.alphaTest = own.alphaTest;
+          // keep the colour flat: the map only cuts the shape
+          cut.onBeforeCompile = (shader) => {
+            shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>\n diffuseColor.rgb = diffuse;');
+          };
+          this.cutouts.set(key, cut);
+        }
+        mask = cut;
+      }
+      this.swapped.push([mesh, mesh.material]);
+      mesh.material = mask;
+    });
+    render();
+    for (const [mesh, material] of this.swapped) mesh.material = material;
+    this.swapped.length = 0;
+  }
+
   dispose() {
+    for (const cut of this.cutouts.values()) cut.dispose();
     this.mask.dispose();
     this.black.dispose();
     this.white.dispose();

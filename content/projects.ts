@@ -66,25 +66,6 @@ export const projects: Project[] = [
     },
   },
   {
-    slug: 'tiny-squares-camera-system',
-    title: 'Tiny Squares: Camera System',
-    summary:
-      'Engineering a camera that shoots, converts image, bitmaps jpg, and prints instantly.',
-    cover: '/projects/tiny-squares-camera-system/cover.jpg',
-    tags: ['Embedded Systems', 'Computer Vision', 'Image Processing'],
-    tools: ["ESP32", "Camera Module", "Embedded C++", "JPEG", "Bitmap Processing", "Thermal Printing"],
-    overview: [
-      "Tiny Squares is a compact camera system built around the ESP32-Wrover-Kit by Espressif alongside the OV3660 camera module and a thermal printer.",
-      "This system combines camera control, constrained image processing, serial communication, and power management in one small, embedded pipeline. Each stage must operate within the ESP32's limited memory while still producing an image that remains recognizable on a thermal print.",
-      "In this post, the first part will be more of a personal story of how this came to be. The second part will be the technical aspect of the system.",
-    ],
-    seo: {
-      title: 'Tiny Squares Camera System',
-      description:
-        'Engineering an embedded camera that captures, converts, and instantly prints images.',
-    },
-  },
-  {
     slug: 'moore-fsm-sequence-detector',
     title: 'Moore FSM: A Sequence Detector',
     summary:

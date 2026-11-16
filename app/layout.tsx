@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MotionProvider from "@/components/MotionProvider";
+import ExternalLinkPrompt from "@/components/ExternalLinkPrompt";
 import { mailto, site } from "@/lib/site";
 
 const siteUrl = site.url;
@@ -140,6 +141,7 @@ export default function RootLayout({
           </div>
 
           <Footer />
+          <ExternalLinkPrompt />
         </MotionProvider>
       </body>
     </html>

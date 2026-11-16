@@ -1,5 +1,6 @@
 import { getPost, postHref } from '@/content/posts';
 import { getProject, projectHref } from '@/content/projects';
+import { song } from '@/content/music';
 import { site } from '@/lib/site';
 
 /**
@@ -22,46 +23,45 @@ export type DeskItem = {
 
 function project(slug: string, node: string): DeskItem {
   const { title, summary } = getProject(slug);
-  return { id: slug, node, kicker: 'project', title, summary, href: projectHref(slug), cta: 'read the write-up' };
+  return { id: slug, node, kicker: 'project', title, summary, href: projectHref(slug), cta: 'take a closer look' };
 }
 
 const intro = getPost('introduction');
 
 export const DESK_ITEMS: DeskItem[] = [
   project('sunstang-vcu-2026', 'Item_sunstang'),
-  project('tiny-squares-camera-system', 'Item_tiny'),
   project('the-perfect-squat', 'Item_squat'),
   project('moore-fsm-sequence-detector', 'Item_fsm'),
   {
     id: 'about',
     node: 'Item_about',
     kicker: 'about',
-    title: 'third-year software engineering',
+    title: 'hanjing’s id',
     summary: 'hi! i’m hanjing, studying software engineering at the university of western ontario.',
     href: '/about',
-    cta: 'about me',
+    cta: 'learn more',
   },
   {
     id: 'music',
     node: 'Item_music',
-    kicker: 'about',
-    title: 'music',
-    summary: 'guitar, piano, and tenor sax. creativity and curiosity keep me building.',
+    kicker: 'music',
+    title: `${song.title} · ${song.artist}`,
+    summary: 'what i’ve been listening to. open the case to play it.',
     href: '/about',
-    cta: 'about me',
+    cta: 'listen',
   },
   {
     id: 'blog',
     node: 'Item_blog',
     kicker: 'blog',
-    title: intro.listTitle,
-    summary: intro.seo.description,
+    title: 'hanjing’s journal',
+    summary: `${intro.listTitle}, and a guest book at the back.`,
     href: postHref(intro.slug),
-    cta: 'read the blog',
+    cta: 'open the journal',
   },
 ];
 
-/** The label tape on the lid. */
+/** The label tape on the lid: it just names the case and points inside. */
 export const CONTACT_ITEM: DeskItem = {
   id: 'contact',
   node: 'CaseTape',
@@ -69,7 +69,7 @@ export const CONTACT_ITEM: DeskItem = {
   title: 'property of hanjing lin',
   summary: `if found, return to ${site.emailLabel}.`,
   href: '/contact',
-  cta: 'get in touch',
+  cta: 'see what’s inside',
 };
 
 export const ALL_ITEMS = [...DESK_ITEMS, CONTACT_ITEM];

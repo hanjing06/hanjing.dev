@@ -23,10 +23,7 @@ const TAPE_HEIGHT = 0.016;
  * Text on each label-tape strip. `length` must match LABEL_LENGTHS in
  * blender/desk_scene.py so the letters aren't stretched.
  */
-export const LABEL_STRIPS = [
-  { text: 'PROPERTY OF HANJING LIN', length: 0.152 },
-  { text: 'RETURN TO QUALCOMM OFFICE', length: 0.162 },
-];
+export const LABEL_STRIPS = [{ text: 'PROPERTY OF HANJING LIN', length: 0.152 }];
 
 const MONO = 'Menlo, Consolas, "SFMono-Regular", monospace';
 
@@ -197,61 +194,46 @@ export function cardTexture(fonts: DeskFonts) {
   return toTexture(el);
 }
 
-/** Folded note pointing at the blog. */
-export function noteTexture(fonts: DeskFonts) {
-  const { el, ctx } = canvas(840, 640);
-  ctx.fillStyle = '#fffdf6';
-  ctx.fillRect(0, 0, el.width, el.height);
-  ctx.strokeStyle = 'rgba(80, 120, 200, 0.3)';
-  ctx.lineWidth = 3;
-  for (let y = 150; y < el.height; y += 80) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(el.width, y);
-    ctx.stroke();
-  }
-  ctx.strokeStyle = 'rgba(210, 70, 70, 0.4)';
+/**
+ * Placeholder CD cover (used until content/music.ts names a cover image):
+ * paper, a painted sun, and the song in small type.
+ */
+export function coverTexture(fonts: DeskFonts, title: string, artist: string) {
+  const { el, ctx } = canvas(512, 512);
+  ctx.fillStyle = '#efe2c4';
+  ctx.fillRect(0, 0, 512, 512);
+  const sun = ctx.createRadialGradient(300, 210, 10, 300, 210, 170);
+  sun.addColorStop(0, '#e2462a');
+  sun.addColorStop(0.7, '#c9301c');
+  sun.addColorStop(1, 'rgba(201, 48, 28, 0)');
+  ctx.fillStyle = sun;
   ctx.beginPath();
-  ctx.moveTo(90, 0);
-  ctx.lineTo(90, el.height);
-  ctx.stroke();
-  ctx.fillStyle = '#1f3fa8';
-  ctx.font = `italic 500 92px ${fonts.serif}`;
-  ctx.fillText('start here.', 130, 205);
-  ctx.font = `italic 60px ${fonts.serif}`;
-  ctx.fillText('→ read the blog', 130, 370);
-  ctx.fillText('- hanjing', 470, 530);
+  ctx.arc(300, 210, 170, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#2b1a10';
+  ctx.font = `500 40px ${fonts.serif}`;
+  ctx.fillText(title, 40, 430);
+  ctx.fillStyle = '#6b4a2e';
+  ctx.font = `italic 30px ${fonts.serif}`;
+  ctx.fillText(artist, 40, 472);
   return toTexture(el);
 }
 
-/** Thermal print from the Tiny Squares camera: a dithered photo. */
-export function printTexture() {
-  const { el, ctx } = canvas(360, 440);
-  ctx.fillStyle = '#f7f6f1';
-  ctx.fillRect(0, 0, el.width, el.height);
-  const size = 300;
-  const img = ctx.createImageData(size, size);
-  const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
-  for (let y = 0; y < size; y += 1) {
-    for (let x = 0; x < size; x += 1) {
-      const sky = 0.85 - y / size * 0.5;
-      const sun = Math.hypot(x - 200, y - 110) < 46 ? 1 : 0;
-      const hill = y > 190 + Math.sin(x / 40) * 24 ? 0.18 : 0;
-      const v = hill || Math.max(sky, sun);
-      const on = v * 16 > bayer[(y % 4) * 4 + (x % 4)];
-      const i = (y * size + x) * 4;
-      const c = on ? 247 : 24;
-      img.data[i] = c;
-      img.data[i + 1] = c;
-      img.data[i + 2] = c - (on ? 6 : 0);
-      img.data[i + 3] = 255;
-    }
-  }
-  ctx.putImageData(img, 30, 30);
-  ctx.fillStyle = '#222';
-  ctx.font = `22px ${MONO}`;
-  ctx.fillText('TINY SQUARES #042', 30, 365);
-  ctx.fillText('esp32 · 1-bit', 30, 400);
+/** The small paper label on the journal's cover. */
+export function journalLabelTexture(fonts: DeskFonts) {
+  const { el, ctx } = canvas(384, 256);
+  ctx.fillStyle = '#f6efdc';
+  ctx.fillRect(0, 0, 384, 256);
+  ctx.strokeStyle = '#7a2e24';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(14, 14, 356, 228);
+  ctx.fillStyle = '#2b1a10';
+  ctx.textAlign = 'center';
+  ctx.font = `italic 62px ${fonts.serif}`;
+  ctx.fillText('journal', 192, 128);
+  ctx.font = `30px ${fonts.serif}`;
+  ctx.fillStyle = '#6b4a2e';
+  ctx.fillText('& guest book', 192, 182);
   return toTexture(el);
 }
 
@@ -270,14 +252,35 @@ function noteCanvas(fonts: DeskFonts, lines: [string, number][], top = 170) {
   return toTexture(el);
 }
 
-/** Sticky note on the desk: drag it around, click it for the normal site. */
+/** Sticky note inside the case lid: click it (or its tape) for the normal site. */
 export function stickyTexture(fonts: DeskFonts) {
   return noteCanvas(fonts, [
-    ['just want', 64],
-    ['the normal', 64],
-    ['website?', 64],
-    ['click me →', 56],
-  ], 150);
+    ['just want', 70],
+    ['the normal', 70],
+    ['website?', 70],
+  ], 220);
+}
+
+/** The strip of tape holding the note up, with the way out written on it (4:1, see blender/desk_scene.py). */
+export function stickyTapeTexture(fonts: DeskFonts) {
+  const { el, ctx } = canvas(1024, 256);
+  // translucent washi tape with torn ends
+  ctx.fillStyle = 'rgba(248, 244, 232, 0.82)';
+  ctx.beginPath();
+  ctx.moveTo(10, 8);
+  for (let y = 8; y <= 248; y += 16) ctx.lineTo(y % 32 ? 0 : 14, y);
+  ctx.lineTo(1014, 248);
+  for (let y = 248; y >= 8; y -= 16) ctx.lineTo(y % 32 ? 1024 : 1010, y);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.fillRect(20, 20, 984, 36);
+  ctx.fillStyle = '#26315f';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = `600 70px ${fonts.tape}`;
+  ctx.fillText('Click here for the normal website', 512, 134);
+  return toTexture(el);
 }
 
 /** Sticky note on the wall (terminal view): back to the normal site. */
@@ -287,4 +290,163 @@ export function wallNoteTexture(fonts: DeskFonts) {
     ['← back to the', 52],
     ['normal site', 52],
   ], 180);
+}
+
+// ---------------------------------------------------------------- circuit boards (blender/boards.py)
+
+/** Silkscreen text on the VCU, from the KiCad layout: [text, x, y] in board mm, centred. */
+const VCU_SILK: [string, number, number][] = [
+  ['LV Switch', 86.5, 157.5], ['HV Switch', 105, 157.75], ['Blue LEDs', 127.9, 159.5], ['Green LEDs', 154.2, 159],
+  ['Pre-charge', 135, 161.75], ['Mode Select', 141, 101.5], ['Gear Select', 112, 100.5], ['Left Signal', 93, 128.5],
+  ['Hazard', 120, 128.5], ['Right Signal', 146.6, 128.5], ['SUNSTANG', 167.7, 154.8], ['+12V', 255, 152.5],
+  ['GND', 259.5, 157], ['+3V3', 251, 157], ['+5V', 239, 162.5], ['CANH', 247, 196], ['CANL', 241, 196], ['GND', 236, 196],
+  ['+12V', 253, 196], ['LV', 100.5, 105.4], ['HV', 100.5, 110], ['HVIL', 101.3, 114.6], ['FAULT', 102, 119.2],
+  ['J1', 116, 185.5], ['J2', 196, 185.5], ['U5', 254, 72], ['DS1', 80, 99],
+];
+
+/** Silkscreen labels of the parts you can press or read, drawn larger. */
+const VCU_CONTROL_LABELS = new Set(['LV Switch', 'HV Switch', 'Blue LEDs', 'Green LEDs', 'Pre-charge', 'Mode Select', 'Gear Select', 'Left Signal', 'Hazard', 'Right Signal', 'LV', 'HV', 'HVIL', 'FAULT']);
+
+/**
+ * The Sunstang VCU's silkscreen (10 px per board mm, transparent): labels,
+ * the Nucleo and LCD outlines, the header pads, the team's names.
+ */
+export function vcuSilkTexture() {
+  const { el, ctx } = canvas(1995, 1400);
+  const px = (x: number, y: number): [number, number] => [(x - 70) * 10, (y - 58.5) * 10];
+  const white = 'rgba(255,255,255,0.9)';
+  ctx.strokeStyle = white;
+  ctx.lineWidth = 3;
+  // outlines: the Nucleo (dashed) and the LCD
+  ctx.setLineDash([14, 10]);
+  ctx.strokeRect(...px(182.7, 66.9), 700, 825);
+  ctx.setLineDash([]);
+  ctx.strokeRect(...px(79, 67), 720, 280);
+  // header pads: two 20-pin rows (J1, J2) and the 4-pin (J3)
+  const pad = (x: number, y: number) => {
+    const [cx, cy] = px(x, y);
+    ctx.fillStyle = '#d9ab4c';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#1b1f1d';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.fill();
+  };
+  for (const x0 of [116.25, 196.25]) for (let i = 0; i < 10; i += 1) for (const dy of [0, 3.5]) pad(x0 + i * 3.5, 187.3 + dy);
+  for (let i = 0; i < 4; i += 1) pad(247.5 + i * 2.7, 192);
+  // small passives drawn as outlines so the board doesn't look bare
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+  const rects: [number, number, number, number][] = [
+    [88, 105.5, 3.2, 1.6], [88, 110, 3.2, 1.6], [88, 114.5, 3.2, 1.6], [88, 119, 3.2, 1.6],
+    [121.75, 162.5, 3.2, 1.6], [121.75, 167.1, 3.2, 1.6], [121.75, 171.7, 3.2, 1.6], [121.75, 176.3, 3.2, 1.6], [121.75, 180.9, 3.2, 1.6],
+    [160.75, 163, 3.2, 1.6], [160.75, 167.5, 3.2, 1.6], [160.75, 172, 3.2, 1.6], [160.75, 176.4, 3.2, 1.6], [160.75, 180.9, 3.2, 1.6],
+    [181.15, 174.3, 3.2, 1.6], [194.5, 174.3, 3.2, 1.6], [207.9, 174.3, 3.2, 1.6], [221.3, 174.3, 3.2, 1.6], [234.65, 174.3, 3.2, 1.6],
+    [181.15, 177.8, 3.2, 1.6], [194.5, 177.8, 3.2, 1.6], [207.9, 177.8, 3.2, 1.6], [221.3, 177.8, 3.2, 1.6], [234.65, 177.8, 3.2, 1.6],
+    [109.4, 99, 1.6, 3.2], [114.4, 99, 3.2, 1.6], [114.4, 103, 3.2, 1.6], [123.9, 99.5, 3.2, 1.6], [104.8, 106.2, 1.6, 3.2], [104.8, 118.7, 1.6, 3.2],
+    [123.8, 106.2, 1.6, 3.2], [165.5, 92.5, 1.6, 3.2], [165.5, 103, 1.6, 3.2], [193, 149.5, 3.2, 1.6], [193, 153, 3.2, 1.6], [246, 164.5, 3.2, 1.6],
+    [99.7, 134.5, 1.6, 3.2], [99.7, 140.5, 1.6, 3.2], [126.9, 134.5, 1.6, 3.2], [126.9, 140.5, 1.6, 3.2], [153.4, 134.5, 1.6, 3.2], [153.4, 140.5, 1.6, 3.2],
+  ];
+  for (const [x, y, w, h] of rects) {
+    const [cx, cy] = px(x, y);
+    ctx.strokeRect(cx - w * 5, cy - h * 5, w * 10, h * 10);
+  }
+  // a few traces, for the feel of a routed board
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+  ctx.lineWidth = 4;
+  const trace = (points: [number, number][]) => {
+    ctx.beginPath();
+    points.forEach((p, i) => (i ? ctx.lineTo(...px(...p)) : ctx.moveTo(...px(...p))));
+    ctx.stroke();
+  };
+  trace([[150, 95], [175, 95], [200, 120]]);
+  trace([[150, 90], [178, 90], [205, 117]]);
+  trace([[130, 145], [130, 155], [180, 155], [200, 145]]);
+  trace([[160, 185], [160, 170], [172, 158], [205, 158]]);
+  trace([[250, 100], [250, 150]]);
+  // labels
+  ctx.fillStyle = white;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  for (const [text, x, y] of VCU_SILK) {
+    // the controls get big, bold labels so the board explains itself; the rest stay small
+    const size = text === 'SUNSTANG' ? 26 : VCU_CONTROL_LABELS.has(text) ? 24 : 15;
+    ctx.font = `${VCU_CONTROL_LABELS.has(text) ? 800 : 600} ${size}px ${MONO}`;
+    ctx.fillText(text, ...px(x, y));
+  }
+  ctx.textAlign = 'left';
+  ctx.font = `600 15px ${MONO}`;
+  ctx.fillText('Sunstang VCU 2026   Hanjing Lin   Sahil Sharma   Xiuting Shi', ...px(92.5, 151.5));
+  // the little sun over the car, next to the team name
+  const [sx, sy] = px(167.7, 147);
+  ctx.strokeStyle = white;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(sx, sy, 16, 0, Math.PI * 2);
+  ctx.stroke();
+  for (let i = 0; i < 8; i += 1) {
+    const a = (i / 8) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(sx + Math.cos(a) * 22, sy + Math.sin(a) * 22);
+    ctx.lineTo(sx + Math.cos(a) * 30, sy + Math.sin(a) * 30);
+    ctx.stroke();
+  }
+  return toTexture(el);
+}
+
+/** The DE1-SoC's silkscreen (10 px per board mm, transparent, origin at the board centre). */
+export function deSilkTexture() {
+  const { el, ctx } = canvas(1580, 1000);
+  const px = (x: number, y: number): [number, number] => [(x * 1000 + 79) * 10, (50 - y * 1000) * 10];
+  const white = 'rgba(255,255,255,0.9)';
+  ctx.fillStyle = white;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = `700 54px ${MONO}`;
+  ctx.fillText('DE1-SoC', ...px(0.045, 0.012));
+  ctx.font = `500 16px ${MONO}`;
+  ctx.fillText('Cyclone V SoC', ...px(0.045, 0.004));
+  ctx.fillText('terasic', ...px(0.045, -0.003));
+  // the parts the detector uses get big labels; HEX labels sit above the displays
+  ctx.font = `800 22px ${MONO}`;
+  for (let n = 0; n < 6; n += 1) ctx.fillText(`HEX${n}`, ...px(0.017 - n * 0.0118, -0.0095));
+  for (let i = 0; i < 10; i += 1) {
+    const used = i <= 3;
+    ctx.font = `${used ? 800 : 600} ${used ? 17 : 14}px ${MONO}`;
+    ctx.fillText(`LEDR${i}`, ...px(0.028 - i * 0.0065, -0.0337));
+    ctx.font = `${i === 0 ? 800 : 600} ${i === 0 ? 22 : 16}px ${MONO}`;
+    ctx.fillText(`SW${i}`, ...px(0.028 - i * 0.0065, -0.0478));
+  }
+  for (let i = 0; i < 4; i += 1) {
+    ctx.font = `${i <= 1 ? 800 : 600} ${i <= 1 ? 22 : 16}px ${MONO}`;
+    ctx.fillText(`KEY${i}`, ...px(0.074 - i * 0.0105, -0.0465));
+  }
+  // what the used ones do, in small print under the big names
+  ctx.font = `600 14px ${MONO}`;
+  ctx.fillText('clock', ...px(0.074, -0.0488));
+  ctx.fillText('reset', ...px(0.0635, -0.0488));
+  ctx.font = `600 14px ${MONO}`;
+  ctx.fillText('GPIO 0', ...px(-0.044, 0.0395));
+  ctx.fillText('GPIO 1', ...px(0.016, 0.0395));
+  ctx.fillText('VGA', ...px(-0.0715, 0.0155));
+  ctx.fillText('POWER', ...px(-0.052, 0.0395));
+  ctx.font = `600 15px ${MONO}`;
+  ctx.fillText('ECE 2277A', ...px(0.055, -0.017));
+  ctx.fillText('Moore FSM detector', ...px(0.055, -0.0215));
+  // pin-1 marks and a few traces
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 4;
+  const trace = (points: [number, number][]) => {
+    ctx.beginPath();
+    points.forEach((p, i) => (i ? ctx.lineTo(...px(...p)) : ctx.moveTo(...px(...p))));
+    ctx.stroke();
+  };
+  trace([[-0.03, 0.021], [-0.03, 0.016], [-0.014, 0.016]]);
+  trace([[0.03, 0.021], [0.03, 0.016], [0.014, 0.016]]);
+  trace([[0.0, -0.002], [0.0, -0.012], [-0.02, -0.012]]);
+  trace([[0.012, -0.002], [0.012, -0.024], [0.03, -0.024]]);
+  trace([[-0.044, 0.041], [-0.044, 0.03], [-0.03, 0.03]]);
+  return toTexture(el);
 }

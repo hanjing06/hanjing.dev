@@ -49,3 +49,9 @@ Thumbs.db
 # local AI-agent / tooling output
 .claude/settings.local.json
 graphify-out/
+
+# guest book entries saved locally (lib/guestbook.ts)
+/.data
+
+# python bytecode (blender scripts)
+__pycache__/

@@ -3,7 +3,8 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
-import { aboutLinks, aboutParagraphs, aboutSignoff, helloEmail } from '@/content/about';
+import { aboutLinks, aboutParagraphs, aboutSignoff } from '@/content/about';
+import { mailto, site } from '@/lib/site';
 import { fadeUp, pageContainer } from '@/lib/motion';
 import { reveal, type SectionProps } from './reveal';
 
@@ -11,11 +12,11 @@ const LINK_WORDS = new RegExp(`(${Object.keys(aboutLinks).join('|')})`);
 const linkClass =
   'font-semibold text-neutral-700 underline decoration-black/30 underline-offset-4 transition-colors duration-200 hover:text-black hover:decoration-black';
 
-/** Turns the words listed in `aboutLinks` into links. */
-function withLinks(paragraph: string) {
+/** Turns the words listed in `aboutLinks` into links (also used on the desk's ID card). */
+export function withLinks(paragraph: string, className = linkClass) {
   return paragraph.split(LINK_WORDS).map((part, i) =>
     aboutLinks[part] ? (
-      <a key={i} href={aboutLinks[part]} target="_blank" rel="noopener noreferrer" className={linkClass}>
+      <a key={i} href={aboutLinks[part]} target="_blank" rel="noopener noreferrer" className={className}>
         {part}
       </a>
     ) : (
@@ -64,8 +65,8 @@ export default function AboutSection({ heading = 'h1', inView = false, children 
           <p>
             {aboutSignoff.before}
             <a
-              href={`mailto:${helloEmail}`}
-              title={helloEmail}
+              href={mailto}
+              title={site.email}
               className={linkClass}
             >
               {aboutSignoff.link}
