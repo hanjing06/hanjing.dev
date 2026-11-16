@@ -3,11 +3,15 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import type { Pass } from 'three/addons/postprocessing/Pass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { song } from '@/content/music';
+import { stickerImage } from '@/content/stickers';
+import { boardMaterial } from './lab/boardLook';
 import {
   cardTexture,
+  coverTexture,
   matTexture,
-  noteTexture,
-  printTexture,
+  journalLabelTexture,
+  stickyTapeTexture,
   stickyTexture,
   wallNoteTexture,
   tapeTextures,
@@ -15,6 +19,9 @@ import {
   type DeskFonts,
 } from './textures';
 
+
+/** Name of the desk lamp's spotlight, so the engine can switch it. */
+export const LAMP_SPOT = 'LampSpot';
 /**
  * The cozy, architectural desk at dusk: warm low sun through a mullioned
  * window, an architect's lamp pooling light on the cutting mat, the monitor's
@@ -55,35 +62,33 @@ function material(role: string, { fonts, screenMap, track }: Pick<LookContext, '
     case 'case_lid': return plastic('#94d5fb');
     case 'case_button_a': return plastic('#ffd84a');
     case 'case_button_b': return plastic('#ff7eb6');
-    case 'case_sharpener': return plastic('#e8eef2');
+    case 'case_trim': return plastic('#f4f7fa', 0.3);
+    case 'case_drawer': return plastic('#eef3f7', 0.35);
+    case 'case_dial': return plastic('#f4f7fa', 0.3);
+    case 'case_dial_face': return new THREE.MeshPhysicalMaterial({ color: '#ffffff', roughness: 0.08, clearcoat: 1 });
     case 'case_hinge': return plastic('#6fb3db');
     case 'case_hole': return matte('#2a2f36', 0.8);
-    case 'label_1':
-    case 'label_2': {
-      const { map, bumpMap } = tapeTextures(fonts, role === 'label_1' ? 0 : 1);
+    case 'label_1': {
+      const { map, bumpMap } = tapeTextures(fonts, 0);
       return new THREE.MeshPhysicalMaterial({
         map: track(map), bumpMap: track(bumpMap), bumpScale: 4, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.06,
       });
     }
-    // items
-    case 'pcb_green': return matte('#1f6b45', 0.45);
-    case 'pcb_blue': return matte('#2552a8', 0.45);
-    case 'chip_black': return matte('#15181a', 0.35);
-    case 'chip_silver': return metal('#d9dde2', 0.35);
-    case 'gold': return metal('#d9ab4c', 0.3);
-    case 'plastic_white': return matte('#f1f2ef', 0.5);
-    case 'led_red': return new THREE.MeshStandardMaterial({ color: '#ff4a3d', emissive: '#ff2a1d', emissiveIntensity: 1.6 });
-    case 'cam_body': return plastic('#f4f3ef', 0.45);
-    case 'cam_lens': return matte('#1d2022', 0.3);
-    case 'glass': return new THREE.MeshPhysicalMaterial({ color: '#3a6ea8', roughness: 0.05, metalness: 0.2, clearcoat: 1 });
-    case 'print': return mapped(track(printTexture()), 0.95);
+    // items (the two circuit boards' roles are in lab/boardLook.ts, shared with the lab views)
     case 'chrome': return metal('#c9cfd4', 0.22);
     case 'plate_black': return matte('#202325', 0.5);
     case 'card': return matte('#fafafa', 0.5);
     case 'card_face': return new THREE.MeshPhysicalMaterial({ map: track(cardTexture(fonts)), roughness: 0.45, clearcoat: 0.4 });
-    case 'note': return matte('#fffdf6', 0.95);
-    case 'note_face': return mapped(track(noteTexture(fonts)), 0.95);
-    case 'pick': return new THREE.MeshPhysicalMaterial({ color: '#f2a93b', roughness: 0.25, clearcoat: 1 });
+    case 'journal_cover': return new THREE.MeshPhysicalMaterial({ color: '#7a2e24', roughness: 0.65, sheen: 0.4, sheenColor: '#c8735f' });
+    case 'journal_pages': return matte('#f1e8d4', 0.95);
+    case 'journal_label': return mapped(track(journalLabelTexture(fonts)), 0.9);
+    case 'journal_band': return matte('#1d1a18', 0.6);
+    // the CD in its jewel case (the engine swaps in a real cover image when there is one)
+    case 'cd_tray': return plastic('#1a1b1e', 0.35);
+    case 'cd_disc': return new THREE.MeshPhysicalMaterial({ color: '#d9dde2', metalness: 1, roughness: 0.18, iridescence: 1, iridescenceIOR: 1.6 });
+    case 'cd_hub': return new THREE.MeshPhysicalMaterial({ color: '#c8ccd2', roughness: 0.2, transparent: true, opacity: 0.7 });
+    case 'cd_shell': return new THREE.MeshPhysicalMaterial({ color: '#e8f1f6', roughness: 0.05, clearcoat: 1, transparent: true, opacity: 0.22, depthWrite: false });
+    case 'cd_cover': return mapped(track(coverTexture(fonts, song.title, song.artist)), 0.6);
     // desk
     case 'desk_wood': return new THREE.MeshPhysicalMaterial({ map: track(woodTexture()), roughness: 0.5, clearcoat: 0.25, clearcoatRoughness: 0.5 });
     case 'mat': return mapped(track(matTexture(fonts)), 0.92);
@@ -104,12 +109,23 @@ function material(role: string, { fonts, screenMap, track }: Pick<LookContext, '
     case 'book_1': return matte('#2f4a6b', 0.8);
     case 'book_2': return matte('#c9b28a', 0.85);
     case 'book_3': return matte('#8a3b32', 0.8);
-    case 'scale_ruler': return metal('#d6d9dc', 0.35);
     case 'sticky': return matte('#ffe873', 0.9);
     case 'sticky_face': return mapped(track(stickyTexture(fonts)), 0.9);
+    case 'sticky_tape': return new THREE.MeshStandardMaterial({ map: track(stickyTapeTexture(fonts)), transparent: true, roughness: 0.75, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
     case 'wall_note_face': return mapped(track(wallNoteTexture(fonts)), 0.9);
     case 'wall': return matte('#4a3f36', 0.95);
-    default: return undefined;
+    default: {
+      if (role.startsWith('sticker_')) {
+        // a die-cut sticker: a PNG with a white bubble border and transparent corners
+        const map = track(new THREE.TextureLoader().load(stickerImage(role.slice('sticker_'.length))));
+        map.flipY = false;
+        map.colorSpace = THREE.SRGBColorSpace;
+        map.anisotropy = 16;
+        map.generateMipmaps = true;
+        return new THREE.MeshPhysicalMaterial({ map, transparent: true, alphaTest: 0.2, roughness: 0.3, clearcoat: 0.9, clearcoatRoughness: 0.15 });
+      }
+      return boardMaterial(role, { track });
+    }
   }
 }
 
@@ -245,11 +261,12 @@ export function applyLook({ scene, renderer, model, fonts, screenMap, addPass, t
   sun.shadow.radius = 3;
   scene.add(sun, sun.target, windowGobo(sunDirection, centre, track));
 
-  // architect's lamp: warm pool on the mat
+  // architect's lamp: warm pool on the mat (the engine switches it via LAMP_SPOT)
   const lampAt = model.getObjectByName('LampLight')?.getWorldPosition(new THREE.Vector3());
   const lampTarget = model.getObjectByName('LampTarget')?.getWorldPosition(new THREE.Vector3());
   if (lampAt && lampTarget) {
     const lamp = new THREE.SpotLight('#ffcf8f', 0.16, 0, 0.62, 0.75, 2);
+    lamp.name = LAMP_SPOT;
     lamp.position.copy(lampAt);
     lamp.target.position.copy(lampTarget);
     lamp.castShadow = true;

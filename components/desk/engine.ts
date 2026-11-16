@@ -1,43 +1,68 @@
 import * as THREE from 'three';
+import { song } from '@/content/music';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { CONTACT_ITEM, DESK_ITEMS } from './items';
+import { stickers } from '@/content/stickers';
+import { CONTACT_ITEM, DESK_ITEMS, getDeskItem } from './items';
 import { setupKeyboard, type DeskKeyboard } from './keyboard';
-import { applyLook } from './look';
+import { LAMP_SPOT, applyLook } from './look';
 import { OUTLINE_LAYER, SilhouetteOutlinePass } from './SilhouetteOutlinePass';
 import { Terminal, TerminalScreen } from './terminal';
-import type { DeskFonts } from './textures';
+import { coverTexture, type DeskFonts } from './textures';
 
 const MODEL_URL = '/desk/desk.glb';
 
 /** Hover/selection targets reported to React. */
-export type DeskTarget = string; // an item id, 'case', 'contact', 'monitor', or 'sticky'
+export type DeskTarget = string; // an item id, 'case', 'contact', 'monitor', 'lamp', 'sticky', 'wall-note' or 'sticker:<id>'
 export type DeskMode = 'desk' | 'terminal';
 
+/** What React can ask the running desk to do. */
+/** What's on the CD (content/music.ts, or the latest from Spotify). */
+export type CdSong = { title: string; artist: string; cover?: string };
+
+export type DeskControls = {
+  /** Turn to the monitor and open a site path (e.g. "/projects/x") in the terminal. */
+  openOnMonitor: (href: string) => void;
+  /** Open (play) or close (stop) the CD case. */
+  setMusic: (open: boolean) => void;
+  /** While something covers the desk (the journal), the desk ignores the keyboard. */
+  setCovered: (covered: boolean) => void;
+  /** Put a song on the CD: its cover image, or a drawn cover with the title and artist. */
+  setSong: (song: CdSong) => void;
+};
+
 export type DeskEvents = {
-  onHover?: (target: DeskTarget | null, state: { lidOpen: boolean; inCase: boolean }) => void;
+  onHover?: (target: DeskTarget | null, state: { lidOpen: boolean; inCase: boolean; lampOn: boolean }) => void;
   onSelect?: (id: string | null) => void;
-  onOpen?: (href: string) => void;
+  /** The CD case was opened (play) or closed (stop). */
+  onMusic?: (open: boolean) => void;
+  /** A part was picked up to look at over the desk (the ID, a project, the journal). */
+  onOpen?: (id: string) => void;
   onHint?: (hint: string) => void;
   /** 'terminal' while the camera is on the monitor and typing goes to the terminal. */
   onMode?: (mode: DeskMode) => void;
-  /** The visitor asked for the simple version (sticky note or `simple`). */
+  /** The visitor asked for the simple version (the wall note or `simple`). */
   onSimple?: () => void;
 };
 
 // ---------------------------------------------------------------- layout (metres, three.js axes)
 
 const MAT_Y = 0.002; // cutting-mat surface
+
+/** How far the CD case's lid opens (radians about its hinge). */
+const CD_OPEN = 1.95;
+
+/** Typing speed of commands the desk types for you, and the wait for the camera first. */
+const AUTO_TYPE_MS = 28;
+const AUTO_TYPE_DELAY_MS = 550;
 const DRAG_Y = 0.04; // carry height while dragging
 const LID_OPEN = -1.95; // CaseLid rotation.x when open (~112 deg)
 /** Inside of the pencil case, for "drop it back in". */
 const CASE_BOUNDS = { minX: -0.125, maxX: 0.125, minZ: -0.035, maxZ: 0.075 };
 /** Where parts can be set down on the mat. */
 const MAT_BOUNDS = { minX: -0.28, maxX: 0.28, minZ: -0.19, maxZ: 0.19 };
-/** Where free objects (the sticky note) can go: anywhere on the visible desk. */
-const DESK_BOUNDS = { minX: -0.62, maxX: 0.62, minZ: -0.24, maxZ: 0.34 };
 const WELCOME_HINT = 'start by opening the pencil case, or start typing to enter the terminal';
 /** Spots used when a part is tapped out (touch) instead of dragged. */
 const TAP_SLOTS: [number, number][] = [
@@ -49,9 +74,12 @@ const FOV = 32;
 const PITCH = THREE.MathUtils.degToRad(52);
 const TARGET = new THREE.Vector3(0, 0.0, 0.0);
 const FRAME_HALF_WIDTH = { wide: 0.5, narrow: 0.19 };
-const NO_SHADOW_CAST = new Set(['label_1', 'label_2', 'screen', 'sticky_face', 'card_face', 'note_face', 'print', 'mat', 'desk_wood', 'wall', 'wall_note_face']);
+const NO_SHADOW_CAST = new Set(['cd_shell', 'cd_cover', 'label_1', 'screen', 'sticky_face', 'sticky_tape', 'card_face', 'journal_label', 'mat', 'desk_wood', 'wall', 'wall_note_face', ...stickers.map((s) => `sticker_${s.id}`)]);
 const MAX_PIXEL_RATIO = 1.5;
 const DRAG_THRESHOLD_PX = 5;
+/** Padding (metres) around each part's invisible hit box. */
+const HIT_PAD = 0.006;
+const HIT_MATERIAL = new THREE.MeshBasicMaterial();
 const DOUBLE_CLICK_MS = 350;
 
 // terminal view: frame the monitor and the keyboard in front of it
@@ -76,8 +104,6 @@ type Item = {
   homePos: THREE.Vector3;
   homeQuat: THREE.Quaternion;
   out: boolean;
-  /** Not part of the pencil case (the sticky note): drags anywhere on the desk. */
-  free?: boolean;
 };
 
 type Tween = {
@@ -91,11 +117,19 @@ type Tween = {
 type Disposable = { dispose: () => void };
 
 const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+/** Ease out with a small overshoot (about 3%), for things that swing into place. */
+const settle = (k: number) => {
+  const c = 0.9;
+  return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2);
+};
+/** How long the camera takes between the desk and the terminal, in seconds. */
+const VIEW_S = 1.1;
 
 /**
  * Owns the WebGL renderer, the desk scene, and the pencil-case interaction:
- * click the case to open it, drag parts out onto the mat (tap on touch),
- * drop them back in, double-click a part to visit its page.
+ * click the case to open it, drag parts out onto the mat (tap on
+ * touch), drop them back in, double-click a part to pick it up. Nothing
+ * navigates away: parts open over the desk, pages open in the terminal.
  *
  * React only creates it, listens to its events, and disposes it.
  */
@@ -118,6 +152,8 @@ export class DeskEngine {
   private disposed = false;
   private distance = 1;
   private resources: Disposable[] = [];
+  private cdCover: THREE.Mesh | null = null;
+  private pendingSong: CdSong | null = null;
   private tweens: Tween[] = [];
 
   // typing: the desk keyboard mirrors real keys, the monitor runs a terminal
@@ -139,12 +175,27 @@ export class DeskEngine {
   private pickMeshes: THREE.Object3D[] = [];
   private lidOpen = false;
   private hovered: THREE.Object3D | null = null;
+  /** The desk lamp: click it to switch it on or off. */
+  private lampRoot: THREE.Object3D | null = null;
+  private lampOn = true;
+  /** The CD in its jewel case; open while its song plays. */
+  private cd: { lid: THREE.Object3D; disc: THREE.Object3D | null } | null = null;
+  private cdOpen = false;
+  /** The selected part, if any (enter opens it). */
+  private selectedId: string | null = null;
+  private covered = false;
+  /** Lamp brightness, 0 (off) to 1 (on), and what full brightness means. */
+  private lampLevel = 1;
+  private lamp: { spot: THREE.SpotLight; light: number; bulb: THREE.MeshStandardMaterial | null; glow: number } | null = null;
   private outlined: THREE.Object3D | null = null;
 
   // pointer / drag state
   private down: { x: number; y: number; root: THREE.Object3D | null; touch: boolean } | null = null;
   private drag: { item: Item; offset: THREE.Vector3; target: THREE.Vector3; last: THREE.Vector3 } | null = null;
   private lastClick = { root: null as THREE.Object3D | null, time: 0 };
+  private lidToggledAt = 0;
+  /** Pending keystroke of a command the desk is typing for the visitor. */
+  private autoType: number | null = null;
   private dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -DRAG_Y);
   private hit = new THREE.Vector3();
 
@@ -211,11 +262,15 @@ export class DeskEngine {
     if (this.caseRoot) this.pickRoots.set(this.caseRoot, 'case');
     const monitor = model.getObjectByName('Monitor');
     if (monitor) this.pickRoots.set(monitor, 'monitor');
+    // the sticky note stuck inside the lid, and the stickers on top of it
     const sticky = model.getObjectByName('StickyNote');
-    if (sticky) {
-      this.pickRoots.set(sticky, 'sticky');
-      this.items.push({ id: 'sticky', href: '', root: sticky, homePos: sticky.position.clone(), homeQuat: sticky.quaternion.clone(), out: true, free: true });
+    if (sticky) this.pickRoots.set(sticky, 'sticky');
+    for (const sticker of stickers) {
+      const node = model.getObjectByName(`Sticker_${sticker.id}`);
+      if (node) this.pickRoots.set(node, `sticker:${sticker.id}`);
     }
+    this.lampRoot = model.getObjectByName('Lamp') ?? null;
+    if (this.lampRoot) this.pickRoots.set(this.lampRoot, 'lamp');
     const wallNote = model.getObjectByName('WallNote');
     if (wallNote) this.pickRoots.set(wallNote, 'wall-note');
     if (this.tapeRoot) this.pickRoots.set(this.tapeRoot, 'contact');
@@ -225,10 +280,38 @@ export class DeskEngine {
       this.items.push({ id: info.id, href: info.href, root, homePos: root.position.clone(), homeQuat: root.quaternion.clone(), out: false });
       this.pickRoots.set(root, info.id);
     }
+    const cdLid = model.getObjectByName('MusicLid');
+    if (cdLid) this.cd = { lid: cdLid, disc: model.getObjectByName('MusicDisc') ?? null };
+    this.cdCover = (model.getObjectByName('MusicCover') as THREE.Mesh | undefined) ?? null;
+    if (this.pendingSong) this.setSong(this.pendingSong);
+    else if (song.cover) this.setSong(song);
     for (const root of this.pickRoots.keys()) {
       root.traverse((o) => {
         if ((o as THREE.Mesh).isMesh) this.pickMeshes.push(o);
       });
+    }
+    // thin parts (the barbell, the cards) are hard to hit: give each part an
+    // invisible, padded hit box so a click near it still finds it, not the case
+    model.updateMatrixWorld(true);
+    for (const item of this.items) {
+      const box = new THREE.Box3().setFromObject(item.root);
+      if (box.isEmpty()) continue;
+      const size = box.getSize(new THREE.Vector3());
+      const center = item.root.worldToLocal(box.getCenter(new THREE.Vector3()));
+      const scale = item.root.getWorldScale(new THREE.Vector3());
+      const geometry = new THREE.BoxGeometry(
+        (size.x + HIT_PAD) / scale.x,
+        Math.max(size.y + HIT_PAD, 0.012) / scale.y,
+        (size.z + HIT_PAD) / scale.z,
+      );
+      const proxy = new THREE.Mesh(geometry, HIT_MATERIAL);
+      proxy.name = `${item.root.name}Hit`;
+      proxy.visible = false; // never drawn (or outlined), but still hit by the raycaster
+      proxy.userData.role = 'hit'; // look.ts leaves it alone
+      proxy.position.copy(center);
+      item.root.add(proxy);
+      this.pickMeshes.push(proxy);
+      this.resources.push(geometry);
     }
 
     this.scene.add(model);
@@ -244,6 +327,11 @@ export class DeskEngine {
         return resource;
       },
     });
+    const spot = this.scene.getObjectByName(LAMP_SPOT) as THREE.SpotLight | undefined;
+    if (spot) {
+      const bulb = ((this.lampRoot?.getObjectByName('LampBulb') as THREE.Mesh | undefined)?.material as THREE.MeshStandardMaterial | undefined) ?? null;
+      this.lamp = { spot, light: spot.intensity, bulb, glow: bulb?.emissiveIntensity ?? 0 };
+    }
     const keyboardRoot = model.getObjectByName('Keyboard');
     if (keyboardRoot) {
       this.keyboard = setupKeyboard(keyboardRoot, this.fonts, (resource) => {
@@ -257,6 +345,7 @@ export class DeskEngine {
 
   dispose() {
     this.disposed = true;
+    this.stopAutoType();
     this.stop();
     this.resizeObserver.disconnect();
     this.visibilityObserver.disconnect();
@@ -284,15 +373,104 @@ export class DeskEngine {
   private setLid(open: boolean) {
     if (!this.lid || open === this.lidOpen) return;
     this.lidOpen = open;
+    this.lidToggledAt = performance.now();
     const lid = this.lid;
     const from = lid.rotation.x;
     const to = open ? LID_OPEN : 0;
-    this.tween(lid, 0.7, (k) => {
-      lid.rotation.x = from + (to - from) * ease(k);
+    // opening swings up and settles with a touch of overshoot; closing eases shut
+    this.tween(lid, open ? 0.8 : 0.6, (k) => {
+      lid.rotation.x = from + (to - from) * (open ? settle(k) : ease(k));
     });
-    this.events.onHint?.(open ? 'drag things out onto the mat' : WELCOME_HINT);
+    this.events.onHint?.(open ? 'drag things out onto the mat, or press any key to enter the terminal' : WELCOME_HINT);
     // refresh the caption now if the pointer is still on the case
-    if (this.hovered && this.hovered === this.caseRoot) this.events.onHover?.('case', { lidOpen: open, inCase: false });
+    if (this.hovered && this.hovered === this.caseRoot) this.events.onHover?.('case', { lidOpen: open, inCase: false, lampOn: this.lampOn });
+  }
+
+  setCovered(covered: boolean) {
+    this.covered = covered;
+  }
+
+  /**
+   * Open a part: the CD plays (popping out onto the mat first); the ID card,
+   * the projects and the journal are picked up and shown over the desk; the
+   * case itself (or the label on it) opens or closes.
+   */
+  private activate(id: string) {
+    if (id === 'music') {
+      const cd = this.items.find((i) => i.id === 'music');
+      if (cd && !cd.out) {
+        if (!this.lidOpen) this.setLid(true);
+        this.tapOut(cd);
+      }
+      this.setMusic(!this.cdOpen);
+      return;
+    }
+    if (id === CONTACT_ITEM.id || id === 'case') {
+      this.setLid(!this.lidOpen);
+      return;
+    }
+    if (getDeskItem(id)) {
+      this.select(id);
+      this.events.onOpen?.(id);
+    }
+  }
+
+  private select(id: string | null) {
+    this.selectedId = id;
+    this.events.onSelect?.(id);
+  }
+
+  /** Put a song on the CD (before the model loads, it waits until it has). */
+  setSong(next: CdSong) {
+    if (this.disposed) return;
+    const mesh = this.cdCover;
+    if (!mesh) {
+      this.pendingSong = next;
+      return;
+    }
+    this.pendingSong = null;
+    const apply = (texture: THREE.Texture) => {
+      if (this.disposed) return texture.dispose();
+      texture.flipY = false;
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 4;
+      const material = mesh.material as THREE.MeshStandardMaterial;
+      material.map = texture;
+      material.needsUpdate = true;
+      this.resources.push(texture);
+    };
+    const drawn = () => apply(coverTexture(this.fonts, next.title, next.artist));
+    if (next.cover) new THREE.TextureLoader().load(next.cover, apply, undefined, drawn);
+    else drawn();
+  }
+
+  /** Open the CD case (its song plays) or close it. */
+  setMusic(open: boolean) {
+    if (!this.cd || open === this.cdOpen || this.disposed) return;
+    this.cdOpen = open;
+    const lid = this.cd.lid;
+    const from = lid.rotation.z;
+    const to = open ? CD_OPEN : 0;
+    this.tween(lid, 0.6, (k) => {
+      lid.rotation.z = from + (to - from) * ease(k);
+    });
+    this.events.onMusic?.(open);
+  }
+
+  /** Switch the desk lamp: its light and bulb fade together. */
+  private setLamp(on: boolean) {
+    if (on === this.lampOn) return;
+    this.lampOn = on;
+    const lamp = this.lamp;
+    if (lamp) {
+      const from = this.lampLevel;
+      this.tween(lamp.spot, 0.25, (k) => {
+        this.lampLevel = from + ((on ? 1 : 0) - from) * k;
+        lamp.spot.intensity = lamp.light * this.lampLevel;
+        if (lamp.bulb) lamp.bulb.emissiveIntensity = lamp.glow * this.lampLevel;
+      });
+    }
+    if (this.hovered && this.hovered === this.lampRoot) this.events.onHover?.('lamp', { lidOpen: this.lidOpen, inCase: false, lampOn: on });
   }
 
   /** Move an item to (x, z) on the mat, or home if `home`. */
@@ -310,33 +488,39 @@ export class DeskEngine {
 
   private sendHome(item: Item) {
     item.out = false;
+    if (item.id === 'music') this.setMusic(false);
     this.move(item, item.homePos, item.homeQuat, 0.05);
   }
 
   private setDown(item: Item, x: number, z: number) {
-    const wasOut = this.items.some((i) => i.out && !i.free);
+    const wasOut = this.items.some((i) => i.out);
     item.out = true;
     const yaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.random() - 0.5) * 0.35);
     const quat = item.homeQuat.clone().premultiply(yaw);
     this.move(item, new THREE.Vector3(x, MAT_Y, z), quat, 0, 0.35);
-    this.events.onSelect?.(item.id);
-    if (!wasOut) this.events.onHint?.('double-click anything to visit that page');
+    this.select(item.id);
+    if (!wasOut) this.events.onHint?.('double-click anything to take a closer look');
   }
 
   /** Touch: pop an item out to the next free spot. */
   private tapOut(item: Item) {
     const taken = this.items.filter((i) => i.out).map((i) => i.root.position);
     const free = TAP_SLOTS.find(([x, z]) => taken.every((p) => Math.hypot(p.x - x, p.z - z) > 0.06)) ?? TAP_SLOTS[0];
-    const wasOut = this.items.some((i) => i.out && !i.free);
+    const wasOut = this.items.some((i) => i.out);
     item.out = true;
     const yaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.random() - 0.5) * 0.35);
     this.move(item, new THREE.Vector3(free[0], MAT_Y, free[1]), item.homeQuat.clone().premultiply(yaw), 0.08, 0.6);
-    this.events.onSelect?.(item.id);
+    this.select(item.id);
     if (!wasOut) this.events.onHint?.('tap a part again to see where it goes');
   }
 
   private click(root: THREE.Object3D | null, touch: boolean) {
     const target = root ? this.pickRoots.get(root) : null;
+    if (target === 'lamp') {
+      // the lamp is a lamp in either view
+      this.setLamp(!this.lampOn);
+      return;
+    }
     if (this.mode === 'terminal') {
       // in the terminal view: the wall note goes to the normal site, anything but the monitor goes back to the desk
       if (target === 'wall-note') this.events.onSimple?.();
@@ -348,28 +532,26 @@ export class DeskEngine {
       return;
     }
     if (target === 'sticky') {
+      // the note (and the tape on it) in the lid: the normal website
       this.events.onSimple?.();
       return;
     }
-    if (!root || !target) {
-      this.events.onSelect?.(null);
+    if (!root || !target || target.startsWith('sticker:')) {
+      this.select(null);
       return;
     }
-    if (target === 'case') {
-      this.setLid(!this.lidOpen);
-      return;
-    }
-    if (target === 'contact') {
-      this.events.onSelect?.(CONTACT_ITEM.id);
+    const now = performance.now();
+    const double = this.lastClick.root === root && now - this.lastClick.time < DOUBLE_CLICK_MS;
+    this.lastClick = { root, time: now };
+    if (target === 'case' || target === 'contact') {
+      // one click opens or closes the case (a double-click doesn't undo itself)
+      if (now - this.lidToggledAt > DOUBLE_CLICK_MS) this.setLid(!this.lidOpen);
       return;
     }
     const item = this.items.find((i) => i.root === root);
     if (!item) return;
-    const now = performance.now();
-    const double = this.lastClick.root === root && now - this.lastClick.time < DOUBLE_CLICK_MS;
-    this.lastClick = { root, time: now };
     if (double) {
-      this.events.onOpen?.(item.href);
+      this.activate(item.id);
       return;
     }
     if (!item.out && !this.lidOpen) {
@@ -380,7 +562,7 @@ export class DeskEngine {
       this.tapOut(item);
       return;
     }
-    this.events.onSelect?.(item.id);
+    this.select(item.id);
   }
 
   // ---------------------------------------------------------------- pointer
@@ -416,11 +598,11 @@ export class DeskEngine {
   /** Where the dragged part should be: under the pointer, on a plane just above the mat. */
   private updateDragTarget() {
     if (!this.drag) return;
-    const { item, offset, target } = this.drag;
+    const { offset, target } = this.drag;
     this.raycaster.setFromCamera(this.ndc, this.camera);
     if (!this.raycaster.ray.intersectPlane(this.dragPlane, this.hit)) return;
-    const bounds = item.free ? DESK_BOUNDS : MAT_BOUNDS;
-    const slack = item.free ? 0 : 0.04;
+    const bounds = MAT_BOUNDS;
+    const slack = 0.04;
     target.set(
       THREE.MathUtils.clamp(this.hit.x + offset.x, bounds.minX - slack, bounds.maxX + slack),
       DRAG_Y,
@@ -456,7 +638,7 @@ export class DeskEngine {
     const offset = new THREE.Vector3(item.root.position.x - this.hit.x, 0, item.root.position.z - this.hit.z);
     this.drag = { item, offset, target: item.root.position.clone().setY(DRAG_Y), last: item.root.position.clone() };
     this.renderer.domElement.style.cursor = 'grabbing';
-    if (!item.free) this.events.onSelect?.(item.id);
+    this.select(item.id);
   }
 
   private endDrag() {
@@ -465,22 +647,11 @@ export class DeskEngine {
     this.drag = null;
     this.renderer.domElement.style.cursor = '';
     const { x, z } = target;
-    if (item.free) {
-      // the sticky note just gets set down wherever it was dropped
-      const yaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.random() - 0.5) * 0.25);
-      const at = new THREE.Vector3(
-        THREE.MathUtils.clamp(x, DESK_BOUNDS.minX, DESK_BOUNDS.maxX),
-        item.homePos.y,
-        THREE.MathUtils.clamp(z, DESK_BOUNDS.minZ, DESK_BOUNDS.maxZ),
-      );
-      this.move(item, at, item.homeQuat.clone().premultiply(yaw), 0, 0.3);
-      return;
-    }
     const overCase = x > CASE_BOUNDS.minX && x < CASE_BOUNDS.maxX && z > CASE_BOUNDS.minZ && z < CASE_BOUNDS.maxZ;
     if (overCase) {
       if (!this.lidOpen) this.setLid(true);
       this.sendHome(item);
-      this.events.onSelect?.(null);
+      this.select(null);
       return;
     }
     this.setDown(
@@ -495,14 +666,46 @@ export class DeskEngine {
   private setMode(mode: DeskMode) {
     if (mode === this.mode) return;
     this.mode = mode;
-    // leaving always returns the terminal to its welcome screen at ~
-    if (mode === 'desk') {
-      this.terminal.reset();
-      this.screen.follow();
-    }
+    // the terminal keeps its screen while you're away; only `clear` wipes it
+    if (mode === 'desk') this.stopAutoType();
     this.redraw();
-    if (mode === 'terminal') this.events.onSelect?.(null);
+    if (mode === 'terminal') this.select(null);
     this.events.onMode?.(mode);
+  }
+
+  /**
+   * Opens a site path on the monitor: the camera turns to it and the desk types
+   * the matching `cd` for you, so it also shows how the terminal works.
+   */
+  openOnMonitor(href: string) {
+    if (this.disposed) return;
+    this.stopAutoType();
+    this.select(null);
+    this.setMode('terminal');
+    const command = `cd ~/${href.replace(/^\/+|\/+$/g, '')}`;
+    const t = this.terminal;
+    t.input = '';
+    this.redraw();
+    let i = 0;
+    const step = () => {
+      if (this.disposed) return;
+      if (i < command.length) {
+        t.type(command[i++]);
+        this.screen.follow();
+        this.redraw();
+        this.autoType = window.setTimeout(step, AUTO_TYPE_MS);
+        return;
+      }
+      this.autoType = null;
+      this.submit();
+    };
+    // let the camera arrive before typing starts
+    this.autoType = window.setTimeout(step, AUTO_TYPE_DELAY_MS);
+  }
+
+  private stopAutoType() {
+    if (this.autoType !== null) window.clearTimeout(this.autoType);
+    this.autoType = null;
   }
 
   private submit() {
@@ -519,7 +722,12 @@ export class DeskEngine {
   }
 
   private onKeyDown = (event: KeyboardEvent) => {
-    if (!this.running || this.disposed || isEditable(event.target)) return;
+    if (!this.running || this.disposed || this.covered || isEditable(event.target)) return;
+    // typing yourself takes over from a command the desk was typing
+    if (this.autoType !== null) {
+      this.stopAutoType();
+      this.terminal.input = '';
+    }
     this.keyboard?.press(event.code);
     // leave focused buttons/links and browser shortcuts alone
     if (isControl(event.target) || event.metaKey) return;
@@ -544,7 +752,16 @@ export class DeskEngine {
       event.preventDefault();
       return;
     }
-    if (this.mode !== 'terminal') return;
+    if (this.mode !== 'terminal') {
+      // on the desk, enter opens what you're pointing at, or else the selected part
+      const pointed = this.hovered ? this.pickRoots.get(this.hovered) : undefined;
+      const target = pointed && (getDeskItem(pointed) || pointed === 'case') ? pointed : this.selectedId;
+      if (event.key === 'Enter' && target) {
+        this.activate(target);
+        event.preventDefault();
+      }
+      return;
+    }
     switch (event.key) {
       case 'Backspace':
         t.backspace();
@@ -671,6 +888,9 @@ export class DeskEngine {
     this.timer.update();
     const dt = Math.min(this.timer.getDelta(), 0.1);
 
+    // the disc turns while its song plays
+    if (this.cdOpen && this.cd?.disc) this.cd.disc.rotation.y -= dt * 3;
+
     for (const t of [...this.tweens]) {
       t.t += dt;
       const k = Math.min(1, t.t / t.dur);
@@ -691,8 +911,10 @@ export class DeskEngine {
       .multiplyScalar(this.distance)
       .add(TARGET);
     const wanted = this.mode === 'terminal' ? 1 : 0;
-    this.viewMix = this.reducedMotion ? wanted : this.viewMix + (wanted - this.viewMix) * (1 - Math.exp(-dt * 3.2));
-    const mix = this.viewMix * this.viewMix * (3 - 2 * this.viewMix);
+    // a steady glide, eased at both ends (no lurch at the start)
+    const step = dt / VIEW_S;
+    this.viewMix = this.reducedMotion ? wanted : wanted > this.viewMix ? Math.min(wanted, this.viewMix + step) : Math.max(wanted, this.viewMix - step);
+    const mix = ease(this.viewMix);
     this.camera.position.lerpVectors(deskPosition, this.monitorPosition, mix);
     this.camera.lookAt(new THREE.Vector3().lerpVectors(TARGET, MONITOR_TARGET, mix));
 
@@ -730,7 +952,7 @@ export class DeskEngine {
       const target = root ? this.pickRoots.get(root) ?? null : null;
       const item = this.items.find((i) => i.root === root);
       if (!this.drag) this.renderer.domElement.style.cursor = root ? (item && (item.out || this.lidOpen) ? 'grab' : 'pointer') : '';
-      this.events.onHover?.(this.drag ? null : target, { lidOpen: this.lidOpen, inCase: !!item && !item.out });
+      this.events.onHover?.(this.drag ? null : target, { lidOpen: this.lidOpen, inCase: !!item && !item.out, lampOn: this.lampOn });
     }
     if (root) this.setOutlined(root);
     const easing = this.reducedMotion ? 1 : 1 - Math.exp(-dt * 25);

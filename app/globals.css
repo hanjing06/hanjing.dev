@@ -92,3 +92,58 @@ figcaption {
   0%, 100% { transform: translateY(0); opacity: 0.6; }
   50% { transform: translateY(5px); opacity: 1; }
 }
+
+/* the desk journal's page turns (components/desk/Journal.tsx) */
+@keyframes journal-turn-forward {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(-180deg); }
+}
+@keyframes journal-turn-back {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(180deg); }
+}
+
+/* something picked up off the desk (components/desk/PickedUp.tsx) */
+@keyframes pick-up {
+  from { opacity: 0; transform: translateY(28px) scale(0.9) rotate(-2deg); }
+}
+/* putting something back down on the desk: it sinks, shrinks and fades */
+@keyframes put-down {
+  to { opacity: 0; transform: translateY(32px) scale(0.92) rotate(1.5deg); }
+}
+/* the desk dissolving into the simple site, and coming back */
+@keyframes desk-leave {
+  to { opacity: 0; filter: blur(14px); transform: scale(1.04); }
+}
+@keyframes desk-enter {
+  from { opacity: 0; filter: blur(10px); transform: scale(1.03); }
+}
+/* a project lab opening: it grows out of the desk, sharpening as it comes */
+@keyframes lab-in {
+  from { opacity: 0; transform: translateY(24px) scale(0.94); filter: blur(6px); }
+}
+/* the backdrop behind a picked-up thing: the desk blurs and dims */
+@keyframes backdrop-in {
+  from { opacity: 0; backdrop-filter: blur(0px); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+@keyframes fade-out {
+  to { opacity: 0; }
+}
+/* the journal shutting (the right page folds onto the left) and sliding away */
+@keyframes journal-shut {
+  to { transform: perspective(2200px) rotateY(-180deg); }
+}
+@keyframes journal-away {
+  to { opacity: 0; transform: translateY(36vh) rotate(-3deg) scale(0.94); }
+}
+
+/* dark panels scroll without a visible scrollbar (wheel, trackpad and keys still work) */
+.scroll-quiet {
+  scrollbar-width: none;
+}
+.scroll-quiet::-webkit-scrollbar {
+  display: none;
+}

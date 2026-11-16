@@ -182,7 +182,7 @@ export class Terminal {
       if (this.path[0] === 'blog') return { label: getPost(name).listSubtitle, detail: getPost(name).dateLabel, command: `cd ${name}` };
       return { label: name, detail: describe(this.path, name), command: `cd ${name}` };
     });
-    if (this.path.length) items.push({ label: '← back', detail: this.path.length > 1 ? `to ${this.path[0]}` : 'to the start', command: 'cd ..' });
+    if (this.path.length) items.push({ label: 'back', detail: this.path.length > 1 ? `to ${this.path[0]}` : 'to the start', command: 'cd ..' });
     if (this.path.length > 1) items.push({ label: '⌂ home', detail: 'back to the start', command: 'cd ~' });
     if (!this.path.length) items.push({ label: 'turn off friendly mode', detail: 'type commands yourself', command: 'friendly' });
     items.push({ label: 'leave the terminal', detail: 'back to the desk', command: 'exit' });
@@ -372,7 +372,7 @@ export class Terminal {
       case 'simple':
       case 'normal':
       case 'lite':
-        this.print('taking you back to the start…', 'accent');
+        this.print('taking you to the simple site…', 'accent');
         return { type: 'simple' };
       // small extras, not listed in help
       case 'pwd':
