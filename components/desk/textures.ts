@@ -396,57 +396,102 @@ export function vcuSilkTexture() {
   return toTexture(el);
 }
 
-/** The DE1-SoC's silkscreen (10 px per board mm, transparent, origin at the board centre). */
+/**
+ * The DE10-Standard's silkscreen (10 px per board mm, transparent, origin at
+ * the board centre). Positions follow build_de10 in blender/boards.py.
+ */
 export function deSilkTexture() {
-  const { el, ctx } = canvas(1580, 1000);
-  const px = (x: number, y: number): [number, number] => [(x * 1000 + 79) * 10, (50 - y * 1000) * 10];
-  const white = 'rgba(255,255,255,0.9)';
-  ctx.fillStyle = white;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font = `700 54px ${MONO}`;
-  ctx.fillText('DE1-SoC', ...px(0.045, 0.012));
-  ctx.font = `500 16px ${MONO}`;
-  ctx.fillText('Cyclone V SoC', ...px(0.045, 0.004));
-  ctx.fillText('terasic', ...px(0.045, -0.003));
-  // the parts the detector uses get big labels; HEX labels sit above the displays
-  ctx.font = `800 22px ${MONO}`;
-  for (let n = 0; n < 6; n += 1) ctx.fillText(`HEX${n}`, ...px(0.017 - n * 0.0118, -0.0095));
-  for (let i = 0; i < 10; i += 1) {
-    const used = i <= 3;
-    ctx.font = `${used ? 800 : 600} ${used ? 17 : 14}px ${MONO}`;
-    ctx.fillText(`LEDR${i}`, ...px(0.028 - i * 0.0065, -0.0337));
-    ctx.font = `${i === 0 ? 800 : 600} ${i === 0 ? 22 : 16}px ${MONO}`;
-    ctx.fillText(`SW${i}`, ...px(0.028 - i * 0.0065, -0.0478));
-  }
-  for (let i = 0; i < 4; i += 1) {
-    ctx.font = `${i <= 1 ? 800 : 600} ${i <= 1 ? 22 : 16}px ${MONO}`;
-    ctx.fillText(`KEY${i}`, ...px(0.074 - i * 0.0105, -0.0465));
-  }
-  // what the used ones do, in small print under the big names
-  ctx.font = `600 14px ${MONO}`;
-  ctx.fillText('clock', ...px(0.074, -0.0488));
-  ctx.fillText('reset', ...px(0.0635, -0.0488));
-  ctx.font = `600 14px ${MONO}`;
-  ctx.fillText('GPIO 0', ...px(-0.044, 0.0395));
-  ctx.fillText('GPIO 1', ...px(0.016, 0.0395));
-  ctx.fillText('VGA', ...px(-0.0715, 0.0155));
-  ctx.fillText('POWER', ...px(-0.052, 0.0395));
-  ctx.font = `600 15px ${MONO}`;
-  ctx.fillText('ECE 2277A', ...px(0.055, -0.017));
-  ctx.fillText('Moore FSM detector', ...px(0.055, -0.0215));
-  // pin-1 marks and a few traces
-  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  const { el, ctx } = canvas(1620, 1120);
+  const px = (x: number, y: number): [number, number] => [(x * 1000 + 81) * 10, (56 - y * 1000) * 10];
+  const white = 'rgba(255,255,255,0.92)';
+  const text = (t: string, x: number, y: number, size: number, weight = 600, rotate = 0) => {
+    ctx.font = `${weight} ${size}px ${MONO}`;
+    if (!rotate) return ctx.fillText(t, ...px(x, y));
+    ctx.save();
+    ctx.translate(...px(x, y));
+    ctx.rotate(rotate);
+    ctx.fillText(t, 0, 0);
+    ctx.restore();
+  };
+  // a few traces first, under everything
+  ctx.strokeStyle = 'rgba(255,255,255,0.13)';
   ctx.lineWidth = 4;
   const trace = (points: [number, number][]) => {
     ctx.beginPath();
     points.forEach((p, i) => (i ? ctx.lineTo(...px(...p)) : ctx.moveTo(...px(...p))));
     ctx.stroke();
   };
-  trace([[-0.03, 0.021], [-0.03, 0.016], [-0.014, 0.016]]);
-  trace([[0.03, 0.021], [0.03, 0.016], [0.014, 0.016]]);
-  trace([[0.0, -0.002], [0.0, -0.012], [-0.02, -0.012]]);
-  trace([[0.012, -0.002], [0.012, -0.024], [0.03, -0.024]]);
-  trace([[-0.044, 0.041], [-0.044, 0.03], [-0.03, 0.03]]);
+  trace([[-0.004, 0.0], [-0.016, 0.0]]);
+  trace([[-0.004, 0.008], [-0.016, 0.008]]);
+  trace([[0.028, 0.012], [0.038, 0.012]]);
+  trace([[0.012, -0.012], [0.012, -0.016], [-0.002, -0.016]]);
+  trace([[0.0275, 0.016], [0.05, 0.016], [0.053, 0.019]]);
+  trace([[0.0, 0.0195], [0.0, 0.026], [0.009, 0.034]]);
+  trace([[-0.052, 0.003], [-0.052, -0.004], [-0.035, -0.004]]);
+  // the footprint of the LCD's pins and the HSMC's mounting tabs
+  ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(...px(-0.074, -0.0148), 280, 185);
+  ctx.strokeRect(...px(0.0685, 0.037), 80, 560);
+
+  ctx.fillStyle = white;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  // the board's name, next to the push buttons like the real one
+  text('DE10-Standard', 0.0245, -0.0195, 40, 800);
+  text('terasic', 0.0245, -0.0262, 15, 600);
+  text('ECE 2277A', -0.031, 0.0262, 15, 600);
+  text('Moore FSM detector', -0.031, 0.0225, 15, 600);
+  // the parts the detector uses get big labels
+  for (let n = 0; n < 6; n += 1) text(`HEX${n}`, -0.002 - n * 0.0079, -0.0135, 18, 800);
+  for (let i = 0; i < 10; i += 1) {
+    const x = -0.0125 - i * 0.0068;
+    text(`LEDR${i}`, x, -0.0395, i <= 3 ? 15 : 12, i <= 3 ? 800 : 600);
+    text(`SW${i}`, x, -0.0535, i === 0 ? 20 : 15, i === 0 ? 800 : 600);
+  }
+  for (let i = 0; i < 4; i += 1) text(`KEY${i}`, 0.0445 - i * 0.0118, -0.0372, i <= 1 ? 20 : 15, i <= 1 ? 800 : 600);
+  // what the used ones do, in small print under them
+  text('clock', 0.0445, -0.0525, 14);
+  text('reset', 0.0327, -0.0525, 14);
+  // everything else, small, like the real board
+  for (const [t, x, y] of [
+    ['MIC', -0.066, 0.0425], ['LINE IN', -0.0565, 0.0425], ['LINE OUT', -0.047, 0.0425], ['VIDEO IN', -0.036, 0.0425],
+    ['VGA', -0.0145, 0.0425], ['ETHERNET', 0.0145, 0.0355], ['USB', 0.032, 0.0425], ['USB', 0.0475, 0.0425], ['UART', 0.064, 0.0475],
+    ['PS/2', -0.0645, 0.018], ['BLASTER', -0.0645, 0.0065], ['DC 12V', -0.0645, -0.003], ['POWER', -0.0655, -0.0155],
+    ['ADC', -0.078, -0.0168], ['LCD', -0.06, -0.0142], ['HPS DDR3', -0.026, -0.0048], ['SDRAM', 0.036, 0.0185],
+    ['MSEL', 0.063, -0.0278], ['IR', 0.0605, -0.0345], ['LED', 0.0605, -0.0405], ['MICRO SD', 0.0745, 0.0365],
+  ] as const) text(t, x, y, 12);
+  for (const [t, x] of [['WARM', 0.0555], ['HPS RST', 0.0635], ['HPS KEY', 0.0735]] as const) text(t, x, -0.0545, 9);
+  text('GPIO 0', 0.0515, -0.012, 13, 600, -Math.PI / 2);
+  text('HSMC', 0.0655, 0.022, 13, 600, -Math.PI / 2);
+  text('LTC', 0.0755, -0.0405, 11);
+  return toTexture(el);
+}
+
+/** The marking on the Cyclone V SoC's lid (DE10-Standard). */
+export function fpgaPrintTexture() {
+  const { el, ctx } = canvas(512, 512);
+  ctx.fillStyle = '#26282c';
+  ctx.fillRect(0, 0, 512, 512);
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(14, 14, 484, 484);
+  // pin-1 dimple
+  ctx.fillStyle = 'rgba(0,0,0,0.45)';
+  ctx.beginPath();
+  ctx.arc(52, 460, 14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(236,236,236,0.85)';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = `700 64px ${MONO}`;
+  ctx.fillText('Cyclone V', 256, 190);
+  ctx.font = `600 40px ${MONO}`;
+  ctx.fillText('SoC', 256, 250);
+  ctx.font = `500 30px ${MONO}`;
+  ctx.fillText('5CSXFC6D6F31C6N', 256, 330);
+  ctx.fillStyle = 'rgba(236,236,236,0.55)';
+  ctx.font = `500 24px ${MONO}`;
+  ctx.fillText('K2044A  1721', 256, 376);
   return toTexture(el);
 }

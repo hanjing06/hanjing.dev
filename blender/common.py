@@ -34,12 +34,15 @@ PALETTE = {
     "card": "#fafafa", "card_face": "#ffffff",
     "journal_cover": "#7a2e24", "journal_pages": "#f1e8d4", "journal_label": "#f6efdc", "journal_band": "#1d1a18",
     "cd_tray": "#1a1b1e", "cd_disc": "#d9dde2", "cd_hub": "#c8ccd2", "cd_shell": "#e8f1f6", "cd_cover": "#ffffff",
-    # circuit boards (the VCU and the DE1-SoC, full size and as miniatures)
+    # circuit boards (the VCU and the DE10-Standard, full size and as miniatures)
     "pcb_green": "#1f6b45", "pcb_blue": "#2552a8", "pcb_white": "#f2efe6", "vcu_silk": "#ffffff", "de_silk": "#ffffff",
     "led_off": "#d9d4c8", "switch_black": "#1b1d20", "switch_lever": "#d8dbdf", "btn_cap": "#f3f1ea",
     "knob_black": "#202326", "lcd_frame": "#0f2a1f", "vcu_lcd": "#9fc46a", "hex_bg": "#2b1414", "hex_seg": "#5a1414",
     "key_cap": "#3a3d42", "header_black": "#17191c", "fuse_grey": "#9aa0a6", "connector_metal": "#b8bec6",
     "heatsink": "#c9ced4", "usb_silver": "#b0b6bd",
+    "pcb_navy": "#1d3a78", "fpga_print": "#2a2c30", "glcd": "#9fb3b0", "glcd_frame": "#1a1c1e", "jack_pink": "#e889b5",
+    "jack_blue": "#5aa9e6", "jack_green": "#7cc46a", "jack_yellow": "#e8c34a", "vga_blue": "#2d5fb8", "ps2_purple": "#7a5aa8",
+    "power_red": "#d8322b", "dip_red": "#c8302a",
     # desk
     "desk_wood": "#c89a6a", "mat": "#2c6b66", "kb_case": "#3a3836", "kb_key": "#ece6da",
     "monitor": "#1c1d1f", "screen": "#111418", "lamp": "#efe9dc", "lamp_joint": "#b9bec4", "lamp_bulb": "#fff2d6",
@@ -168,6 +171,19 @@ def between(name, a, b, radius, material, parent=None, vertices=None):
         obj.parent = parent
         obj.matrix_parent_inverse = parent.matrix_world.inverted()
     return obj
+
+
+def join(objects, name):
+    """Merge meshes that share a material into one (fewer draw calls); keeps the first one's parent."""
+    bpy.ops.object.select_all(action="DESELECT")
+    for o in objects:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = objects[0]
+    bpy.ops.object.join()
+    merged = bpy.context.active_object
+    merged.name = name
+    merged.data.name = name
+    return merged
 
 
 def along_x(obj, spin_deg=0.0):

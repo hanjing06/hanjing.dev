@@ -12,6 +12,8 @@ import { OWN_MATERIAL, boardMaterial } from './boardLook';
  */
 
 export type Tween = { obj: THREE.Object3D; t: number; dur: number; update: (k: number) => void; done?: () => void };
+/** Printed or glass layers lying on a part: they'd only shadow the part under them. */
+const FLAT_ROLES = new Set(['vcu_silk', 'de_silk', 'fpga_print', 'glcd']);
 const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
 
 export type BoardScene = {
@@ -40,15 +42,29 @@ type Options = {
   size: number;
   /** Prefers reduced motion: skip tweens. */
   reducedMotion?: boolean;
+  /** The GPU dropped the canvas (driver reset, too many tabs): show a message instead of a frozen board. */
+  onContextLost?: () => void;
 };
 
-export async function createBoardScene(container: HTMLElement, url: string, { size, reducedMotion = false }: Options): Promise<BoardScene> {
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+/**
+ * Phones, tablets and small laptops: render lighter so the lab never makes
+ * a device stutter or heat up (no shadows, 1x pixels, 30 fps).
+ */
+function isLowPower() {
+  if (typeof navigator === 'undefined') return false;
+  const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8;
+  const cores = navigator.hardwareConcurrency ?? 8;
+  return memory <= 4 || cores <= 4 || window.matchMedia('(pointer: coarse)').matches;
+}
+
+export async function createBoardScene(container: HTMLElement, url: string, { size, reducedMotion = false, onContextLost }: Options): Promise<BoardScene> {
+  const lowPower = isLowPower();
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: lowPower ? 'default' : 'high-performance' });
+  renderer.setPixelRatio(lowPower ? 1 : Math.min(window.devicePixelRatio, 1.5));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = !lowPower;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   const canvas = renderer.domElement;
   Object.assign(canvas.style, { display: 'block', width: '100%', height: '100%', touchAction: 'none' });
@@ -79,7 +95,7 @@ export async function createBoardScene(container: HTMLElement, url: string, { si
   scene.add(new THREE.HemisphereLight('#dfe8f3', '#4a4036', 0.9));
   const key = new THREE.DirectionalLight('#fff1dc', 2.2);
   key.position.set(-size * 0.6, size * 1.4, size * 0.9);
-  key.castShadow = true;
+  key.castShadow = !lowPower;
   key.shadow.mapSize.set(1024, 1024);
   key.shadow.camera.near = 0.01;
   key.shadow.camera.far = size * 5;
@@ -96,9 +112,35 @@ export async function createBoardScene(container: HTMLElement, url: string, { si
   ground.rotation.x = -Math.PI / 2;
   ground.position.y = -size * 0.08;
   ground.receiveShadow = true;
-  scene.add(ground);
+  if (!lowPower) scene.add(ground);
 
-  const gltf = await new GLTFLoader().loadAsync(url);
+  // a lost context stops drawing instead of throwing every frame
+  let running = true;
+  let frame = 0;
+  const onLost = (event: Event) => {
+    event.preventDefault();
+    running = false;
+    cancelAnimationFrame(frame);
+    onContextLost?.();
+  };
+  canvas.addEventListener('webglcontextlost', onLost);
+  const release = () => {
+    canvas.removeEventListener('webglcontextlost', onLost);
+    for (const r of resources) r.dispose();
+    renderer.dispose();
+    // hand the GPU context back now rather than at garbage collection: browsers
+    // only allow a handful at once, and the desk behind needs its own
+    renderer.forceContextLoss();
+    canvas.remove();
+  };
+
+  let gltf: Awaited<ReturnType<GLTFLoader['loadAsync']>>;
+  try {
+    gltf = await new GLTFLoader().loadAsync(url);
+  } catch (error) {
+    release();
+    throw error;
+  }
   const root = gltf.scene;
   const materials = new Map<string, THREE.Material>();
   root.traverse((obj) => {
@@ -118,7 +160,7 @@ export async function createBoardScene(container: HTMLElement, url: string, { si
     } else {
       mesh.material = shared;
     }
-    mesh.castShadow = role !== 'vcu_silk' && role !== 'de_silk';
+    mesh.castShadow = !FLAT_ROLES.has(role);
     mesh.receiveShadow = true;
   });
   scene.add(root);
@@ -200,11 +242,12 @@ export async function createBoardScene(container: HTMLElement, url: string, { si
   const frameCallbacks: ((dt: number, time: number) => void)[] = [];
   let tweens: Tween[] = [];
   const clock = new THREE.Clock();
-  let frame = 0;
-  let running = true;
-  const loop = () => {
+  let last = 0;
+  const loop = (now: number) => {
     if (!running) return;
     frame = requestAnimationFrame(loop);
+    if (lowPower && now - last < 1000 / 30 - 2) return;
+    last = now;
     const dt = Math.min(clock.getDelta(), 0.1);
     const time = clock.elapsedTime;
     for (const t of [...tweens]) {
@@ -271,9 +314,7 @@ export async function createBoardScene(container: HTMLElement, url: string, { si
       canvas.removeEventListener('pointerleave', onLeave);
       hoverHandlers.clear();
       controls.dispose();
-      for (const r of resources) r.dispose();
-      renderer.dispose();
-      canvas.remove();
+      release();
     },
   };
 }

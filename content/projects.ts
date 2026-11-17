@@ -73,7 +73,7 @@ export const projects: Project[] = [
     cover: '/projects/moore-fsm-sequence-detector/cover.jpg',
     coverPosition: 'object-top',
     tags: ['Digital Logic', 'FPGA', 'FSM Design'],
-    tools: ["Altera Quartus", "DE1-SoC", "Moore FSM", "D Flip-Flops", "Karnaugh Maps", "Boolean Algebra", "Gate-Level Design", "FPGA Implementation", "Testing", "Debugging", "Verification", "Simulation"],
+    tools: ["Altera Quartus", "DE10-Standard", "Moore FSM", "D Flip-Flops", "Karnaugh Maps", "Boolean Algebra", "Gate-Level Design", "FPGA Implementation", "Testing", "Debugging", "Verification", "Simulation"],
     overview: [
       "This project was a complete Moore finite state machine sequence detector for ECE2277A. The circuit reads one input bit at a time, turns the output on after detecting a target four-bit sequence, and keeps that output high until a second four-bit sequence turns it back off.",
       "The interesting part was not only making the detector function. The assignment required two state-assignment strategies, Boolean simplification, gate-cost comparison, a structural implementation in Quartus, and a simulation waveform that proved the selected design behaved correctly.",

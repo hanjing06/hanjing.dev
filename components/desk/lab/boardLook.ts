@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { deSilkTexture, vcuSilkTexture } from '../textures';
+import { deSilkTexture, fpgaPrintTexture, vcuSilkTexture } from '../textures';
 
 /**
  * Materials for the circuit boards built by blender/boards.py, matched by
@@ -46,6 +46,20 @@ export function boardMaterial(role: string, { track }: Context): THREE.Material 
     case 'connector_metal': return metal('#b8bec6', 0.35);
     case 'heatsink': return metal('#c9ced4', 0.45);
     case 'usb_silver': return metal('#b0b6bd', 0.3);
+    // the DE10-Standard
+    case 'pcb_navy': return matte('#1d3a78', 0.42);
+    case 'fpga_print': return new THREE.MeshStandardMaterial({ map: track(fpgaPrintTexture()), roughness: 0.55, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+    // the 128x64 LCD with its backlight off: grey-green glass
+    case 'glcd': return new THREE.MeshPhysicalMaterial({ color: '#8fa39f', roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.1, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+    case 'glcd_frame': return matte('#1a1c1e', 0.5);
+    case 'jack_pink': return plastic('#e889b5', 0.45);
+    case 'jack_blue': return plastic('#5aa9e6', 0.45);
+    case 'jack_green': return plastic('#7cc46a', 0.45);
+    case 'jack_yellow': return plastic('#e8c34a', 0.45);
+    case 'vga_blue': return plastic('#2d5fb8', 0.5);
+    case 'ps2_purple': return plastic('#7a5aa8', 0.5);
+    case 'power_red': return plastic('#d8322b', 0.35);
+    case 'dip_red': return plastic('#c8302a', 0.5);
     default: return undefined;
   }
 }

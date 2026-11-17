@@ -34,7 +34,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from mathutils import Vector  # noqa: E402
 
 import bpy  # noqa: E402
-from boards import build_de1soc, build_vcu  # noqa: E402
+from boards import build_de10, build_vcu  # noqa: E402
 from common import along_x, between, bevel, box, cylinder, empty, export_glb, finish, plane, reset, select_only, shade  # noqa: E402
 
 # --------------------------------------------------------------------------- pencil case
@@ -202,13 +202,13 @@ def place(group, location, rot_deg):
 
 def build_items():
     # back row (+y) and front row (-y) inside the case, either side of the divider
-    # the Sunstang VCU and the DE1-SoC are the real boards (boards.py), scaled down
+    # the Sunstang VCU and the DE10-Standard are the real boards (boards.py), scaled down
     g, at, r = item("sunstang", -0.078, 0.021, -2)
     build_vcu(parent=g, scale=0.27, name="SunstangVcu")
     place(g, at, r)
 
     g, at, r = item("fsm", -0.078, -0.022, 3)
-    build_de1soc(parent=g, scale=0.35, name="FsmDe1Soc")
+    build_de10(parent=g, scale=0.33, name="FsmDe10")
     place(g, at, r)
 
     g, at, r = item("squat", -0.002, -0.024, 0)
