@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { addSignature, LIMITS, listSignatures } from '@/lib/guestbook';
+import { addSignature, LIMITS, listSignatures, removeSignatures } from '@/lib/guestbook';
+import { isSexual } from '@/lib/moderation';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +23,11 @@ function clean(value: unknown, max: number) {
 export async function GET() {
   try {
     // text only: older drawing-only entries are left out, and drawings aren't sent
-    const entries = (await listSignatures()).filter((e) => e.message).map(({ id, name, message, at }) => ({ id, name, message, at }));
+    const all = await listSignatures();
+    // anything that breaks the rules (signed before a word was banned) is never shown, and is deleted for good
+    const banned = (e: { name: string; message: string }) => isSexual(e.name) || isSexual(e.message ?? '');
+    if (all.some(banned)) await removeSignatures(banned).catch(() => 0);
+    const entries = all.filter((e) => e.message && !banned(e)).map(({ id, name, message, at }) => ({ id, name, message, at }));
     return Response.json({ entries });
   } catch {
     return Response.json({ entries: [], error: 'the guest book is resting right now.' }, { status: 503 });
@@ -42,6 +47,7 @@ export async function POST(request: Request) {
   const name = clean(body.name, LIMITS.name) || 'a visitor';
   const message = clean(body.message, LIMITS.message);
   if (!message) return Response.json({ error: 'write a message first.' }, { status: 400 });
+  if (isSexual(name) || isSexual(message)) return Response.json({ error: 'let’s keep the guest book friendly. try different words?' }, { status: 400 });
 
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'local';
   if (tooMany(ip)) return Response.json({ error: 'thanks for all the love! try again in a few minutes.' }, { status: 429 });
