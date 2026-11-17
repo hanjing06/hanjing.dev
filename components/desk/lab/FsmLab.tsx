@@ -6,7 +6,7 @@ import { glow } from './boardLook';
 import { createBoardScene, type BoardScene } from './boardScene';
 import PartGuide, { type BoardGuide, type BoardPart } from './PartGuide';
 
-const MODEL = '/desk/de1soc.glb';
+const MODEL = '/desk/de10.glb';
 const RED = '#ff3b30';
 const GREEN = '#22c55e';
 const KNOB_TRAVEL = 0.0042;
@@ -48,14 +48,21 @@ const PARTS: BoardPart[] = [
   { match: 'FsmLedr0', anchor: 'FsmLedr0', label: 'LEDR0 = z', tip: 'the output: on after 1 0 1 0' },
   ...[1, 2, 3].map((i) => ({ match: `FsmLedr${i}`, anchor: `FsmLedr${i}`, label: `LEDR${i}`, tip: `state bit ${i - 1}` })),
   ...[4, 5, 6, 7, 8, 9].map((i) => ({ match: `FsmLedr${i}`, anchor: `FsmLedr${i}`, label: `LEDR${i}`, tip: 'not used by the detector' })),
-  { match: 'FsmHeatsink*', anchor: 'FsmHeatsinkBase', label: 'Cyclone V FPGA', tip: 'the detector, as three flip-flops and logic' },
-  { match: 'FsmFpga', anchor: 'FsmHeatsinkBase', label: 'Cyclone V FPGA', tip: 'the detector, as three flip-flops and logic' },
+  { match: 'FsmFpga*', anchor: 'FsmFpga', label: 'Cyclone V SoC FPGA', tip: 'the detector, as three D flip-flops and gates' },
+  // the rest of the board, so it isn't a mystery either
+  { match: 'FsmLcd*', anchor: 'FsmLcdFrame', label: '128×64 LCD', tip: 'not used by the detector' },
+  { match: 'FsmVga*', anchor: 'FsmVga', label: 'VGA out', tip: 'not used by the detector' },
+  { match: 'FsmEthernet*', anchor: 'FsmEthernet', label: 'gigabit ethernet', tip: 'for the ARM (HPS) side' },
+  { match: 'FsmGpio*', anchor: 'FsmGpio', label: '2×20 GPIO header', tip: 'not used by the detector' },
+  { match: 'FsmHsmc*', anchor: 'FsmHsmc', label: 'HSMC connector', tip: 'for daughter cards' },
+  { match: 'FsmUsbBlaster*', anchor: 'FsmUsbBlaster', label: 'USB Blaster II', tip: 'how Quartus programs the FPGA' },
+  { match: 'FsmPower*', anchor: 'FsmPowerSwitch', label: 'power', tip: '12 V in and the on/off button' },
 ];
 
 type Machine = { x: 0 | 1; state: number; bits: (0 | 1)[] };
 
 /**
- * The DE1-SoC running the Moore FSM sequence detector. SW0 is x, KEY0 is
+ * The DE10-Standard running the Moore FSM sequence detector (ECE 2277A). SW0 is x, KEY0 is
  * the clock, KEY1 resets; the HEX displays show the state and the last four
  * bits, LEDR0 is z. The keyboard works too: 1, 0 and r.
  */
@@ -102,7 +109,7 @@ export default function FsmLab({ onStatus }: { onStatus: (text: string) => void 
     let cancelled = false;
     let onKey: ((event: KeyboardEvent) => void) | null = null;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    createBoardScene(el, MODEL, { size: 0.16, reducedMotion })
+    createBoardScene(el, MODEL, { size: 0.17, reducedMotion, onContextLost: () => setFailed(true) })
       .then((s) => {
         if (cancelled) return s.dispose();
         scene = s;

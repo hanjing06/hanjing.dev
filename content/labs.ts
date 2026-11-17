@@ -38,7 +38,7 @@ export const labs: Lab[] = [
   },
   {
     slug: 'moore-fsm-sequence-detector',
-    intro: 'the DE1-SoC running the detector. feed it bits one clock at a time and watch the output latch.',
+    intro: 'the DE10-Standard running the detector. feed it bits one clock at a time and watch the output latch.',
     controls: [
       { what: 'SW0', does: 'the input bit x (up = 1, down = 0).' },
       { what: 'KEY0', does: 'one clock edge: the machine reads x and moves to its next state.' },

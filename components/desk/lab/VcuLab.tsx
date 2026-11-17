@@ -81,7 +81,7 @@ export default function VcuLab({ onStatus }: { onStatus: (text: string) => void 
     let scene: BoardScene | null = null;
     let cancelled = false;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    createBoardScene(el, MODEL, { size: 0.2, reducedMotion })
+    createBoardScene(el, MODEL, { size: 0.2, reducedMotion, onContextLost: () => setFailed(true) })
       .then((s) => {
         if (cancelled) return s.dispose();
         scene = s;
