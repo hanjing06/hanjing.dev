@@ -11,7 +11,7 @@ import { OWN_MATERIAL, boardMaterial } from './boardLook';
  * the camera, picking, tweens and cleanup.
  */
 
-export type Tween = { obj: THREE.Object3D; t: number; dur: number; update: (k: number) => void; done?: () => void };
+type Tween = { obj: THREE.Object3D; t: number; dur: number; update: (k: number) => void; done?: () => void };
 /** Printed or glass layers lying on a part: they'd only shadow the part under them. */
 const FLAT_ROLES = new Set(['vcu_silk', 'de_silk', 'fpga_print', 'glcd']);
 const ease = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);

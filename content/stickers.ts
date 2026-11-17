@@ -4,7 +4,7 @@
  * border) and a mesh named `Sticker_<id>` in the Blender scene. Hovering one
  * on the desk shows its three lines.
  */
-export type Sticker = {
+type Sticker = {
   id: string;
   /** Who or what, e.g. the company or school. */
   title: string;

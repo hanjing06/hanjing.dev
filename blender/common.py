@@ -209,3 +209,7 @@ def export_glb(filename):
         export_lights=False,
     )
     print(f"[blender] wrote {path}")
+    # smaller download, same look (see compact_glb.py)
+    from compact_glb import compact
+
+    compact(path)

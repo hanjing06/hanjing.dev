@@ -1,6 +1,6 @@
 import { pageMetadata } from '@/lib/metadata';
 
-export type Post = {
+type Post = {
   /** Folder name under `app/blog/` and `public/blog/`. */
   slug: string;
   /** Bold first line of the card on /blog. */

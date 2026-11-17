@@ -15,6 +15,8 @@ const contentSecurityPolicy = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // AVIF where the browser takes it (smaller than WebP at the same quality), WebP otherwise
+  images: { formats: ["image/avif", "image/webp"] },
   async headers() {
     const headers = [
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },

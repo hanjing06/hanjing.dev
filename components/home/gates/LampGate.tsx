@@ -10,6 +10,10 @@ import { COPY, GATE_FONT, loadingLabel, type GateProps } from './shared';
  */
 export default function LampGate({ stage, progress, recommendSimple, error, onEnter, onSimple }: GateProps) {
   const [hoverEnter, setHoverEnter] = useState(false);
+  const hover = (on: boolean) => {
+    setHoverEnter(on);
+    if (on) warmUpDesk();
+  };
   const loading = stage === 'loading';
   const glow = loading ? 0.35 + 0.65 * progress : hoverEnter ? 1 : 0;
   const simpleFirst = !!recommendSimple || error;
@@ -20,7 +24,7 @@ export default function LampGate({ stage, progress, recommendSimple, error, onEn
       label={COPY.enter}
       detail={COPY.enterDetail}
       onClick={onEnter}
-      onHover={setHoverEnter}
+      onHover={hover}
     />
   );
   const simple = <ChoiceButton primary={simpleFirst} label={COPY.simple} detail={COPY.simpleDetail} onClick={onSimple} />;
@@ -85,4 +89,18 @@ function ChoiceButton({
       <span className={`text-xs ${primary ? 'text-[#f5f5f7]/70' : 'opacity-70'}`}>{detail}</span>
     </button>
   );
+}
+
+let warmedUp = false;
+/**
+ * Pointing at (or tabbing to) "enter" is a good sign the visitor will go in:
+ * start fetching the desk's code and model then, quietly, so it's mostly
+ * there by the time they click. Both land in the browser's cache, where the
+ * desk picks them up.
+ */
+function warmUpDesk() {
+  if (warmedUp) return;
+  warmedUp = true;
+  void import('@/components/desk/runtime').catch(() => undefined);
+  void fetch('/desk/desk.glb', { priority: 'low' } as RequestInit).catch(() => undefined);
 }

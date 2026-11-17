@@ -13,7 +13,7 @@ import path from 'node:path';
  *   self-hosting. Serverless hosts can't write files, so set up Redis there.
  */
 
-export type Signature = {
+type Signature = {
   id: string;
   name: string;
   message: string;

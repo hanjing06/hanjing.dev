@@ -23,7 +23,7 @@ const TAPE_HEIGHT = 0.016;
  * Text on each label-tape strip. `length` must match LABEL_LENGTHS in
  * blender/desk_scene.py so the letters aren't stretched.
  */
-export const LABEL_STRIPS = [{ text: 'PROPERTY OF HANJING LIN', length: 0.152 }];
+const LABEL_STRIPS = [{ text: 'PROPERTY OF HANJING LIN', length: 0.152 }];
 
 const MONO = 'Menlo, Consolas, "SFMono-Regular", monospace';
 

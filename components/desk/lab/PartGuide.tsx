@@ -18,7 +18,7 @@ export type BoardGuide = { anchor: string; text: string; below?: boolean } | nul
 const MONO = 'font-mono';
 // labels are divs, not <p>: globals.css gives p `text-wrap: pretty`, which beats whitespace-nowrap
 
-export function partFor(parts: BoardPart[], name: string | null) {
+function partFor(parts: BoardPart[], name: string | null) {
   if (!name) return null;
   return parts.find((p) => (p.match.endsWith('*') ? name.startsWith(p.match.slice(0, -1)) : name === p.match)) ?? null;
 }
