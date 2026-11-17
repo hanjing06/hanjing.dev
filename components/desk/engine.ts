@@ -53,6 +53,10 @@ const MAT_Y = 0.002; // cutting-mat surface
 
 /** How far the CD case's lid opens (radians about its hinge). */
 const CD_OPEN = 1.95;
+/** How fast the disc spins while the case is open, radians per second. */
+const CD_SPIN = 3;
+/** How much bigger the CD gets on the mat while it plays. */
+const CD_PLAYING_SCALE = 1.8;
 
 /** Typing speed of commands the desk types for you, and the wait for the camera first. */
 const AUTO_TYPE_MS = 28;
@@ -181,6 +185,9 @@ export class DeskEngine {
   /** The CD in its jewel case; open while its song plays. */
   private cd: { lid: THREE.Object3D; disc: THREE.Object3D | null } | null = null;
   private cdOpen = false;
+  /** The disc's spin, radians per second (eases toward CD_SPIN while open, 0 when closed). */
+  private cdSpin = 0;
+  private readonly cdScaleKey = new THREE.Object3D();
   /** The selected part, if any (enter opens it). */
   private selectedId: string | null = null;
   private covered = false;
@@ -282,6 +289,9 @@ export class DeskEngine {
     }
     const cdLid = model.getObjectByName('MusicLid');
     if (cdLid) this.cd = { lid: cdLid, disc: model.getObjectByName('MusicDisc') ?? null };
+    // the disc's rainbow is painted flat, seen from above: give it top-down UVs
+    const disc = this.cd?.disc as THREE.Mesh | null | undefined;
+    if (disc?.isMesh) flatUvs(disc.geometry);
     this.cdCover = (model.getObjectByName('MusicCover') as THREE.Mesh | undefined) ?? null;
     if (this.pendingSong) this.setSong(this.pendingSong);
     else if (song.cover) this.setSong(song);
@@ -448,6 +458,16 @@ export class DeskEngine {
   setMusic(open: boolean) {
     if (!this.cd || open === this.cdOpen || this.disposed) return;
     this.cdOpen = open;
+    // while it plays, the CD grows on the mat so its spinning disc is easy to see
+    const player = this.items.find((i) => i.id === 'music')?.root;
+    if (player) {
+      const fromScale = player.scale.x;
+      const toScale = open ? CD_PLAYING_SCALE : 1;
+      // (its own tween key: the root's tween is the move onto the mat)
+      this.tween(this.cdScaleKey, 0.7, (k) => {
+        player.scale.setScalar(fromScale + (toScale - fromScale) * ease(k));
+      });
+    }
     const lid = this.cd.lid;
     const from = lid.rotation.z;
     const to = open ? CD_OPEN : 0;
@@ -889,7 +909,9 @@ export class DeskEngine {
     const dt = Math.min(this.timer.getDelta(), 0.1);
 
     // the disc turns while its song plays
-    if (this.cdOpen && this.cd?.disc) this.cd.disc.rotation.y -= dt * 3;
+    // the disc spins up when the case opens and winds down after it closes
+    this.cdSpin += ((this.cdOpen ? CD_SPIN : 0) - this.cdSpin) * Math.min(1, dt * 1.6);
+    if (this.cd?.disc && this.cdSpin > 0.01) this.cd.disc.rotation.y -= dt * this.cdSpin;
 
     for (const t of [...this.tweens]) {
       t.t += dt;
@@ -965,4 +987,20 @@ export class DeskEngine {
 
     this.composer.render(dt);
   };
+}
+
+/** UVs for a flat round part (the CD), projected straight down onto its X/Z plane. */
+function flatUvs(geometry: THREE.BufferGeometry) {
+  geometry.computeBoundingBox();
+  const box = geometry.boundingBox;
+  const position = geometry.getAttribute('position');
+  if (!box || !position) return;
+  const w = box.max.x - box.min.x || 1;
+  const d = box.max.z - box.min.z || 1;
+  const uv = new Float32Array(position.count * 2);
+  for (let i = 0; i < position.count; i += 1) {
+    uv[i * 2] = (position.getX(i) - box.min.x) / w;
+    uv[i * 2 + 1] = (position.getZ(i) - box.min.z) / d;
+  }
+  geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
 }

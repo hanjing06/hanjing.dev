@@ -6,8 +6,9 @@ export const dynamic = 'force-dynamic';
 /**
  * The song for the desk's CD: what's playing on Spotify now, or the last
  * one played. `{ song: null }` when Spotify isn't set up (the desk then uses
- * content/music.ts). The cover goes through /api/now-playing/cover so the
- * page never loads images from another site.
+ * content/music.ts). The cover and the 30-second preview go through
+ * /api/now-playing/cover and /preview, so the page never loads media from
+ * another site.
  */
 export async function GET() {
   try {
@@ -22,6 +23,7 @@ export async function GET() {
           cover: version ? `/api/now-playing/cover?v=${version}` : '',
           url: track.url,
           playing: track.playing,
+          audio: track.previewUrl ? `/api/now-playing/preview?v=${createHash('sha1').update(track.previewUrl).digest('hex').slice(0, 12)}` : '',
         },
       },
       { headers: { 'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=300' } },

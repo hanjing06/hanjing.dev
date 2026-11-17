@@ -16,12 +16,17 @@ export type Track = {
   url: string | null;
   /** True while it's playing right now; false for the last played. */
   playing: boolean;
+  /** A 30-second preview from Apple (Spotify shares no audio), served through /api/now-playing/preview. */
+  previewUrl: string | null;
 };
 
 export const SPOTIFY_SCOPES = 'user-read-currently-playing user-read-recently-played';
 
 /** Spotify only serves album art from here; the cover proxy accepts nothing else. */
 export const COVER_HOST = 'i.scdn.co';
+
+/** Apple serves its previews from hosts ending in this; the preview proxy accepts nothing else. */
+export const PREVIEW_HOST_SUFFIX = '.itunes.apple.com';
 
 /** Seconds to reuse an answer before asking Spotify again. */
 const FRESH_FOR = 60;
@@ -85,7 +90,29 @@ function toTrack(item: SpotifyTrack, playing: boolean): Track {
     coverUrl: image?.url ?? null,
     url: item.external_urls?.spotify ?? null,
     playing,
+    previewUrl: null,
   };
+}
+
+const simple = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, ' ').trim();
+
+/**
+ * The track's 30-second preview on Apple Music, through the free iTunes
+ * Search API (no key). Only a result by the same artist counts, so the CD
+ * never plays the wrong song; null when there's no match.
+ */
+async function previewFor(track: Track): Promise<string | null> {
+  const artist = simple(track.artist.split(',')[0]);
+  const title = simple(track.title.replace(/\s*[-(].*$/, '')) || simple(track.title);
+  const search = new URL('https://itunes.apple.com/search');
+  search.search = new URLSearchParams({ term: `${track.title} ${track.artist.split(',')[0]}`, media: 'music', entity: 'song', limit: '10' }).toString();
+  const response = await fetch(search, { cache: 'no-store', signal: AbortSignal.timeout(4000) });
+  if (!response.ok) return null;
+  const data = (await response.json()) as { results?: { trackName?: string; artistName?: string; previewUrl?: string }[] };
+  const match = data.results?.find((r) => r.previewUrl && simple(r.artistName ?? '').includes(artist) && simple(r.trackName ?? '').startsWith(title));
+  if (!match?.previewUrl) return null;
+  const url = new URL(match.previewUrl);
+  return url.protocol === 'https:' && url.hostname.endsWith(PREVIEW_HOST_SUFFIX) ? url.toString() : null;
 }
 
 /** The track playing now, else the last one played; null when Spotify isn't set up. */
@@ -109,6 +136,11 @@ export async function latestTrack(): Promise<Track | null> {
     if (!recent.ok) throw new Error(`spotify recently played: ${recent.status}`);
     const data = (await recent.json()) as { items: { track: SpotifyTrack }[] };
     if (data.items[0]) track = toTrack(data.items[0].track, false);
+  }
+  if (track) {
+    // same song as last time: reuse its preview instead of asking Apple again
+    const same = cached?.track && cached.track.title === track.title && cached.track.artist === track.artist;
+    track.previewUrl = same ? cached!.track!.previewUrl : await previewFor(track).catch(() => null);
   }
   cached = { track, at: Date.now() };
   return track;

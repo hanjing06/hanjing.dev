@@ -46,8 +46,35 @@ function captionFor(target: DeskTarget, { lidOpen, lampOn }: HoverState, musicOp
   return item ? { title: titleOf(item.id, item.title, live), hint: openHint(item.id, item.cta, musicOpen, live) } : null;
 }
 
-/** The latest song from Spotify (app/api/now-playing), when it's set up. */
-type LiveSong = CdSong & { playing: boolean };
+/** The latest song from Spotify (app/api/now-playing), when it's set up; `audio` is its 30-second preview, if Apple has one. */
+type LiveSong = CdSong & { playing: boolean; audio?: string };
+
+/** The CD plays quietly: it fades up to this volume, and back down when it stops. */
+const VOLUME = 0.3;
+const FADE_IN_S = 2.5;
+const FADE_OUT_S = 1.2;
+
+type Player = { el: HTMLAudioElement; src: string; ctx: AudioContext | null; gain: GainNode | null; stopTimer: number | null };
+
+/** Glide the volume to `to` over `seconds` (Web Audio where there is one: iOS ignores `audio.volume`). */
+function fadeTo(p: Player, to: number, seconds: number) {
+  if (p.ctx && p.gain) {
+    const g = p.gain.gain;
+    const now = p.ctx.currentTime;
+    g.cancelScheduledValues(now);
+    g.setValueAtTime(g.value, now);
+    g.linearRampToValueAtTime(to, now + seconds);
+    return;
+  }
+  const from = p.el.volume;
+  const start = performance.now();
+  const step = () => {
+    const k = Math.min(1, (performance.now() - start) / (seconds * 1000));
+    p.el.volume = from + (to - from) * k;
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
 
 /** The CD is named after its song: the live one when there is one. */
 function titleOf(id: string, title: string, live: LiveSong | null) {
@@ -57,8 +84,8 @@ function titleOf(id: string, title: string, live: LiveSong | null) {
 
 /** How to open a part: the CD plays, everything else opens with a double-click or enter. */
 function openHint(id: string, cta: string, musicOpen: boolean, live: LiveSong | null) {
-  // a live song has no audio here (Spotify doesn't share it), so the case just opens
-  if (id === 'music' && live) return `double-click or press enter to ${musicOpen ? 'close' : 'open'} the case`;
+  // a live song without a preview has nothing to play, so the case just opens
+  if (id === 'music' && live && !live.audio) return `double-click or press enter to ${musicOpen ? 'close' : 'open'} the case`;
   if (id === 'music') return `double-click or press enter to ${musicOpen ? 'stop' : 'listen'}`;
   return `double-click or press enter to ${cta}`;
 }
@@ -139,27 +166,83 @@ export default function DeskHero({ onSimple, onProgress, onReady, onError }: Des
   // its title and how to open it
   const selectedCaption: Caption | null = item ? { title: titleOf(item.id, item.title, live), hint: openHint(item.id, item.cta, musicOpen, live) } : null;
 
-  // the CD's song plays while its case is open, and the case closes when it ends
-  // (only the file in content/music.ts; a live Spotify song has no audio)
-  const audio = useRef<HTMLAudioElement | null>(null);
+  // The CD's song plays while its case is open: the live song's preview, or
+  // the file in content/music.ts. It fades in quietly and fades out when the
+  // case closes; near the end of the clip the case closes by itself.
+  const source = live ? (live.audio ?? '') : song.audio;
+  const player = useRef<Player | null>(null);
   useEffect(() => {
-    if (!song.audio || live) return;
+    if (!source) return;
+    let p = player.current;
     if (musicOpen) {
-      audio.current ??= new Audio(song.audio);
-      audio.current.onended = () => controls.current?.setMusic(false);
-      audio.current.play().catch(() => undefined);
-    } else if (audio.current) {
-      audio.current.pause();
-      audio.current.currentTime = 0;
+      if (!p || p.src !== source) {
+        p?.el.pause();
+        void p?.ctx?.close();
+        const el = new Audio(source);
+        el.preload = 'auto';
+        let ctx: AudioContext | null = null;
+        let gain: GainNode | null = null;
+        try {
+          ctx = new AudioContext();
+          gain = ctx.createGain();
+          gain.gain.value = 0;
+          ctx.createMediaElementSource(el).connect(gain).connect(ctx.destination);
+        } catch {
+          ctx = null;
+          gain = null;
+          el.volume = 0;
+        }
+        p = { el, src: source, ctx, gain, stopTimer: null };
+        player.current = p;
+      }
+      const current = p;
+      if (current.stopTimer !== null) window.clearTimeout(current.stopTimer);
+      current.stopTimer = null;
+      current.el.ontimeupdate = () => {
+        const left = current.el.duration - current.el.currentTime;
+        if (Number.isFinite(left) && left < FADE_OUT_S + 0.2) controls.current?.setMusic(false);
+      };
+      current.el.onended = () => controls.current?.setMusic(false);
+      void current.ctx?.resume();
+      current.el.play().catch(() => undefined);
+      fadeTo(current, VOLUME, FADE_IN_S);
+    } else if (p && !p.el.paused) {
+      const current = p;
+      fadeTo(current, 0, FADE_OUT_S);
+      current.stopTimer = window.setTimeout(() => {
+        current.el.pause();
+        current.el.currentTime = 0;
+        current.stopTimer = null;
+      }, FADE_OUT_S * 1000);
     }
-  }, [musicOpen, live]);
-  useEffect(() => () => audio.current?.pause(), []);
+  }, [musicOpen, source]);
+  useEffect(
+    () => () => {
+      const p = player.current;
+      if (!p) return;
+      if (p.stopTimer !== null) window.clearTimeout(p.stopTimer);
+      p.el.pause();
+      void p.ctx?.close();
+    },
+    [],
+  );
+  // leaving the desk (for the simple site) closes the CD, so its song fades out
+  const sectionRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) controls.current?.setMusic(false);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
   const hoverCaption = hovered && hovered.target !== selected ? captionFor(hovered.target, hovered.state, musicOpen, live) : null;
   // in the terminal the monitor explains itself, so nothing sits over the keyboard
   const caption = typing || opened ? null : (hoverCaption ?? selectedCaption ?? { title: 'welcome to hanjing’s desk', hint });
 
   return (
-    <section aria-label="A desk with a 2000s pencil case. Drag the parts out to explore the site." className={FULLSCREEN}>
+    <section ref={sectionRef} aria-label="A desk with a 2000s pencil case. Drag the parts out to explore the site." className={FULLSCREEN}>
       <DeskScene
         fonts={fonts}
         events={events}
