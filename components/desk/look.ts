@@ -33,7 +33,7 @@ export const LAMP_SPOT = 'LampSpot';
  */
 
 /** Objects on this layer cast shadows but are never seen by the camera. */
-export const SHADOW_ONLY_LAYER = 2;
+const SHADOW_ONLY_LAYER = 2;
 
 type LookContext = {
   scene: THREE.Scene;

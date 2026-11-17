@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { pageContainer, fadeUp } from '@/lib/motion';
 
-export type BlogPostProps = {
+type BlogPostProps = {
   /** Small line above the title, e.g. "start here - july 2026". */
   kicker: string;
   title: string;

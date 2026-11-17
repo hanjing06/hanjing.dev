@@ -16,11 +16,11 @@ import { site } from '@/lib/site';
  * one), plain words or numbers instead of commands, and gentler errors.
  */
 
-export type TerminalAction = { type: 'exit' } | { type: 'simple' } | null;
-export type TerminalMode = 'classic' | 'friendly';
+type TerminalAction = { type: 'exit' } | { type: 'simple' } | null;
+type TerminalMode = 'classic' | 'friendly';
 
 /** One choice in the friendly mode's arrow-key menu. */
-export type MenuItem = { label: string; detail: string; command: string };
+type MenuItem = { label: string; detail: string; command: string };
 
 type LineKind = 'out' | 'cmd' | 'dim' | 'err' | 'accent' | 'title';
 type Line = { text: string; kind: LineKind };

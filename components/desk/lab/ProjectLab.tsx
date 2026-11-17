@@ -7,8 +7,9 @@ import { getLab } from '@/content/labs';
 import { projectHref, type Project } from '@/content/projects';
 import PickedUp, { CloseButton } from '../PickedUp';
 
-const VcuLab = dynamic(() => import('./VcuLab'), { ssr: false });
-const FsmLab = dynamic(() => import('./FsmLab'), { ssr: false });
+// the board labs load through the desk's three.js module, so they share its copy of three.js
+const VcuLab = dynamic(() => import('../runtime').then((m) => m.loadVcuLab()), { ssr: false });
+const FsmLab = dynamic(() => import('../runtime').then((m) => m.loadFsmLab()), { ssr: false });
 const SquatLab = dynamic(() => import('./SquatLab'), { ssr: false });
 
 const MONO = 'font-mono';

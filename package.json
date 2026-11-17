@@ -11,7 +11,6 @@
     "models": "blender -b --python blender/build_all.py"
   },
   "dependencies": {
-    "@vercel/analytics": "^2.0.1",
     "framer-motion": "^12.29.2",
     "next": "^16.1.6",
     "react": "19.2.3",

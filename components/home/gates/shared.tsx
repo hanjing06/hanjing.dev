@@ -8,7 +8,7 @@ import type { ReactNode } from 'react';
  * loading progress until the desk is ready.
  */
 
-export type GateStage = 'choose' | 'loading';
+type GateStage = 'choose' | 'loading';
 
 export type GateProps = {
   stage: GateStage;

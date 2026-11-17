@@ -7,7 +7,7 @@
  * Without them, `latestTrack()` returns null and the desk uses content/music.ts.
  */
 
-export type Track = {
+type Track = {
   title: string;
   artist: string;
   /** Album art on Spotify's CDN (served to visitors through /api/now-playing/cover). */

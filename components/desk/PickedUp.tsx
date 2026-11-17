@@ -4,11 +4,11 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 
 const SERIF = "font-['Times_New_Roman',Times,serif]";
 /** How long putting something down takes (matches the `put-down` keyframes). */
-export const PUT_DOWN_MS = 320;
+const PUT_DOWN_MS = 320;
 
 /** `close()` puts the current view down with its animation; views and the × use this. */
 const PutDownContext = createContext<() => void>(() => undefined);
-export const usePutDown = () => useContext(PutDownContext);
+const usePutDown = () => useContext(PutDownContext);
 
 /**
  * Something picked up off the desk and held up to look at: dims the desk,

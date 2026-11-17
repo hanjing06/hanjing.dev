@@ -11,7 +11,7 @@ import { site } from '@/lib/site';
  * To add a part: model an `Item_<id>` group in the Blender script, then add it
  * here.
  */
-export type DeskItem = {
+type DeskItem = {
   id: string;
   node: string;
   kicker: string;

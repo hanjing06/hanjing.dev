@@ -5,9 +5,9 @@
  * people tend to ask. Projects without an entry still open, with their
  * cover photo in place of a model.
  */
-export type LabControl = { what: string; does: string };
-export type LabQuestion = { q: string; a: string };
-export type Lab = {
+type LabControl = { what: string; does: string };
+type LabQuestion = { q: string; a: string };
+type Lab = {
   slug: string;
   /** One line under the prompt, before the tabs. */
   intro: string;
@@ -15,7 +15,7 @@ export type Lab = {
   questions: LabQuestion[];
 };
 
-export const labs: Lab[] = [
+const labs: Lab[] = [
   {
     slug: 'sunstang-vcu-2026',
     intro: 'the real board, powered up. flip it on and run the start-up the driver goes through.',

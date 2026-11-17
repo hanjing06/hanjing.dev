@@ -41,7 +41,7 @@ export default function DeskScene({ fonts, events, onProgress, onReady, onError,
         document.fonts.load(`500 64px ${fonts.serif}`),
         document.fonts.load(`italic 64px ${fonts.serif}`),
       ]).catch(() => undefined);
-      const { DeskEngine } = await import('./engine');
+      const { DeskEngine } = await import('./runtime');
       if (cancelled) return;
       const events = () => callbacks.current.events;
       const engine = new DeskEngine(container, fonts, {
