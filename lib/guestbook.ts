@@ -71,3 +71,27 @@ export async function addSignature(signature: Signature) {
   await fs.mkdir(path.dirname(FILE), { recursive: true });
   await fs.writeFile(FILE, JSON.stringify(all, null, 2));
 }
+
+/**
+ * Delete stored signatures that `drop` rejects (for entries that break the
+ * guest book's rules, e.g. ones signed before a word was banned). Returns how
+ * many went.
+ */
+export async function removeSignatures(drop: (signature: Signature) => boolean) {
+  if (redis()) {
+    const rows: string[] = await command(['LRANGE', KEY, 0, -1]);
+    const bad = rows.filter((row) => {
+      try {
+        return drop(JSON.parse(row));
+      } catch {
+        return false;
+      }
+    });
+    for (const row of bad) await command(['LREM', KEY, 0, row]);
+    return bad.length;
+  }
+  const all = await readFile();
+  const kept = all.filter((signature) => !drop(signature));
+  if (kept.length !== all.length) await fs.writeFile(FILE, JSON.stringify(kept, null, 2));
+  return all.length - kept.length;
+}
