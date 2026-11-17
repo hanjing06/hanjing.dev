@@ -4,11 +4,13 @@
  * - `cover`: an image in /public (e.g. '/music/cover.jpg'). Leave empty for a
  *   drawn placeholder cover.
  * - `audio`: the song (or a clip of it) in /public, e.g. '/music/song.mp3'.
- *   It plays while the CD case is open and stops when it closes; there's no
- *   player on screen.
+ *   It plays while the CD case is open and fades out when it closes; there's
+ *   no player on screen.
  *
  * When Spotify is set up (README → "Spotify"), the CD shows the latest track
- * from there instead, without audio.
+ * from there instead, and plays its 30-second preview from Apple when there
+ * is one. Either way the song fades in quietly and fades out when the case
+ * closes.
  */
 export const song = {
   title: 'song title',

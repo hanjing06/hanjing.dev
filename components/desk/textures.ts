@@ -195,6 +195,76 @@ export function cardTexture(fonts: DeskFonts) {
 }
 
 /**
+ * The data side of a CD, seen from above: silver with two broad rainbow
+ * sweeps, fine tracks, the bare ring and the clear hub. Mapped flat onto
+ * the disc (the engine gives it top-down UVs), so the colours turn with it.
+ */
+export function discTexture() {
+  const size = 1024;
+  const { el, ctx } = canvas(size, size);
+  const c = size / 2;
+  const ring = (r: number, fill: string | CanvasGradient) => {
+    ctx.fillStyle = fill;
+    ctx.beginPath();
+    ctx.arc(c, c, r, 0, Math.PI * 2);
+    ctx.fill();
+  };
+  // silver base
+  const base = ctx.createRadialGradient(c, c, 0, c, c, c);
+  base.addColorStop(0, '#e6e9ed');
+  base.addColorStop(0.5, '#aab1b9');
+  base.addColorStop(0.75, '#c9ced4');
+  base.addColorStop(1, '#8f969e');
+  ring(c, base);
+  // the rainbow: two sweeps with silver between, like light caught from one side
+  const rainbow = ctx.createConicGradient(Math.PI * 1.1, c, c);
+  const sweep = ['#ff4fb8', '#ffc93a', '#4dff9e', '#36b7ff', '#8f63ff', '#ff4fb8'];
+  for (const start of [0, 0.5]) {
+    sweep.forEach((color, k) => rainbow.addColorStop(start + k * 0.048, color));
+    rainbow.addColorStop(start + 0.31, '#c7ccd3');
+    rainbow.addColorStop(start + 0.37, '#dfe3e8');
+    rainbow.addColorStop(start + 0.43, '#c7ccd3');
+  }
+  rainbow.addColorStop(1, '#ff4fb8');
+  ctx.globalAlpha = 0.9;
+  ring(c, rainbow);
+  ctx.globalAlpha = 1;
+  // the tracks
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+  ctx.lineWidth = 1;
+  for (let r = c * 0.32; r < c; r += 3) {
+    ctx.beginPath();
+    ctx.arc(c, c, r, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  // the rim
+  ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.arc(c, c, c - 4, 0, Math.PI * 2);
+  ctx.stroke();
+  // the bare ring between the data and the hub, then the clear hub
+  const bare = ctx.createRadialGradient(c, c, c * 0.2, c, c, c * 0.32);
+  bare.addColorStop(0, '#d7dbe0');
+  bare.addColorStop(0.7, '#8d939a');
+  bare.addColorStop(1, '#5d6369');
+  ring(c * 0.32, bare);
+  const hub = ctx.createRadialGradient(c, c, c * 0.1, c, c, c * 0.24);
+  hub.addColorStop(0, '#9aa0a7');
+  hub.addColorStop(0.6, '#c9ced4');
+  hub.addColorStop(1, '#7b8188');
+  ring(c * 0.24, hub);
+  // a speck on the ring, so you can see it turn
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.fillRect(c - 22, c - c * 0.3, 44, 10);
+  // the hole
+  ctx.globalCompositeOperation = 'destination-out';
+  ring(c * 0.12, '#000');
+  ctx.globalCompositeOperation = 'source-over';
+  return toTexture(el);
+}
+
+/**
  * Placeholder CD cover (used until content/music.ts names a cover image):
  * paper, a painted sun, and the song in small type.
  */

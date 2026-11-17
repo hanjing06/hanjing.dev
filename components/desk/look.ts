@@ -9,6 +9,7 @@ import { boardMaterial } from './lab/boardLook';
 import {
   cardTexture,
   coverTexture,
+  discTexture,
   matTexture,
   journalLabelTexture,
   stickyTapeTexture,
@@ -85,7 +86,11 @@ function material(role: string, { fonts, screenMap, track }: Pick<LookContext, '
     case 'journal_band': return matte('#1d1a18', 0.6);
     // the CD in its jewel case (the engine swaps in a real cover image when there is one)
     case 'cd_tray': return plastic('#1a1b1e', 0.35);
-    case 'cd_disc': return new THREE.MeshPhysicalMaterial({ color: '#d9dde2', metalness: 1, roughness: 0.18, iridescence: 1, iridescenceIOR: 1.6 });
+    // a rainbow CD: the colours are painted on (so they read in any light) and lit a little from within
+    case 'cd_disc': {
+      const map = track(discTexture());
+      return new THREE.MeshPhysicalMaterial({ map, emissiveMap: map, emissive: '#ffffff', emissiveIntensity: 0.18, metalness: 0.55, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.08, alphaTest: 0.5 });
+    }
     case 'cd_hub': return new THREE.MeshPhysicalMaterial({ color: '#c8ccd2', roughness: 0.2, transparent: true, opacity: 0.7 });
     case 'cd_shell': return new THREE.MeshPhysicalMaterial({ color: '#e8f1f6', roughness: 0.05, clearcoat: 1, transparent: true, opacity: 0.22, depthWrite: false });
     case 'cd_cover': return mapped(track(coverTexture(fonts, song.title, song.artist)), 0.6);
