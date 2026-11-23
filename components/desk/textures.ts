@@ -331,25 +331,21 @@ export function stickyTexture(fonts: DeskFonts) {
   ], 220);
 }
 
-/** The strip of tape holding the note up, with the way out written on it (4:1, see blender/desk_scene.py). */
-export function stickyTapeTexture(fonts: DeskFonts) {
-  const { el, ctx } = canvas(1024, 256);
-  // translucent washi tape with torn ends
-  ctx.fillStyle = 'rgba(248, 244, 232, 0.82)';
+/** The strip of clear tape holding the note up (see blender/desk_scene.py). */
+export function stickyTapeTexture() {
+  const { el, ctx } = canvas(512, 160);
+  // clear tape: a faint white film with jagged cut ends
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
   ctx.beginPath();
-  ctx.moveTo(10, 8);
-  for (let y = 8; y <= 248; y += 16) ctx.lineTo(y % 32 ? 0 : 14, y);
-  ctx.lineTo(1014, 248);
-  for (let y = 248; y >= 8; y -= 16) ctx.lineTo(y % 32 ? 1024 : 1010, y);
+  ctx.moveTo(6, 4);
+  for (let y = 4; y <= 156; y += 10) ctx.lineTo(y % 20 ? 0 : 8, y);
+  ctx.lineTo(506, 156);
+  for (let y = 156; y >= 4; y -= 10) ctx.lineTo(y % 20 ? 512 : 504, y);
   ctx.closePath();
   ctx.fill();
-  ctx.fillStyle = 'rgba(255,255,255,0.35)';
-  ctx.fillRect(20, 20, 984, 36);
-  ctx.fillStyle = '#26315f';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font = `600 70px ${fonts.tape}`;
-  ctx.fillText('Click here for the normal website', 512, 134);
+  // a soft glint along it
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+  ctx.fillRect(12, 18, 488, 22);
   return toTexture(el);
 }
 

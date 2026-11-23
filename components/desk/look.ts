@@ -116,7 +116,7 @@ function material(role: string, { fonts, screenMap, track }: Pick<LookContext, '
     case 'book_3': return matte('#8a3b32', 0.8);
     case 'sticky': return matte('#ffe873', 0.9);
     case 'sticky_face': return mapped(track(stickyTexture(fonts)), 0.9);
-    case 'sticky_tape': return new THREE.MeshStandardMaterial({ map: track(stickyTapeTexture(fonts)), transparent: true, roughness: 0.75, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
+    case 'sticky_tape': return new THREE.MeshStandardMaterial({ map: track(stickyTapeTexture()), transparent: true, roughness: 0.25, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
     case 'wall_note_face': return mapped(track(wallNoteTexture(fonts)), 0.9);
     case 'wall': return matte('#4a3f36', 0.95);
     default: {

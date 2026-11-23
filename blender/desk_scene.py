@@ -57,6 +57,13 @@ STICKERS = (
     ("sunstang", 0.04, 0.018, 0.05, -3),
     ("interninsider", 0.092, 0.021, 0.03, 8),
 )
+# cat stickers inside the lid, either side of the sticky note: (id, x, y, width, tilt)
+# (no hover text, so they're not in content/stickers.ts)
+LID_STICKERS = (
+    ("cat1", -0.085, 0.008, 0.038, 7),
+    ("cat2", 0.088, 0.012, 0.038, -6),
+    ("cat3", -0.046, -0.02, 0.03, -10),
+)
 STICKER_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "public", "desk", "stickers")
 
 
@@ -168,13 +175,18 @@ def build_case():
     cylinder("CaseDialFace", 0.0085, 0.0006, (dx, dy, top + 0.0031), "case_dial_face", vertices=28, parent=lid)
     box("CaseDialNeedle", (0.0012, 0.012, 0.0004), (dx, dy, top + 0.0036), "case_button_b", rotation=(0, 0, math.radians(28)), parent=lid)
     # the sticky note stuck to the inside of the lid (its face points down; it reads upright once the lid is open)
-    # it sits low (near the hinge) with a strip of tape across its top edge (-y: up once the lid is open)
-    nx, ny, sz = CX + 0.07, CY + 0.012, 0.05
+    # it sits in the middle of the lid with a strip of clear tape across its top edge (-y: up once the lid is open)
+    nx, ny, sz = CX, CY, 0.05
     note = empty("StickyNote", (nx, ny, hinge_z), parent=lid)
     box("Sticky", (sz, sz, 0.0022), (nx, ny, hinge_z - 0.0011), "sticky", rotation=(0, 0, math.radians(6)), parent=note)
     plane("StickyFace", (sz, sz), (nx, ny, hinge_z - 0.00225), "sticky_face", rotation=(math.pi, 0, math.radians(6)), parent=note)
-    # keep the tape's 4:1 in sync with stickyTapeTexture in components/desk/textures.ts
-    plane("StickyTape", (0.052, 0.013), (nx - 0.002, ny - sz / 2 + 0.002, hinge_z - 0.0025), "sticky_tape", rotation=(math.pi, 0, math.radians(3)), parent=note)
+    # and the cats either side of it, face down like the note so they read upright when the lid opens
+    # (each a hair further from the lid than the last, so overlapping corners don't flicker)
+    for i, (sid, x, y, width, tilt) in enumerate(LID_STICKERS):
+        height = width * png_aspect(os.path.join(STICKER_DIR, f"{sid}.png"))
+        plane(f"Sticker_{sid}", (width, height), (CX + x, CY + y, hinge_z - 0.0003 - 0.00015 * i), f"sticker_{sid}", rotation=(math.pi, 0, math.radians(tilt)), parent=lid)
+    # a plain strip of clear tape (stickyTapeTexture in components/desk/textures.ts)
+    plane("StickyTape", (0.036, 0.011), (nx - 0.002, ny - sz / 2 + 0.002, hinge_z - 0.0025), "sticky_tape", rotation=(math.pi, 0, math.radians(3)), parent=note)
     # hinge: a rod with three knuckles
     hinge = cylinder("CaseHinge", 0.0028, L * 0.92, (0, 0, 0), "case_hinge", vertices=14)
     along_x(hinge)

@@ -107,6 +107,8 @@ type Item = {
   root: THREE.Object3D;
   homePos: THREE.Vector3;
   homeQuat: THREE.Quaternion;
+  /** How far the part reaches below its origin: lift it this much to sit on the mat, not sink into it. */
+  lift: number;
   out: boolean;
 };
 
@@ -258,7 +260,7 @@ export class DeskEngine {
       if (!mesh.isMesh) return;
       const role = (mesh.material as THREE.Material).name;
       mesh.userData.role = role;
-      mesh.castShadow = !NO_SHADOW_CAST.has(role);
+      mesh.castShadow = !NO_SHADOW_CAST.has(role) && !role.startsWith('sticker_');
       mesh.receiveShadow = true;
       this.resources.push(mesh.geometry, mesh.material as THREE.Material);
     });
@@ -284,7 +286,12 @@ export class DeskEngine {
     for (const info of DESK_ITEMS) {
       const root = model.getObjectByName(info.node);
       if (!root) continue;
-      this.items.push({ id: info.id, href: info.href, root, homePos: root.position.clone(), homeQuat: root.quaternion.clone(), out: false });
+      // the boards' origins are on their top face with the PCB below, so a
+      // part set down at MAT_Y would sit flush with the mat and flicker through it
+      model.updateMatrixWorld(true);
+      const bottom = new THREE.Box3().setFromObject(root).min.y;
+      const lift = Math.max(0, root.getWorldPosition(new THREE.Vector3()).y - bottom) + 0.0002;
+      this.items.push({ id: info.id, href: info.href, root, homePos: root.position.clone(), homeQuat: root.quaternion.clone(), lift, out: false });
       this.pickRoots.set(root, info.id);
     }
     const cdLid = model.getObjectByName('MusicLid');
@@ -517,7 +524,7 @@ export class DeskEngine {
     item.out = true;
     const yaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.random() - 0.5) * 0.35);
     const quat = item.homeQuat.clone().premultiply(yaw);
-    this.move(item, new THREE.Vector3(x, MAT_Y, z), quat, 0, 0.35);
+    this.move(item, new THREE.Vector3(x, MAT_Y + item.lift, z), quat, 0, 0.35);
     this.select(item.id);
     if (!wasOut) this.events.onHint?.('double-click anything to take a closer look');
   }
@@ -529,7 +536,7 @@ export class DeskEngine {
     const wasOut = this.items.some((i) => i.out);
     item.out = true;
     const yaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.random() - 0.5) * 0.35);
-    this.move(item, new THREE.Vector3(free[0], MAT_Y, free[1]), item.homeQuat.clone().premultiply(yaw), 0.08, 0.6);
+    this.move(item, new THREE.Vector3(free[0], MAT_Y + item.lift, free[1]), item.homeQuat.clone().premultiply(yaw), 0.08, 0.6);
     this.select(item.id);
     if (!wasOut) this.events.onHint?.('tap a part again to see where it goes');
   }

@@ -10,8 +10,12 @@ const MODEL = '/desk/de10.glb';
 const RED = '#ff3b30';
 const GREEN = '#22c55e';
 const KNOB_TRAVEL = 0.0042;
-/** The green glow around LEDR0 when z is on (candela, at board scale). */
-const Z_LIGHT = 0.02;
+/**
+ * The green glow around LEDR0 when z is on (candela, at board scale). The light
+ * sits ~4.5 mm above the board, so lux there is about Z_LIGHT / 0.0045²: this
+ * gives ~2 lux, level with the key light, instead of flooding the board green.
+ */
+const Z_LIGHT = 0.00004;
 const CAP_PRESS = 0.0012;
 
 /**
@@ -193,10 +197,10 @@ function runFsm(s: BoardScene, status: (text: string) => void, onChange: (m: Mac
   zLight.position.set(0, 0.004, 0);
   leds[0]?.add(zLight);
   let zGlow = 0;
-  s.onFrame((dt, time) => {
+  s.onFrame((dt) => {
     const target = m.state >= 4 ? 1 : 0;
     zGlow += (target - zGlow) * Math.min(1, dt * 10);
-    zLight.intensity = zGlow * Z_LIGHT * (0.85 + 0.15 * Math.sin(time * 4));
+    zLight.intensity = zGlow * Z_LIGHT;
   });
 
   const slide = (i: number, up: boolean) => {
