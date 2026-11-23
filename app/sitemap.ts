@@ -9,7 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/about',
     '/projects',
     ...projects.map(({ slug }) => projectHref(slug)),
-    '/contact',
   ];
 
   return routes.map((route) => ({

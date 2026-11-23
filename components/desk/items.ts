@@ -1,7 +1,7 @@
 import { getPost, postHref } from '@/content/posts';
 import { getProject, projectHref } from '@/content/projects';
 import { song } from '@/content/music';
-import { site } from '@/lib/site';
+import { mailto, site } from '@/lib/site';
 
 /**
  * What each part in the pencil case stands for. `node` is the object name in
@@ -68,7 +68,7 @@ export const CONTACT_ITEM: DeskItem = {
   kicker: 'contact',
   title: 'property of hanjing lin',
   summary: `if found, return to ${site.emailLabel}.`,
-  href: '/contact',
+  href: mailto,
   cta: 'see what’s inside',
 };
 
