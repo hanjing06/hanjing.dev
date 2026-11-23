@@ -3,10 +3,11 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { backLink, detailTop, pageTitle } from '@/lib/layout';
 import { pageContainer, fadeUp } from '@/lib/motion';
 
 type BlogPostProps = {
-  /** Small line above the title, e.g. "start here - july 2026". */
+  /** Small line under the title, e.g. "start here - july 2026". */
   kicker: string;
   title: string;
   /** Hero image, usually `/blog/<slug>/cover.jpeg`. */
@@ -29,31 +30,31 @@ export default function BlogPost({
         variants={pageContainer}
         initial="hidden"
         animate="show"
-        className="site-container min-w-0 break-words py-20 sm:py-32"
+        className={`site-container min-w-0 break-words ${detailTop} pb-20 sm:pb-32`}
       >
         <div className="mx-auto w-full max-w-[880px] min-w-0">
           <motion.div variants={fadeUp}>
             <Link
               href="/blog"
-              className="inline-flex min-h-11 items-center text-sm text-neutral-600 transition-colors duration-200 hover:text-black"
+              className={backLink}
             >
               ← back to blog
             </Link>
           </motion.div>
 
-          <motion.p
-            variants={fadeUp}
-            className="mt-10 text-lg text-neutral-600"
-          >
-            {kicker}
-          </motion.p>
-
           <motion.h1
             variants={fadeUp}
-            className="mt-3 max-w-[12ch] text-4xl text-black sm:text-5xl md:text-6xl"
+            className={`max-w-[12ch] ${pageTitle}`}
           >
             {title}
           </motion.h1>
+
+          <motion.p
+            variants={fadeUp}
+            className="mt-3 text-lg text-neutral-600"
+          >
+            {kicker}
+          </motion.p>
 
           <motion.div
             variants={fadeUp}

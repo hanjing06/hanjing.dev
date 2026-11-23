@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { easeFade } from '@/lib/motion';
 
 type ExpandableImageProps = {
   src: string;
@@ -60,15 +61,10 @@ export default function ExpandableImage({
       {isOpen ? (
         <motion.div
           className="fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center bg-black/85 p-4 sm:p-8"
-          initial={{ opacity: 0, filter: 'blur(4px)' }}
-          animate={{ opacity: 1, filter: 'blur(0px)' }}
-          exit={{
-            opacity: 0,
-            y: -12,
-            filter: 'blur(4px)',
-            transition: { duration: 0.15, ease: 'easeIn' },
-          }}
-          transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.2, ease: easeFade } }}
+          transition={{ duration: 0.3, ease: easeFade }}
           onClick={() => setIsOpen(false)}
           role="dialog"
           aria-modal="true"

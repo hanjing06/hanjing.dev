@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { postHref, posts } from '@/content/posts';
+import { pageTitle, pageTop } from '@/lib/layout';
 import { pageContainer, fadeUp } from '@/lib/motion';
 
 export default function BlogPage() {
@@ -12,11 +13,11 @@ export default function BlogPage() {
         variants={pageContainer}
         initial="hidden"
         animate="show"
-        className="site-container py-32"
+        className={`site-container ${pageTop} pb-32`}
       >
         <motion.h1
           variants={fadeUp}
-          className="mb-10 text-5xl text-black sm:text-6xl"
+          className={`mb-10 ${pageTitle}`}
         >
           hanjing&apos;s blog.
         </motion.h1>

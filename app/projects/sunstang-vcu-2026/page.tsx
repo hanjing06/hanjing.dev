@@ -6,6 +6,7 @@ import Link from 'next/link';
 import ArticleTableOfContents from '@/components/ArticleTableOfContents';
 import ExpandableImage from '@/components/ExpandableImage';
 import { getProject } from '@/content/projects';
+import { backLink, detailTop, pageTitle } from '@/lib/layout';
 import { articleContainer, fadeUp } from '@/lib/motion';
 
 const tags = ["Embedded Systems", "PCB Design"];
@@ -26,43 +27,24 @@ export default function SunstangPage() {
         variants={articleContainer}
         initial="hidden"
         animate="show"
-        className="site-container min-w-0 break-words py-16 sm:py-24"
+        className={`site-container min-w-0 break-words ${detailTop} pb-16 sm:pb-24`}
       >
         {/* Back */}
         <motion.div variants={fadeUp}>
           <Link
             href="/projects"
-            className="inline-flex min-h-11 items-center text-sm text-neutral-600 transition-colors duration-200 hover:text-neutral-800"
+            className={backLink}
           >
             ← back to projects
           </Link>
         </motion.div>
 
-        {/* Logo */}
-        <motion.div variants={fadeUp} className="mt-4">
-          <Image
-            src="/projects/sunstang-vcu-2026/logo.png"
-            alt="Sunstang Solar Car Project"
-            width={550}
-            height={94}
-            className="h-16 w-auto object-contain"
-          />
-        </motion.div>
-
-        {/* Meta */}
-        <motion.div
-          variants={fadeUp}
-          className="mt-4 text-sm text-neutral-600"
-        >
-          2026 · Sunstang Driver Controls
-        </motion.div>
-
         {/* Title + GitHub */}
         <motion.div
           variants={fadeUp}
-          className="mt-4 flex min-w-0 items-start gap-3 sm:items-center sm:gap-4"
+          className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4"
         >
-          <h1 className="min-w-0 text-3xl text-black sm:text-4xl">
+          <h1 className={`min-w-0 ${pageTitle}`}>
             Sunstang VCU 2026
           </h1>
           <a
@@ -87,6 +69,11 @@ export default function SunstangPage() {
           className="mt-3 text-base text-neutral-600 sm:text-lg"
         >
           Designing the vehicle control unit for a solar powered car.
+        </motion.p>
+
+        {/* Meta */}
+        <motion.p variants={fadeUp} className="mt-4 text-sm text-neutral-600">
+          2026 · Sunstang Driver Controls
         </motion.p>
 
         {/* Tags */}

@@ -2,9 +2,9 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { createFadeUp, easeOutQuint, fadeUp, pageContainer } from '@/lib/motion';
+import { createFadeUp, easeFade, fadeUp, pageContainer } from '@/lib/motion';
 
-const late = createFadeUp(easeOutQuint, 0.5);
+const late = createFadeUp(easeFade, 0.5);
 
 /**
  * The simple home page's opening screen: name and subheader on the left, and

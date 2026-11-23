@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { aboutLinks, aboutParagraphs, aboutSignoff } from '@/content/about';
 import { mailto, site } from '@/lib/site';
 import { fadeUp, pageContainer } from '@/lib/motion';
+import { pageTitle, pageTop } from '@/lib/layout';
 import { reveal, type SectionProps } from './reveal';
 
 const LINK_WORDS = new RegExp(`(${Object.keys(aboutLinks).join('|')})`);
@@ -33,11 +34,11 @@ export default function AboutSection({ heading = 'h1', inView = false, children 
       variants={pageContainer}
       {...reveal(inView)}
       id="about"
-      className={`site-container scroll-mt-16 ${inView ? 'py-16' : 'py-32'}`}
+      className={`site-container scroll-mt-16 ${inView ? 'py-16' : `${pageTop} pb-32`}`}
     >
       <Heading
         variants={fadeUp}
-        className="mb-10 text-5xl text-black sm:text-6xl"
+        className={`mb-10 ${pageTitle}`}
       >
         about me.
       </Heading>

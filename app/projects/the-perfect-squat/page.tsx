@@ -6,6 +6,7 @@ import Link from 'next/link';
 import ArticleTableOfContents from '@/components/ArticleTableOfContents';
 import ExpandableImage from '@/components/ExpandableImage';
 import { getProject } from '@/content/projects';
+import { backLink, detailTop, pageTitle } from '@/lib/layout';
 import { articleContainer, fadeUp } from '@/lib/motion';
 
 const tags = ["Computer Vision", "Machine Learning"];
@@ -26,29 +27,21 @@ export default function SquatPage() {
         variants={articleContainer}
         initial="hidden"
         animate="show"
-        className="site-container min-w-0 break-words py-16 sm:py-24"
+        className={`site-container min-w-0 break-words ${detailTop} pb-16 sm:pb-24`}
       >
         {/* Back */}
         <motion.div variants={fadeUp}>
           <Link
             href="/projects"
-            className="inline-flex min-h-11 items-center text-sm text-neutral-600 transition-colors duration-200 hover:text-black"
+            className={backLink}
           >
             ← back to projects
           </Link>
         </motion.div>
 
-        {/* Meta */}
-        <motion.div
-          variants={fadeUp}
-          className="mt-10 text-sm text-neutral-600"
-        >
-          Ongoing · Passion Project
-        </motion.div>
-
         {/* Title + GitHub */}
-        <motion.div variants={fadeUp} className="mt-4 flex items-center gap-4">
-          <h1 className="text-4xl text-black">
+        <motion.div variants={fadeUp} className="flex items-center gap-4">
+          <h1 className={pageTitle}>
             The Perfect Squat
           </h1>
 
@@ -74,6 +67,11 @@ export default function SquatPage() {
           className="mt-3 text-lg text-neutral-600"
         >
           Developing a computer vision program that detects the bar path of your squat.
+        </motion.p>
+
+        {/* Meta */}
+        <motion.p variants={fadeUp} className="mt-4 text-sm text-neutral-600">
+          Ongoing · Passion Project
         </motion.p>
 
         {/* Tags */}

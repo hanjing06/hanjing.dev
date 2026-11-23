@@ -5,6 +5,7 @@ import Link from 'next/link';
 import ArticleTableOfContents from '@/components/ArticleTableOfContents';
 import ExpandableImage from '@/components/ExpandableImage';
 import { getProject } from '@/content/projects';
+import { backLink, detailTop, pageTitle } from '@/lib/layout';
 import { articleContainer, fadeUp } from '@/lib/motion';
 
 const tags = ['Digital Logic', 'FPGA', 'FSM Design'];
@@ -71,27 +72,20 @@ export default function MooreFsmPage() {
         variants={articleContainer}
         initial="hidden"
         animate="show"
-        className="site-container min-w-0 break-words py-16 sm:py-24"
+        className={`site-container min-w-0 break-words ${detailTop} pb-16 sm:pb-24`}
       >
         <motion.div variants={fadeUp}>
           <Link
             href="/projects"
-            className="inline-flex min-h-11 items-center text-sm text-neutral-600 transition-colors duration-200 hover:text-black"
+            className={backLink}
           >
             ← back to projects
           </Link>
         </motion.div>
 
-        <motion.div
-          variants={fadeUp}
-          className="mt-10 text-sm text-neutral-600"
-        >
-          2025 · ECE2277A Digital Logic Systems
-        </motion.div>
-
         <motion.h1
           variants={fadeUp}
-          className="mt-4 text-4xl text-black"
+          className={pageTitle}
         >
           Moore FSM: A sequence detector
         </motion.h1>
@@ -102,6 +96,10 @@ export default function MooreFsmPage() {
         >
           Designing a finite state machine that detects a bit sequence, compares
           state assignments, and verifies the final circuit in Quartus.
+        </motion.p>
+
+        <motion.p variants={fadeUp} className="mt-4 text-sm text-neutral-600">
+          2025 · ECE2277A Digital Logic Systems
         </motion.p>
 
         <motion.div variants={fadeUp} className="mt-5 flex flex-wrap gap-2">
