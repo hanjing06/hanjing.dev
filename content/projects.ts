@@ -30,6 +30,22 @@ export type Project = {
  */
 export const projects: Project[] = [
   {
+    slug: 'ratatouille',
+    title: 'Ratatouille',
+    summary: 'Engineering a wearable that learns and teaches you how to cook.',
+    cover: '/projects/ratatouille/cover.jpg',
+    tags: ['Embedded Systems', 'Computer Vision', 'AI'],
+    tools: ['ESP32', 'ESP32-S3', 'C++', 'Python', 'YOLO-World', 'OpenCV', 'PyTorch', 'Pipecat', 'Deepgram', 'Silero VAD', 'Claude API', 'FastAPI', 'React', 'KiCad', 'OpenSCAD', '3D Printing'],
+    overview: [
+      'Built at Hack Western 13 by a team of three, Ratatouille is a chest-worn cooking coach for anyone a written recipe gets in the way of: you talk to it, its camera watches your counter, and it points a red laser at the next ingredient. An ESP32 camera and an ESP32-S3 driving pan/tilt servos, the laser and a small display stream over Wi-Fi to a Python hub on a laptop, which runs object detection, the voice pipeline, and Claude as the coach.',
+      'Ask "where’s the lime?" and a local intent router moves the laser before Claude has even answered, while Pipecat, Silero VAD and Deepgram stream speech both ways so replies land in about 1 to 1.5 s. Off-the-shelf YOLO-World found almost nothing in our cheap camera’s frames, so we fine-tuned it on a few hundred of our own, taking detection from near 0% to 90–100%.',
+    ],
+    seo: {
+      title: 'Ratatouille',
+      description: 'A chest-worn cooking coach that listens, sees your counter, and points a laser at the next ingredient.',
+    },
+  },
+  {
     slug: 'sunstang-vcu-2026',
     title: 'Sunstang VCU 2026',
     summary: 'Designing the vehicle control unit for a solar powered car.',
